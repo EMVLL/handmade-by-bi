@@ -1,26 +1,38 @@
 @import "tailwindcss";
 
+/* I valori reali arrivano dal tema scelto nell'app admin (vedi app/layout.tsx) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --c-primary: #b5838d;
+  --c-accent: #6d9773;
+  --c-background: #fff8f3;
+  --c-text: #3d3033;
+  --f-heading: Georgia, serif;
+  --f-body: system-ui, sans-serif;
+  --r-site: 12px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--c-primary);
+  --color-accent: var(--c-accent);
+  --color-background: var(--c-background);
+  --color-foreground: var(--c-text);
+  --font-heading: var(--f-heading);
+  --font-body: var(--f-body);
+  --radius-site: var(--r-site);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--c-background);
+  color: var(--c-text);
+  font-family: var(--f-body);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--f-heading);
 }
