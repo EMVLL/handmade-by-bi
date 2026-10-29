@@ -50,6 +50,10 @@ class AppTextsIt implements AppTexts {
   String get loginMissingFields => 'Inserisci email e password';
   @override
   String get loginButton => 'Entra';
+  @override
+  String get loginRemember => 'Rimani connesso';
+  @override
+  String get loginRememberHint => 'Su questo telefono non dovrai rifare l\'accesso';
 
   // ---------------------------------------------------------------- navigazione
   @override
@@ -228,10 +232,9 @@ class AppTextsIt implements AppTexts {
   @override
   String get channelsTitle => "Canali d'ordine";
   @override
-  String channelsIntro(String placeholders) =>
-      'Sul sito compariranno i pulsanti dei canali attivi. '
-      'Nei messaggi puoi usare $placeholders: '
-      'vengono sostituiti con il pezzo scelto dal cliente.';
+  String get channelsIntro =>
+      'Scegli come i clienti possono ordinarti: sul sito comparirà '
+      'un pulsante per ogni canale attivo.';
   @override
   String get saveAndPublish => 'Salva e pubblica';
   @override
@@ -282,12 +285,48 @@ class AppTextsIt implements AppTexts {
   @override
   String get linkRequired => 'Inserisci il link';
   @override
-  String get vintedInvalid => 'Deve iniziare con https://www.vinted.it/';
+  String get vintedInvalid => 'Incolla il link del tuo profilo Vinted';
   @override
-  String get instagramInvalid => 'Deve iniziare con https://www.instagram.com/';
+  String get instagramInvalid => 'Scrivi il nome utente o incolla il link del profilo';
+  @override
+  String get vintedLinkHelp => 'Su Vinted apri il tuo profilo, tocca Condividi → Copia link e incollalo qui';
+  @override
+  String get instagramLinkHelp => 'Il tuo nome utente (es. @handmadebybi) oppure il link del profilo';
 
+  // Messaggi precompilati
+  @override
+  String get messageSectionWhatsapp => 'Messaggio già scritto per il cliente (facoltativo)';
+  @override
+  String get messageSectionEmail => "Oggetto e testo dell'email (facoltativo)";
+  @override
+  String get messageHelp =>
+      'Quando il cliente preme il pulsante, trova il messaggio già scritto e deve solo inviarlo. '
+      'Va già bene così: cambialo solo se vuoi. Con i pulsanti qui sotto inserisci i dati del pezzo, '
+      'che verranno scritti in automatico (guarda l\'esempio).';
+  @override
+  String get tokenProduct => 'Nome del pezzo';
+  @override
+  String get tokenPrice => 'Prezzo';
+  @override
+  String get tokenOption => 'Scelte del cliente';
+  @override
+  String get tokenLink => 'Link al pezzo';
+  @override
+  String get previewTitle => 'Esempio di come lo riceverai:';
+  @override
+  String get resetMessage => 'Ripristina il testo standard';
+  @override
+  String get defaultWhatsappTemplate => 'Ciao! Vorrei ordinare {prodotto} ({prezzo}). {opzione} {link}';
+  @override
+  String get defaultEmailSubject => 'Ordine: {prodotto}';
+  @override
+  String get defaultEmailBody => 'Ciao! Vorrei ordinare {prodotto} ({prezzo}). {opzione} {link}';
+  @override
+  String get sampleProduct => 'Borsa Margherita';
+  @override
+  String get sampleOption => 'Colore: Rosa';
   @override
   String get templateTooLong => 'Testo troppo lungo';
   @override
-  String templateInvalid(String placeholders) => 'Tra graffe puoi usare solo: $placeholders';
+  String get templateInvalid => 'Tra graffe { } usa solo i dati dei pulsanti qui sotto';
 }

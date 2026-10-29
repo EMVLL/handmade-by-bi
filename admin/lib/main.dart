@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config.dart';
 import 'screens/admin_gate.dart';
 import 'screens/login_screen.dart';
+import 'session.dart';
 import 'app_theme.dart';
 import 'texts/app_texts.dart';
 
@@ -14,6 +15,7 @@ Future<void> main() async {
     url: Config.supabaseUrl,
     publishableKey: Config.supabaseKey,
   );
+  await applyRememberMe();
   runApp(const AdminApp());
 }
 

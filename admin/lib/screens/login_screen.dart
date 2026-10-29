@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../session.dart';
 import '../supa.dart';
 import '../texts/app_texts.dart';
 
@@ -15,7 +16,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final _password = TextEditingController();
   bool _busy = false;
   bool _hidden = true;
+  bool _remember = true;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    getRememberMe().then((value) {
+      if (mounted) setState(() => _remember = value);
+    });
+  }
 
   @override
   void dispose() {
@@ -36,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
+      await setRememberMe(_remember);
       await supa.auth.signInWithPassword(email: email, password: password);
     } catch (e) {
       if (!mounted) return;
@@ -86,6 +97,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () => setState(() => _hidden = !_hidden),
                         ),
                       ),
+                    ),
+                    const SizedBox(height: 4),
+                    CheckboxListTile(
+                      value: _remember,
+                      onChanged: (value) => setState(() => _remember = value ?? true),
+                      title: Text(t.loginRemember),
+                      subtitle: Text(t.loginRememberHint),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: 12),

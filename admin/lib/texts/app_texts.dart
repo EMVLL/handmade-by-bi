@@ -40,6 +40,8 @@ abstract class AppTexts {
   String get loginPassword;
   String get loginMissingFields;
   String get loginButton;
+  String get loginRemember;
+  String get loginRememberHint;
 
   // ---------------------------------------------------------------- navigazione
   String get tabProducts;
@@ -132,7 +134,7 @@ abstract class AppTexts {
 
   // ---------------------------------------------------------------- canali d'ordine
   String get channelsTitle;
-  String channelsIntro(String placeholders);
+  String get channelsIntro;
   String get saveAndPublish;
   String get channelsSaved;
   String get channelsPublishNote;
@@ -162,6 +164,24 @@ abstract class AppTexts {
   String get vintedInvalid;
   String get instagramInvalid;
 
+  String get vintedLinkHelp;
+  String get instagramLinkHelp;
+
+  // Messaggi precompilati
+  String get messageSectionWhatsapp;
+  String get messageSectionEmail;
+  String get messageHelp;
+  String get tokenProduct;
+  String get tokenPrice;
+  String get tokenOption;
+  String get tokenLink;
+  String get previewTitle;
+  String get resetMessage;
+  String get defaultWhatsappTemplate;
+  String get defaultEmailSubject;
+  String get defaultEmailBody;
+  String get sampleProduct;
+  String get sampleOption;
   String get templateTooLong;
-  String templateInvalid(String placeholders);
+  String get templateInvalid;
 }
