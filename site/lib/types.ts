@@ -87,3 +87,10 @@ export interface Product {
   created_at: string;
   product_collections: { collection_id: string; position: number }[];
 }
+
+export interface Collection {
+  id: string;
+  slug: string;
+  name: string;
+  position: number;
+}

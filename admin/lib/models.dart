@@ -28,6 +28,7 @@ class Product {
     required this.options,
     required this.vintedUrl,
     required this.deletedAt,
+    required this.categoryIds,
   });
 
   factory Product.fromMap(Map<String, dynamic> map) => Product(
@@ -44,6 +45,9 @@ class Product {
             .toList(),
         vintedUrl: map['vinted_url'] as String?,
         deletedAt: map['deleted_at'] == null ? null : DateTime.tryParse(map['deleted_at'] as String),
+        categoryIds: ((map['product_collections'] as List?) ?? const [])
+            .map((pc) => (pc as Map)['collection_id'] as String)
+            .toList(),
       );
 
   final String id;
@@ -57,4 +61,28 @@ class Product {
   final List<ProductOption> options;
   final String? vintedUrl;
   final DateTime? deletedAt;
+
+  /// Categorie scelte da Benedetta (tabella product_collections).
+  final List<String> categoryIds;
 }
+
+/// Una categoria del negozio (tabella "collections").
+/// "Pronta consegna" e "Altro" non sono qui: il sito le calcola da solo.
+class ShopCategory {
+  const ShopCategory({required this.id, required this.slug, required this.name, required this.position});
+
+  factory ShopCategory.fromMap(Map<String, dynamic> map) => ShopCategory(
+        id: map['id'] as String,
+        slug: map['slug'] as String,
+        name: map['name'] as String,
+        position: (map['position'] as num?)?.toInt() ?? 0,
+      );
+
+  final String id;
+  final String slug;
+  final String name;
+  final int position;
+}
+
+/// Indirizzi riservati alle due categorie automatiche del sito.
+const reservedCategorySlugs = {'altro', 'pronta-consegna'};

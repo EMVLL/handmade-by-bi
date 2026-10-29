@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
+import CategoryMenu from "@/components/CategoryMenu";
 import ProductCard from "@/components/ProductCard";
-import { getProducts } from "@/lib/data";
+import { categoryEntries, siteMenuSettings } from "@/lib/categories";
+import { getCollections, getLiveSite, getProducts } from "@/lib/data";
 
 export const metadata: Metadata = { title: "Tutti i lavori" };
 
 export default async function ProductsPage() {
-  const products = await getProducts();
+  const [products, collections, site] = await Promise.all([getProducts(), getCollections(), getLiveSite()]);
+  const entries = categoryEntries(siteMenuSettings(site), products, collections);
   return (
     <div className="mx-auto max-w-5xl px-5 py-12">
-      <h1 className="mb-8 font-heading text-4xl">Tutti i lavori</h1>
+      <CategoryMenu entries={entries} style="buttons" />
+      <h1 className="mb-8 mt-8 font-heading text-4xl">Tutti i lavori</h1>
       {products.length ? (
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3">
           {products.map((p) => (

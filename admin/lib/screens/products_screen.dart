@@ -17,6 +17,10 @@ class ProductsScreen extends StatefulWidget {
 
 class _ProductsScreenState extends State<ProductsScreen> {
   List<Product> _items = [];
+  List<ShopCategory> _categories = [];
+
+  /// Filtro attivo: null = tutti, '' = senza categoria, altrimenti id categoria.
+  String? _filter;
   bool _loading = true;
   bool _trash = false;
   String? _error;
@@ -33,14 +37,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
       _error = null;
     });
     try {
-      var query = supa.from('products').select();
+      var query = supa.from('products').select('*, product_collections(collection_id)');
       query = _trash ? query.not('deleted_at', 'is', null) : query.isFilter('deleted_at', null);
-      final rows = await query
-          .order('position', ascending: true)
-          .order('created_at', ascending: false);
+      final results = await Future.wait([
+        query.order('position', ascending: true).order('created_at', ascending: false),
+        supa.from('collections').select().order('position', ascending: true).order('name', ascending: true),
+      ]);
       if (!mounted) return;
       setState(() {
-        _items = rows.map(Product.fromMap).toList();
+        _items = results[0].map(Product.fromMap).toList();
+        _categories = results[1].map(ShopCategory.fromMap).toList();
+        if (_filter != null && _filter!.isNotEmpty && !_categories.any((c) => c.id == _filter)) {
+          _filter = null;
+        }
         _loading = false;
       });
     } catch (e) {
@@ -166,6 +175,37 @@ class _ProductsScreenState extends State<ProductsScreen> {
     );
   }
 
+  List<Product> get _visibleItems {
+    final filter = _filter;
+    if (filter == null) return _items;
+    if (filter.isEmpty) return _items.where((p) => p.categoryIds.isEmpty).toList();
+    return _items.where((p) => p.categoryIds.contains(filter)).toList();
+  }
+
+  /// Filtri per categoria, sopra l'elenco.
+  Widget _filters() {
+    Widget chip(String label, String? value) => Padding(
+          padding: const EdgeInsets.only(right: 6),
+          child: ChoiceChip(
+            label: Text(label),
+            selected: _filter == value,
+            onSelected: (_) => setState(() => _filter = value),
+          ),
+        );
+    return SizedBox(
+      height: 48,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        children: [
+          chip(t.filterAll, null),
+          for (final c in _categories) chip(c.name, c.id),
+          chip(t.filterNoCategory, ''),
+        ],
+      ),
+    );
+  }
+
   Widget _body() {
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_error != null) {
@@ -178,7 +218,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
         ],
       );
     }
-    if (_items.isEmpty) {
+    final items = _visibleItems;
+    if (items.isEmpty) {
       return ListView(
         padding: const EdgeInsets.all(32),
         children: [
@@ -192,10 +233,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
     }
     return ListView.separated(
       padding: const EdgeInsets.only(bottom: 96),
-      itemCount: _items.length,
+      itemCount: items.length,
       separatorBuilder: (context, index) => const Divider(height: 1),
       itemBuilder: (context, i) {
-        final p = _items[i];
+        final p = items[i];
         return ListTile(
           leading: _thumb(p),
           title: Text(p.title, maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -231,7 +272,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
           ),
         ],
       ),
-      body: RefreshIndicator(onRefresh: _load, child: _body()),
+      body: Column(
+        children: [
+          if (!_trash && !_loading && _error == null && _items.isNotEmpty) _filters(),
+          Expanded(child: RefreshIndicator(onRefresh: _load, child: _body())),
+        ],
+      ),
       floatingActionButton: _trash
           ? null
           : FloatingActionButton.extended(

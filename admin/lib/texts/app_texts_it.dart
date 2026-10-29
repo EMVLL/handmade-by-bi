@@ -59,6 +59,8 @@ class AppTextsIt implements AppTexts {
   @override
   String get tabProducts => 'Pezzi';
   @override
+  String get tabCategories => 'Categorie';
+  @override
   String get tabChannels => "Canali d'ordine";
 
   // ---------------------------------------------------------------- pezzi
@@ -238,6 +240,55 @@ class AppTextsIt implements AppTexts {
   String get progressSaving => 'Salvo…';
   @override
   String progressUploading(int done, int total) => 'Carico la foto $done di $total…';
+
+  // ---------------------------------------------------------------- categorie
+  @override
+  String get categoriesTitle => 'Categorie';
+  @override
+  String get categoriesAutoTitle => 'Categorie automatiche';
+  @override
+  String categoriesAutoReady(int count) =>
+      'Disponibili in pronta consegna: ${productsCount(count)} (quelli con stato Disponibile)';
+  @override
+  String categoriesAutoOther(int count) => 'Altro: ${productsCount(count)} (quelli senza categoria)';
+  @override
+  String get categoriesAutoNote => 'Non devi crearle né aggiornarle: il sito le calcola da solo.';
+  @override
+  String productsCount(int count) => count == 1 ? '1 pezzo' : '$count pezzi';
+  @override
+  String get categoriesEmpty => 'Nessuna categoria.\nPremi "Nuova categoria" per crearne una.';
+  @override
+  String get categoryNew => 'Nuova categoria';
+  @override
+  String get categoryNameField => 'Nome della categoria';
+  @override
+  String get categoryNameRequired => 'Scrivi un nome';
+  @override
+  String get categoryRename => 'Rinomina';
+  @override
+  String get categoryMoveUp => 'Sposta su';
+  @override
+  String get categoryMoveDown => 'Sposta giù';
+  @override
+  String get categoryDeleteTitle => 'Eliminare la categoria?';
+  @override
+  String categoryDeleteBody(String name) =>
+      'I pezzi di "$name" non vengono cancellati: se non hanno altre categorie finiscono in "Altro".';
+  @override
+  String get categoryReserved => '"Altro" e "Pronta consegna" esistono già in automatico';
+  @override
+  String get categorySaved => 'Fatto! Il sito si aggiorna entro un minuto';
+  @override
+  String get editCategoriesSection => 'Categorie';
+  @override
+  String get editCategoriesHint =>
+      'Puoi sceglierne più di una. Se non ne scegli nessuna, il pezzo va in "Altro".';
+  @override
+  String get editNoCategories => 'Non ci sono ancora categorie: creale nella scheda Categorie.';
+  @override
+  String get filterAll => 'Tutti';
+  @override
+  String get filterNoCategory => 'Senza categoria';
 
   // ---------------------------------------------------------------- canali d'ordine
   @override

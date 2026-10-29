@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import type { LiveSite, Product, Props } from "@/lib/types";
+import { categoryEntries, menuSettings } from "@/lib/categories";
+import type { Collection, LiveSite, Product, Props } from "@/lib/types";
 import { bool, list, mediaUrl, num, paragraphs, str } from "@/lib/format";
+import CategoryMenu from "../CategoryMenu";
 import ContactLinks from "../ContactLinks";
 import ProductCard, { PriceLine } from "../ProductCard";
 import SmartLink from "../SmartLink";
@@ -10,6 +12,7 @@ import SmartLink from "../SmartLink";
 export interface BlockContext {
   site: LiveSite;
   products: Product[];
+  collections: Collection[];
 }
 
 type Renderer = (props: Props, ctx: BlockContext) => ReactNode;
@@ -164,6 +167,19 @@ const productGrid: Renderer = (p, ctx) => {
   );
 };
 
+// ---------------------------------------------------------------- Menu categorie
+const categoryMenu: Renderer = (p, ctx) => {
+  const settings = menuSettings(p);
+  const entries = categoryEntries(settings, ctx.products, ctx.collections);
+  if (!entries.length) return null;
+  return (
+    <div className={`${wrap} py-10`}>
+      <Title text={settings.title} />
+      <CategoryMenu entries={entries} style={settings.style} />
+    </div>
+  );
+};
+
 // ---------------------------------------------------------------- Prodotto in evidenza
 const featuredProduct: Renderer = (p, ctx) => {
   const product = ctx.products.find((x) => x.id === str(p.product_id));
@@ -292,6 +308,7 @@ export const RENDERERS: Record<string, Renderer> = {
   text,
   gallery,
   product_grid: productGrid,
+  category_menu: categoryMenu,
   featured_product: featuredProduct,
   testimonials,
   faq,

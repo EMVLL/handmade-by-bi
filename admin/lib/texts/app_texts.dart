@@ -45,6 +45,7 @@ abstract class AppTexts {
 
   // ---------------------------------------------------------------- navigazione
   String get tabProducts;
+  String get tabCategories;
   String get tabChannels;
 
   // ---------------------------------------------------------------- pezzi
@@ -136,6 +137,30 @@ abstract class AppTexts {
 
   String get progressSaving;
   String progressUploading(int done, int total);
+
+  // ---------------------------------------------------------------- categorie
+  String get categoriesTitle;
+  String get categoriesAutoTitle;
+  String categoriesAutoReady(int count);
+  String categoriesAutoOther(int count);
+  String get categoriesAutoNote;
+  String productsCount(int count);
+  String get categoriesEmpty;
+  String get categoryNew;
+  String get categoryNameField;
+  String get categoryNameRequired;
+  String get categoryRename;
+  String get categoryMoveUp;
+  String get categoryMoveDown;
+  String get categoryDeleteTitle;
+  String categoryDeleteBody(String name);
+  String get categoryReserved;
+  String get categorySaved;
+  String get editCategoriesSection;
+  String get editCategoriesHint;
+  String get editNoCategories;
+  String get filterAll;
+  String get filterNoCategory;
 
   // ---------------------------------------------------------------- canali d'ordine
   String get channelsTitle;

@@ -72,6 +72,8 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
   final List<String> _removedPaths = [];
   bool _saving = false;
   String _progress = '';
+  List<ShopCategory> _allCategories = [];
+  late final Set<String> _categoryIds;
 
   bool get _isNew => widget.product == null;
 
@@ -86,6 +88,8 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         text: p?.compareAtPrice == null ? '' : formatNumber(p!.compareAtPrice!));
     _vinted = TextEditingController(text: p?.vintedUrl ?? '');
     _status = p?.status ?? 'disponibile';
+    _categoryIds = {...?p?.categoryIds};
+    _loadCategories();
     _photos.addAll((p?.photos ?? const <String>[]).map(_Photo.saved));
     _options.addAll((p?.options ?? const <ProductOption>[])
         .map((o) => _OptionDraft(name: o.name, values: o.values)));
@@ -100,6 +104,53 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
       o.dispose();
     }
     super.dispose();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final rows = await supa.from('collections').select().order('position', ascending: true).order('name', ascending: true);
+      if (!mounted) return;
+      setState(() => _allCategories = rows.map(ShopCategory.fromMap).toList());
+    } catch (_) {
+      // Senza categorie si può comunque salvare il pezzo.
+    }
+  }
+
+  Widget _categoriesPicker() {
+    if (_allCategories.isEmpty) {
+      return Text(t.editNoCategories, style: Theme.of(context).textTheme.bodySmall);
+    }
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final c in _allCategories)
+          FilterChip(
+            label: Text(c.name),
+            selected: _categoryIds.contains(c.id),
+            onSelected: (on) => setState(() => on ? _categoryIds.add(c.id) : _categoryIds.remove(c.id)),
+          ),
+      ],
+    );
+  }
+
+  /// Allinea le categorie del pezzo a quelle scelte.
+  Future<void> _saveCategories(String productId) async {
+    final before = {...?widget.product?.categoryIds};
+    final removed = before.difference(_categoryIds).toList();
+    final added = _categoryIds.difference(before).toList();
+    if (removed.isNotEmpty) {
+      await supa
+          .from('product_collections')
+          .delete()
+          .eq('product_id', productId)
+          .inFilter('collection_id', removed);
+    }
+    if (added.isNotEmpty) {
+      await supa.from('product_collections').insert([
+        for (final id in added) {'product_id': productId, 'collection_id': id},
+      ]);
+    }
   }
 
   void _snack(String text) {
@@ -516,13 +567,13 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
 
   // ------------------------------------------------------------------ salvataggio
 
-  Future<void> _insertWithUniqueSlug(Map<String, dynamic> data) async {
+  Future<String> _insertWithUniqueSlug(Map<String, dynamic> data) async {
     final base = slugify(data['title'] as String);
     for (var attempt = 0; attempt < 5; attempt++) {
       final slug = attempt == 0 ? base : '$base-${randomDigits(4)}';
       try {
-        await supa.from('products').insert({...data, 'slug': slug});
-        return;
+        final row = await supa.from('products').insert({...data, 'slug': slug}).select('id').single();
+        return row['id'] as String;
       } on PostgrestException catch (e) {
         if (e.code != '23505') rethrow; // 23505 = indirizzo già usato
       }
@@ -583,11 +634,14 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         'vinted_url': vinted.isEmpty ? null : vinted,
       };
 
+      final String productId;
       if (_isNew) {
-        await _insertWithUniqueSlug(data);
+        productId = await _insertWithUniqueSlug(data);
       } else {
-        await supa.from('products').update(data).eq('id', widget.product!.id);
+        productId = widget.product!.id;
+        await supa.from('products').update(data).eq('id', productId);
       }
+      await _saveCategories(productId);
 
       if (_removedPaths.isNotEmpty) {
         try {
@@ -694,6 +748,8 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                     ),
                   ],
                 ),
+                _section(t.editCategoriesSection, t.editCategoriesHint),
+                _categoriesPicker(),
                 _section(t.statusSection),
                 Wrap(
                   spacing: 8,

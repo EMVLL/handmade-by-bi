@@ -1,6 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { supabase } from "./supabase";
-import type { LiveSite, Product } from "./types";
+import type { Collection, LiveSite, Product } from "./types";
 
 // Versione pubblicata del sito (tema, contatti, pagine, blocchi, menu).
 // Si aggiorna da sola entro ~1 minuto da una nuova pubblicazione;
@@ -36,4 +36,20 @@ export async function getProducts(): Promise<Product[]> {
 export async function getProduct(slug: string): Promise<Product | null> {
   const products = await getProducts();
   return products.find((p) => p.slug === slug) ?? null;
+}
+
+// Categorie create da Benedetta (le automatiche le calcola lib/categories.ts).
+export async function getCollections(): Promise<Collection[]> {
+  "use cache";
+  cacheTag("products");
+  cacheLife("minutes");
+
+  const { data, error } = await supabase
+    .from("collections")
+    .select("id, slug, name, position")
+    .order("position", { ascending: true })
+    .order("name", { ascending: true });
+
+  if (error) throw new Error(`Supabase collections: ${error.message}`);
+  return (data ?? []) as Collection[];
 }
