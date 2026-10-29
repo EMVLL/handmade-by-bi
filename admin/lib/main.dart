@@ -5,6 +5,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config.dart';
 import 'screens/admin_gate.dart';
 import 'screens/login_screen.dart';
+import 'app_theme.dart';
+import 'texts/app_texts.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,15 +23,11 @@ class AdminApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Handmade by Bi',
+      title: t.appName,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFB5838D)),
-        useMaterial3: true,
-        inputDecorationTheme: const InputDecorationTheme(border: OutlineInputBorder()),
-      ),
-      locale: const Locale('it'),
-      supportedLocales: const [Locale('it')],
+      theme: AppTheme.light(),
+      locale: t.locale,
+      supportedLocales: [t.locale],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       home: const AuthGate(),
     );

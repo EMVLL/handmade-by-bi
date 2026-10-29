@@ -8,6 +8,8 @@ import '../config.dart';
 import '../models.dart';
 import '../supa.dart';
 import '../utils.dart';
+import '../app_theme.dart';
+import '../texts/app_texts.dart';
 
 /// Una foto del pezzo: già caricata (path) oppure appena scelta (bytes).
 class _Photo {
@@ -103,7 +105,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
   Future<void> _addPhotos() async {
     final free = Config.maxPhotos - _photos.length;
     if (free <= 0) {
-      _snack('Puoi avere al massimo ${Config.maxPhotos} foto');
+      _snack(t.photosMax(Config.maxPhotos));
       return;
     }
     // Su iPhone si apre il menu: Libreria foto / Scatta foto / Scegli file.
@@ -116,7 +118,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         imageQuality: 82,
       );
     } catch (e) {
-      _snack('Non riesco ad aprire le foto: ${friendlyError(e)}');
+      _snack(t.photosOpenError(friendlyError(e)));
       return;
     }
     if (picked.isEmpty) return;
@@ -134,9 +136,9 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     if (!mounted) return;
     setState(() {});
     if (picked.length > free) {
-      _snack('Aggiunte solo $free foto: il massimo è ${Config.maxPhotos}');
+      _snack(t.photosPartiallyAdded(free, Config.maxPhotos));
     } else if (skipped > 0) {
-      _snack('$skipped foto non aggiunte: formato non supportato o file troppo grande');
+      _snack(t.photosSkipped(skipped));
     }
   }
 
@@ -166,24 +168,24 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
             if (index > 0)
               ListTile(
                 leading: const Icon(Icons.star_outline),
-                title: const Text('Usa come copertina'),
+                title: Text(t.photoMakeCover),
                 onTap: () => Navigator.pop(context, 'cover'),
               ),
             if (index > 0)
               ListTile(
                 leading: const Icon(Icons.arrow_back),
-                title: const Text('Sposta a sinistra'),
+                title: Text(t.photoMoveLeft),
                 onTap: () => Navigator.pop(context, 'left'),
               ),
             if (index < last)
               ListTile(
                 leading: const Icon(Icons.arrow_forward),
-                title: const Text('Sposta a destra'),
+                title: Text(t.photoMoveRight),
                 onTap: () => Navigator.pop(context, 'right'),
               ),
             ListTile(
               leading: const Icon(Icons.delete_outline),
-              title: const Text('Rimuovi foto'),
+              title: Text(t.photoRemove),
               onTap: () => Navigator.pop(context, 'remove'),
             ),
           ],
@@ -216,9 +218,9 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
       padding: const EdgeInsets.only(right: 8),
       child: InkWell(
         onTap: () => _photoMenu(index),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppTheme.radius),
           child: SizedBox(
             width: 104,
             height: 104,
@@ -227,18 +229,18 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
               children: [
                 image,
                 if (index == 0)
-                  const Positioned(
+                  Positioned(
                     left: 0,
                     right: 0,
                     bottom: 0,
                     child: ColoredBox(
-                      color: Colors.black54,
+                      color: AppColors.photoLabelBackground,
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 3),
+                        padding: const EdgeInsets.symmetric(vertical: 3),
                         child: Text(
-                          'Copertina',
+                          t.photoCover,
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white, fontSize: 12),
+                          style: const TextStyle(color: AppColors.photoLabelText, fontSize: 12),
                         ),
                       ),
                     ),
@@ -255,12 +257,12 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: _addPhotos,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppTheme.radius),
       child: Container(
         width: 104,
         height: 104,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppTheme.radius),
           border: Border.all(color: scheme.outline),
         ),
         child: Column(
@@ -268,7 +270,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
           children: [
             Icon(Icons.add_a_photo_outlined, color: scheme.primary),
             const SizedBox(height: 6),
-            const Text('Aggiungi', style: TextStyle(fontSize: 12)),
+            Text(t.photoAdd, style: const TextStyle(fontSize: 12)),
           ],
         ),
       ),
@@ -308,12 +310,12 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                         child: TextFormField(
                           controller: option.name,
                           textCapitalization: TextCapitalization.sentences,
-                          decoration: const InputDecoration(labelText: 'Nome (es. Colore)'),
+                          decoration: InputDecoration(labelText: t.optionName),
                           validator: _validateOptionName,
                         ),
                       ),
                       IconButton(
-                        tooltip: 'Rimuovi opzione',
+                        tooltip: t.optionRemove,
                         icon: const Icon(Icons.delete_outline),
                         onPressed: () => setState(() {
                           _options.remove(option);
@@ -328,9 +330,9 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                     child: TextFormField(
                       controller: option.values,
                       textCapitalization: TextCapitalization.sentences,
-                      decoration: const InputDecoration(
-                        labelText: 'Scelte, separate da virgola',
-                        hintText: 'Verde, Rosa, Azzurro',
+                      decoration: InputDecoration(
+                        labelText: t.optionValues,
+                        hintText: t.optionValuesHint,
                       ),
                       validator: _validateOptionValues,
                     ),
@@ -343,7 +345,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
           OutlinedButton.icon(
             onPressed: () => setState(() => _options.add(_OptionDraft())),
             icon: const Icon(Icons.add),
-            label: const Text('Aggiungi opzione'),
+            label: Text(t.optionAdd),
           ),
       ],
     );
@@ -353,20 +355,20 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
 
   String? _validateTitle(String? value) {
     final text = value?.trim() ?? '';
-    if (text.isEmpty) return 'Scrivi il nome del pezzo';
-    if (text.length > 120) return 'Massimo 120 caratteri';
+    if (text.isEmpty) return t.errTitleRequired;
+    if (text.length > 120) return t.maxChars(120);
     return null;
   }
 
   String? _validateDescription(String? value) =>
-      (value ?? '').trim().length > 5000 ? 'Massimo 5000 caratteri' : null;
+      (value ?? '').trim().length > 5000 ? t.maxChars(5000) : null;
 
   String? _validatePrice(String? value) {
     final text = value?.trim() ?? '';
     if (text.isEmpty) return null;
     final price = parsePrice(text);
-    if (price == null) return 'Scrivi un numero, es. 25 o 12,50';
-    if (price < 0 || price > 100000) return 'Prezzo non valido';
+    if (price == null) return t.errPriceFormat;
+    if (price < 0 || price > 100000) return t.errPriceInvalid;
     return null;
   }
 
@@ -374,11 +376,11 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     final text = value?.trim() ?? '';
     if (text.isEmpty) return null;
     final compare = parsePrice(text);
-    if (compare == null) return 'Scrivi un numero, es. 30';
+    if (compare == null) return t.errPriceFormat;
     final price = parsePrice(_price.text.trim());
-    if (price == null) return 'Serve anche il prezzo attuale';
-    if (compare <= price) return 'Deve essere più alto del prezzo';
-    if (compare > 100000) return 'Prezzo non valido';
+    if (price == null) return t.errCompareNeedsPrice;
+    if (compare <= price) return t.errCompareTooLow;
+    if (compare > 100000) return t.errPriceInvalid;
     return null;
   }
 
@@ -386,25 +388,25 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     final text = value?.trim() ?? '';
     if (text.isEmpty) return null;
     if (text.length > 300 || !_vintedPattern.hasMatch(text)) {
-      return 'Incolla il link dell\'annuncio (https://www.vinted.it/...)';
+      return t.errVintedLink;
     }
     return null;
   }
 
   String? _validateOptionName(String? value) {
     final text = value?.trim() ?? '';
-    if (text.isEmpty) return 'Scrivi il nome';
-    if (text.length > 30) return 'Massimo 30 caratteri';
+    if (text.isEmpty) return t.errOptionName;
+    if (text.length > 30) return t.maxChars(30);
     return null;
   }
 
   String? _validateOptionValues(String? value) {
     final values = splitValues(value ?? '');
-    if (values.isEmpty) return 'Scrivi almeno una scelta';
+    if (values.isEmpty) return t.errOptionValuesEmpty;
     if (values.length > Config.maxOptionValues) {
-      return 'Massimo ${Config.maxOptionValues} scelte';
+      return t.errOptionValuesMax(Config.maxOptionValues);
     }
-    if (values.any((v) => v.length > 30)) return 'Ogni scelta al massimo 30 caratteri';
+    if (values.any((v) => v.length > 30)) return t.errOptionValueLength(30);
     return null;
   }
 
@@ -421,18 +423,18 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         if (e.code != '23505') rethrow; // 23505 = indirizzo già usato
       }
     }
-    throw Exception('Non riesco a creare un indirizzo unico per questo pezzo');
+    throw Exception(t.errSlug);
   }
 
   Future<void> _save() async {
     if (_saving) return;
     if (!(_form.currentState?.validate() ?? false)) {
-      _snack('Controlla i campi evidenziati in rosso');
+      _snack(t.checkFields);
       return;
     }
     setState(() {
       _saving = true;
-      _progress = 'Salvo…';
+      _progress = t.progressSaving;
     });
 
     final uploaded = <String>[];
@@ -446,7 +448,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
           continue;
         }
         done++;
-        if (mounted) setState(() => _progress = 'Carico la foto $done di $toUpload…');
+        if (mounted) setState(() => _progress = t.progressUploading(done, toUpload));
         final path = newPhotoPath(photo.mime!);
         await supa.storage.from('media').uploadBinary(
               path,
@@ -457,7 +459,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         paths.add(path);
       }
 
-      if (mounted) setState(() => _progress = 'Salvo…');
+      if (mounted) setState(() => _progress = t.progressSaving);
       final vinted = _vinted.text.trim();
       final data = <String, dynamic>{
         'title': _title.text.trim(),
@@ -529,7 +531,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     return PopScope(
       canPop: !_saving,
       child: Scaffold(
-        appBar: AppBar(title: Text(_isNew ? 'Nuovo pezzo' : 'Modifica pezzo')),
+        appBar: AppBar(title: Text(_isNew ? t.editNewTitle : t.editTitle)),
         body: AbsorbPointer(
           absorbing: _saving,
           child: Form(
@@ -537,13 +539,13 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
               children: [
-                _section('Foto', 'La prima è la copertina. Tocca una foto per spostarla o rimuoverla.'),
+                _section(t.photosSection, t.photosHint),
                 _photoStrip(),
-                _section('Il pezzo'),
+                _section(t.productSection),
                 TextFormField(
                   controller: _title,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(labelText: 'Nome *'),
+                  decoration: InputDecoration(labelText: t.fieldName),
                   validator: _validateTitle,
                 ),
                 const SizedBox(height: 12),
@@ -552,7 +554,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                   textCapitalization: TextCapitalization.sentences,
                   minLines: 3,
                   maxLines: 10,
-                  decoration: const InputDecoration(labelText: 'Descrizione', alignLabelWithHint: true),
+                  decoration: InputDecoration(labelText: t.fieldDescription, alignLabelWithHint: true),
                   validator: _validateDescription,
                 ),
                 const SizedBox(height: 12),
@@ -563,9 +565,9 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                       child: TextFormField(
                         controller: _price,
                         keyboardType: decimal,
-                        decoration: const InputDecoration(
-                          labelText: 'Prezzo €',
-                          helperText: 'Vuoto = su richiesta',
+                        decoration: InputDecoration(
+                          labelText: t.fieldPrice,
+                          helperText: t.fieldPriceHelp,
                         ),
                         validator: _validatePrice,
                       ),
@@ -575,36 +577,36 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                       child: TextFormField(
                         controller: _compare,
                         keyboardType: decimal,
-                        decoration: const InputDecoration(
-                          labelText: 'Prezzo barrato €',
-                          helperText: 'Solo per i saldi',
+                        decoration: InputDecoration(
+                          labelText: t.fieldCompare,
+                          helperText: t.fieldCompareHelp,
                         ),
                         validator: _validateCompare,
                       ),
                     ),
                   ],
                 ),
-                _section('Stato'),
+                _section(t.statusSection),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: [
                     for (final s in productStatuses)
                       ChoiceChip(
-                        label: Text(statusLabel(s)),
+                        label: Text(t.statusLabel(s)),
                         selected: _status == s,
                         onSelected: (_) => setState(() => _status = s),
                       ),
                   ],
                 ),
-                _section('Opzioni', 'Le scelte che fa il cliente, ad esempio colori o misure.'),
+                _section(t.optionsSection, t.optionsHint),
                 _optionsEditor(),
-                _section('Vinted', 'Se il pezzo è anche in vendita su Vinted.'),
+                _section(t.vintedSection, t.vintedHint),
                 TextFormField(
                   controller: _vinted,
                   keyboardType: TextInputType.url,
                   autocorrect: false,
-                  decoration: const InputDecoration(labelText: 'Link all\'annuncio (facoltativo)'),
+                  decoration: InputDecoration(labelText: t.vintedField),
                   validator: _validateVinted,
                 ),
               ],
@@ -627,7 +629,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                         Text(_progress),
                       ],
                     )
-                  : const Text('Salva'),
+                  : Text(t.save),
             ),
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../supa.dart';
 import 'home_screen.dart';
+import '../texts/app_texts.dart';
 
 /// Controlla che l'account sia tra gli amministratori del negozio.
 class AdminGate extends StatefulWidget {
@@ -30,14 +31,14 @@ class _AdminGateState extends State<AdminGate> {
         if (snapshot.hasError) {
           return _Message(
             text: friendlyError(snapshot.error!),
-            action: 'Riprova',
+            action: t.retry,
             onAction: () => setState(() => _check = _isAdmin()),
           );
         }
         if (snapshot.data != true) {
           return _Message(
-            text: 'Questo account non è autorizzato a gestire il negozio.',
-            action: 'Esci',
+            text: t.errorNotAuthorized,
+            action: t.signOut,
             onAction: () => supa.auth.signOut(),
           );
         }

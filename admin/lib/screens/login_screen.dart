@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../supa.dart';
+import '../texts/app_texts.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _email.text.trim();
     final password = _password.text;
     if (email.isEmpty || password.isEmpty) {
-      setState(() => _error = 'Inserisci email e password');
+      setState(() => _error = t.loginMissingFields);
       return;
     }
     setState(() {
@@ -59,10 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Handmade by Bi',
+                    Text(t.appName,
                         textAlign: TextAlign.center, style: theme.textTheme.headlineMedium),
                     const SizedBox(height: 4),
-                    Text('Gestione del negozio',
+                    Text(t.loginSubtitle,
                         textAlign: TextAlign.center, style: theme.textTheme.bodyLarge),
                     const SizedBox(height: 32),
                     TextField(
@@ -70,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       keyboardType: TextInputType.emailAddress,
                       autofillHints: const [AutofillHints.email],
                       autocorrect: false,
-                      decoration: const InputDecoration(labelText: 'Email'),
+                      decoration: InputDecoration(labelText: t.loginEmail),
                     ),
                     const SizedBox(height: 12),
                     TextField(
@@ -79,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       autofillHints: const [AutofillHints.password],
                       onSubmitted: (_) => _signIn(),
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: t.loginPassword,
                         suffixIcon: IconButton(
                           icon: Icon(_hidden ? Icons.visibility : Icons.visibility_off),
                           onPressed: () => setState(() => _hidden = !_hidden),
@@ -97,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: _busy
                           ? const SizedBox(
                               width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Text('Entra'),
+                          : Text(t.loginButton),
                     ),
                   ],
                 ),

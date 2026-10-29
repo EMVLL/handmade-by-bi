@@ -1,12 +1,5 @@
 const productStatuses = ['disponibile', 'su_ordinazione', 'venduto', 'nascosto'];
 
-String statusLabel(String status) => switch (status) {
-      'disponibile' => 'Disponibile',
-      'su_ordinazione' => 'Su ordinazione',
-      'venduto' => 'Venduto',
-      'nascosto' => 'Nascosto',
-      _ => status,
-    };
 
 class ProductOption {
   const ProductOption(this.name, this.values);

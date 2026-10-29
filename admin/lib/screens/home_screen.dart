@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'channels_screen.dart';
 import 'products_screen.dart';
+import '../texts/app_texts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,16 +24,16 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tab,
         onDestinationSelected: (i) => setState(() => _tab = i),
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.inventory_2_outlined),
-            selectedIcon: Icon(Icons.inventory_2),
-            label: 'Pezzi',
+            icon: const Icon(Icons.inventory_2_outlined),
+            selectedIcon: const Icon(Icons.inventory_2),
+            label: t.tabProducts,
           ),
           NavigationDestination(
-            icon: Icon(Icons.chat_outlined),
-            selectedIcon: Icon(Icons.chat),
-            label: 'Canali d\'ordine',
+            icon: const Icon(Icons.chat_outlined),
+            selectedIcon: const Icon(Icons.chat),
+            label: t.tabChannels,
           ),
         ],
       ),

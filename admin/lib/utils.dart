@@ -8,9 +8,6 @@ String formatNumber(double value) => value == value.roundToDouble()
     ? value.toStringAsFixed(0)
     : value.toStringAsFixed(2).replaceAll('.', ',');
 
-/// Prezzo leggibile, oppure "su richiesta".
-String formatPrice(double? value) =>
-    value == null ? 'Prezzo su richiesta' : '${value.toStringAsFixed(2).replaceAll('.', ',')} €';
 
 /// Accetta "25", "12,50", "12.50", "€ 12,50". Restituisce null se vuoto o non valido.
 double? parsePrice(String text) {

@@ -4,8 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../config.dart';
 import '../models.dart';
 import '../supa.dart';
-import '../utils.dart';
 import 'product_edit_screen.dart';
+import '../app_theme.dart';
+import '../texts/app_texts.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -72,11 +73,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminare per sempre?'),
-        content: Text('"${p.title}" e le sue foto verranno cancellati definitivamente.'),
+        title: Text(t.deleteForeverTitle),
+        content: Text(t.deleteForeverBody(p.title)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Annulla')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Elimina')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(t.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(t.delete)),
         ],
       ),
     );
@@ -90,7 +91,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           // Le foto rimaste non danno fastidio: il pezzo è già eliminato.
         }
       }
-      _snack('Pezzo eliminato');
+      _snack(t.doneDeleted);
       await _load();
     } catch (e) {
       _snack(friendlyError(e));
@@ -100,19 +101,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Future<void> _onAction(Product p, String action) async {
     switch (action) {
       case 'sold':
-        await _update(p, {'status': 'venduto'}, 'Segnato come venduto');
+        await _update(p, {'status': 'venduto'}, t.doneSold);
       case 'available':
-        await _update(p, {'status': 'disponibile'}, 'Di nuovo disponibile');
+        await _update(p, {'status': 'disponibile'}, t.doneAvailable);
       case 'hide':
-        await _update(p, {'status': 'nascosto'}, 'Nascosto dal sito');
+        await _update(p, {'status': 'nascosto'}, t.doneHidden);
       case 'trash':
         await _update(
           p,
           {'deleted_at': DateTime.now().toUtc().toIso8601String()},
-          'Spostato nel cestino',
+          t.doneTrashed,
         );
       case 'restore':
-        await _update(p, {'deleted_at': null}, 'Ripristinato');
+        await _update(p, {'deleted_at': null}, t.doneRestored);
       case 'delete':
         await _deleteForever(p);
     }
@@ -123,31 +124,31 @@ class _ProductsScreenState extends State<ProductsScreen> {
       MaterialPageRoute(builder: (_) => ProductEditScreen(product: p)),
     );
     if (changed == true) {
-      _snack(p == null ? 'Pezzo aggiunto: sul sito entro un minuto' : 'Modifiche salvate');
+      _snack(p == null ? t.doneAdded : t.doneSaved);
       await _load();
     }
   }
 
   List<PopupMenuEntry<String>> _menu(Product p) {
     if (_trash) {
-      return const [
-        PopupMenuItem(value: 'restore', child: Text('Ripristina')),
-        PopupMenuItem(value: 'delete', child: Text('Elimina per sempre')),
+      return [
+        PopupMenuItem(value: 'restore', child: Text(t.actionRestore)),
+        PopupMenuItem(value: 'delete', child: Text(t.actionDeleteForever)),
       ];
     }
     return [
-      if (p.status != 'venduto') const PopupMenuItem(value: 'sold', child: Text('Segna come venduto')),
+      if (p.status != 'venduto') PopupMenuItem(value: 'sold', child: Text(t.actionSold)),
       if (p.status != 'disponibile')
-        const PopupMenuItem(value: 'available', child: Text('Rimetti disponibile')),
-      if (p.status != 'nascosto') const PopupMenuItem(value: 'hide', child: Text('Nascondi dal sito')),
-      const PopupMenuItem(value: 'trash', child: Text('Sposta nel cestino')),
+        PopupMenuItem(value: 'available', child: Text(t.actionAvailable)),
+      if (p.status != 'nascosto') PopupMenuItem(value: 'hide', child: Text(t.actionHide)),
+      PopupMenuItem(value: 'trash', child: Text(t.actionTrash)),
     ];
   }
 
   Widget _thumb(Product p) {
     final cover = p.photos.isEmpty ? null : mediaUrl(p.photos.first);
     return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
       child: SizedBox(
         width: 56,
         height: 56,
@@ -173,7 +174,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         children: [
           Text(_error!, textAlign: TextAlign.center),
           const SizedBox(height: 16),
-          Center(child: FilledButton(onPressed: _load, child: const Text('Riprova'))),
+          Center(child: FilledButton(onPressed: _load, child: Text(t.retry))),
         ],
       );
     }
@@ -182,7 +183,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         padding: const EdgeInsets.all(32),
         children: [
           Text(
-            _trash ? 'Il cestino è vuoto.' : 'Nessun pezzo ancora.\nPremi "Nuovo pezzo" per aggiungere il primo!',
+            _trash ? t.emptyTrash : t.emptyProducts,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium,
           ),
@@ -198,7 +199,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         return ListTile(
           leading: _thumb(p),
           title: Text(p.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-          subtitle: Text('${formatPrice(p.price)} · ${statusLabel(p.status)}'),
+          subtitle: Text('${t.price(p.price)} · ${t.statusLabel(p.status)}'),
           onTap: _trash ? null : () => _open(p),
           trailing: PopupMenuButton<String>(
             onSelected: (action) => _onAction(p, action),
@@ -213,15 +214,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_trash ? 'Cestino' : 'I miei pezzi'),
+        title: Text(_trash ? t.trashTitle : t.productsTitle),
         actions: [
           IconButton(
-            tooltip: 'Vedi il sito',
+            tooltip: t.viewSite,
             icon: const Icon(Icons.storefront_outlined),
             onPressed: () => launchUrl(Uri.parse(Config.siteUrl)),
           ),
           IconButton(
-            tooltip: _trash ? 'Torna ai pezzi' : 'Cestino',
+            tooltip: _trash ? t.closeTrash : t.openTrash,
             icon: Icon(_trash ? Icons.close : Icons.delete_outline),
             onPressed: () {
               setState(() => _trash = !_trash);
@@ -236,7 +237,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           : FloatingActionButton.extended(
               onPressed: () => _open(null),
               icon: const Icon(Icons.add_a_photo_outlined),
-              label: const Text('Nuovo pezzo'),
+              label: Text(t.newProduct),
             ),
     );
   }

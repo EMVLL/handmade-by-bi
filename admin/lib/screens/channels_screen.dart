@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../supa.dart';
+import '../texts/app_texts.dart';
 
 final _phonePattern = RegExp(r'^[1-9][0-9]{7,14}$');
 final _templatePattern = RegExp(r'^([^{}]|\{(prodotto|prezzo|opzione|link)\})*$');
@@ -8,6 +9,8 @@ final _emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 final _vintedPattern = RegExp(r'^https://(www\.)?vinted\.[a-z.]+/');
 final _instagramPattern = RegExp(r'^https://(www\.)?instagram\.com/');
 
+/// Segnaposto dei messaggi: sono parole chiave lette dal sito e dal database,
+/// quindi NON vanno tradotte.
 const _placeholders = ['{prodotto}', '{prezzo}', '{opzione}', '{link}'];
 
 /// "+39 333 123 4567" / "0039..." / "3331234567" -> "393331234567"
@@ -114,7 +117,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
   Future<void> _save() async {
     if (_saving) return;
     if (!(_form.currentState?.validate() ?? false)) {
-      _snack('Controlla i campi evidenziati in rosso');
+      _snack(t.checkFields);
       return;
     }
     setState(() => _saving = true);
@@ -134,8 +137,8 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
       };
       await supa.from('site_settings').update({'contacts': contacts}).eq('id', 1);
       // I contatti fanno parte del sito pubblicato: li pubblichiamo subito.
-      await supa.rpc('publish_site', params: {'p_note': 'Canali d\'ordine aggiornati'});
-      _snack('Salvato! Il sito si aggiorna entro un minuto');
+      await supa.rpc('publish_site', params: {'p_note': t.channelsPublishNote});
+      _snack(t.channelsSaved);
     } catch (e) {
       _snack(friendlyError(e));
     } finally {
@@ -156,9 +159,9 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
 
   String? _checkTemplate(String? value) {
     final text = value ?? '';
-    if (text.length > 1000) return 'Testo troppo lungo';
+    if (text.length > 1000) return t.templateTooLong;
     if (!_templatePattern.hasMatch(text)) {
-      return 'Tra graffe puoi usare solo: ${_placeholders.join(' ')}';
+      return t.templateInvalid(_placeholders.join(' '));
     }
     return null;
   }
@@ -229,7 +232,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
             children: [
               Text(_error!, textAlign: TextAlign.center),
               const SizedBox(height: 16),
-              FilledButton(onPressed: _load, child: const Text('Riprova')),
+              FilledButton(onPressed: _load, child: Text(t.retry)),
             ],
           ),
         ),
@@ -241,27 +244,25 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
           Text(
-            'Sul sito compariranno i pulsanti dei canali attivi. '
-            'Nei messaggi puoi usare ${_placeholders.join(', ')}: '
-            'vengono sostituiti con il pezzo scelto dal cliente.',
+            t.channelsIntro(_placeholders.join(', ')),
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 16),
           _card(
-            title: 'WhatsApp',
-            subtitle: 'Il cliente ti scrive con il messaggio già pronto',
+            title: t.whatsapp,
+            subtitle: t.whatsappSubtitle,
             value: _waOn,
             onChanged: (v) => setState(() => _waOn = v),
             children: [
               TextFormField(
                 controller: _waNumber,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Numero',
-                  helperText: 'Con prefisso, es. +39 333 1234567',
+                decoration: InputDecoration(
+                  labelText: t.phoneField,
+                  helperText: t.phoneHelp,
                 ),
-                validator: _required(() => _waOn, 'Inserisci il numero', (text) {
-                  return _phonePattern.hasMatch(normalizePhone(text)) ? null : 'Numero non valido';
+                validator: _required(() => _waOn, t.phoneRequired, (text) {
+                  return _phonePattern.hasMatch(normalizePhone(text)) ? null : t.phoneInvalid;
                 }),
               ),
               const SizedBox(height: 12),
@@ -269,15 +270,15 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
                 controller: _waTemplate,
                 minLines: 2,
                 maxLines: 5,
-                decoration: const InputDecoration(labelText: 'Messaggio precompilato'),
+                decoration: InputDecoration(labelText: t.templateField),
                 validator: _checkTemplate,
               ),
               _placeholderChips(_waTemplate),
             ],
           ),
           _card(
-            title: 'Email',
-            subtitle: 'Si apre l\'app email con oggetto e testo pronti',
+            title: t.emailChannel,
+            subtitle: t.emailSubtitle,
             value: _mailOn,
             onChanged: (v) => setState(() => _mailOn = v),
             children: [
@@ -285,18 +286,18 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
                 controller: _mailAddress,
                 keyboardType: TextInputType.emailAddress,
                 autocorrect: false,
-                decoration: const InputDecoration(labelText: 'Indirizzo email'),
-                validator: _required(() => _mailOn, 'Inserisci l\'indirizzo', (text) {
+                decoration: InputDecoration(labelText: t.emailField),
+                validator: _required(() => _mailOn, t.emailRequired, (text) {
                   return _emailPattern.hasMatch(text) && text.length <= 200
                       ? null
-                      : 'Indirizzo non valido';
+                      : t.emailInvalid;
                 }),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _mailSubject,
-                decoration: const InputDecoration(labelText: 'Oggetto'),
-                validator: (v) => (v ?? '').length > 150 ? 'Massimo 150 caratteri' : _checkTemplate(v),
+                decoration: InputDecoration(labelText: t.emailSubject),
+                validator: (v) => (v ?? '').length > 150 ? t.maxChars(150) : _checkTemplate(v),
               ),
               _placeholderChips(_mailSubject),
               const SizedBox(height: 12),
@@ -304,15 +305,15 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
                 controller: _mailBody,
                 minLines: 2,
                 maxLines: 6,
-                decoration: const InputDecoration(labelText: 'Testo'),
+                decoration: InputDecoration(labelText: t.emailBody),
                 validator: _checkTemplate,
               ),
               _placeholderChips(_mailBody),
             ],
           ),
           _card(
-            title: 'Vinted',
-            subtitle: 'Link al tuo profilo Vinted',
+            title: t.vintedChannel,
+            subtitle: t.vintedSubtitle,
             value: _vintedOn,
             onChanged: (v) => setState(() => _vintedOn = v),
             children: [
@@ -320,18 +321,18 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
                 controller: _vintedUrl,
                 keyboardType: TextInputType.url,
                 autocorrect: false,
-                decoration: const InputDecoration(labelText: 'Link al profilo'),
-                validator: _required(() => _vintedOn, 'Inserisci il link', (text) {
+                decoration: InputDecoration(labelText: t.profileLink),
+                validator: _required(() => _vintedOn, t.linkRequired, (text) {
                   return _vintedPattern.hasMatch(text) && text.length <= 300
                       ? null
-                      : 'Deve iniziare con https://www.vinted.it/';
+                      : t.vintedInvalid;
                 }),
               ),
             ],
           ),
           _card(
-            title: 'Instagram',
-            subtitle: 'Link al tuo profilo Instagram',
+            title: t.instagramChannel,
+            subtitle: t.instagramSubtitle,
             value: _igOn,
             onChanged: (v) => setState(() => _igOn = v),
             children: [
@@ -339,11 +340,11 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
                 controller: _igUrl,
                 keyboardType: TextInputType.url,
                 autocorrect: false,
-                decoration: const InputDecoration(labelText: 'Link al profilo'),
-                validator: _required(() => _igOn, 'Inserisci il link', (text) {
+                decoration: InputDecoration(labelText: t.profileLink),
+                validator: _required(() => _igOn, t.linkRequired, (text) {
                   return _instagramPattern.hasMatch(text) && text.length <= 300
                       ? null
-                      : 'Deve iniziare con https://www.instagram.com/';
+                      : t.instagramInvalid;
                 }),
               ),
             ],
@@ -353,7 +354,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
             style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
             child: _saving
                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Text('Salva e pubblica'),
+                : Text(t.saveAndPublish),
           ),
         ],
       ),
@@ -364,10 +365,10 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Canali d\'ordine'),
+        title: Text(t.channelsTitle),
         actions: [
           IconButton(
-            tooltip: 'Esci',
+            tooltip: t.signOut,
             icon: const Icon(Icons.logout),
             onPressed: () => supa.auth.signOut(),
           ),
