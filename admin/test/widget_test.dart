@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:admin/color_names.dart';
 import 'package:admin/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -15,6 +16,18 @@ void main() {
     expect(parsePrice('€ 25'), 25);
     expect(parsePrice(''), isNull);
     expect(parsePrice('abc'), isNull);
+  });
+
+  test('splitChoices tiene insieme le mezze taglie', () {
+    expect(splitChoices('25,5'), ['25,5']);
+    expect(splitChoices('S, M, L'), ['S', 'M', 'L']);
+  });
+
+  test('colori riconosciuti dal nome', () {
+    expect(isColorOption('Colore'), isTrue);
+    expect(isColorOption('Taglia'), isFalse);
+    expect(colorForName('Rosa antico'), isNotNull);
+    expect(colorForName('Fantasia'), isNull);
   });
 
   test('detectImageMime riconosce JPEG', () {

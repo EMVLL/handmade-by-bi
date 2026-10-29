@@ -108,8 +108,13 @@ abstract class AppTexts {
   String get optionsSection;
   String get optionsHint;
   String get optionName;
+  List<String> get optionNameSuggestions;
   String get optionValues;
-  String get optionValuesHint;
+  String get choiceInput;
+  String get choiceInputHint;
+  String get colorChoiceHint;
+  String get choiceAdd;
+  String get choiceAlreadyPresent;
   String get optionRemove;
   String get optionAdd;
 

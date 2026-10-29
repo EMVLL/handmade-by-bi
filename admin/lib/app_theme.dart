@@ -16,6 +16,15 @@ abstract final class AppColors {
   /// Fascia "Copertina" sopra la prima foto.
   static const photoLabelBackground = Color(0x8A000000);
   static const photoLabelText = Color(0xFFFFFFFF);
+
+  /// Bordo dei pallini colorati (serve a vedere anche il bianco).
+  static const swatchBorder = Color(0x33000000);
+
+  /// Pallino "multicolore".
+  static const rainbow = [
+    Color(0xFFE53935), Color(0xFFFB8C00), Color(0xFFFDD835), Color(0xFF43A047),
+    Color(0xFF1E88E5), Color(0xFF8E24AA), Color(0xFFE53935),
+  ];
 }
 
 /// Tema dell'app: forme e misure comuni, costruite sui colori di [AppColors].

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { colorFor, isColorOption } from "@/lib/colors";
 import type { Contacts, ProductOption, ProductStatus } from "@/lib/types";
 
 const DEFAULT_TEMPLATE = "Ciao! Vorrei ordinare {prodotto} ({prezzo}). {opzione} {link}";
@@ -81,29 +82,46 @@ export default function OrderPanel({
   return (
     <div className="space-y-5">
       {!sold &&
-        options.map((o) => (
-          <fieldset key={o.name}>
-            <legend className="mb-2 text-sm font-semibold">{o.name}</legend>
-            <div className="flex flex-wrap gap-2">
-              {o.values.map((v) => {
-                const active = choices[o.name] === v;
-                return (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setChoices((c) => ({ ...c, [o.name]: v }))}
-                    className={`rounded-full border px-4 py-2 text-sm transition ${
-                      active ? "border-primary bg-primary text-white" : "border-foreground/20 hover:border-primary"
-                    }`}
-                    aria-pressed={active}
-                  >
-                    {v}
-                  </button>
-                );
-              })}
-            </div>
-          </fieldset>
-        ))}
+        options.map((o, oi) => {
+          const colors = isColorOption(o.name);
+          const chosen = choices[o.name];
+          return (
+            <fieldset key={`${o.name}-${oi}`}>
+              <legend className="mb-2 text-sm font-semibold">
+                {o.name}
+                {chosen && <span className="font-normal opacity-70">: {chosen}</span>}
+              </legend>
+              <div className="flex flex-wrap gap-2">
+                {o.values.map((v, vi) => {
+                  const active = chosen === v;
+                  const swatch = colors ? colorFor(v) : null;
+                  return (
+                    <button
+                      key={`${v}-${vi}`}
+                      type="button"
+                      onClick={() => setChoices((c) => ({ ...c, [o.name]: v }))}
+                      className={`inline-flex min-w-11 items-center justify-center gap-2 rounded-full border px-4 py-2 text-sm transition ${
+                        active
+                          ? "border-primary bg-primary text-white"
+                          : "border-foreground/20 hover:border-primary"
+                      }`}
+                      aria-pressed={active}
+                    >
+                      {swatch && (
+                        <span
+                          aria-hidden
+                          className="h-4 w-4 shrink-0 rounded-full border border-black/15"
+                          style={{ background: swatch }}
+                        />
+                      )}
+                      {v}
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
+          );
+        })}
 
       {!anyChannel && <p className="text-sm opacity-70">I canali per ordinare saranno attivi a breve.</p>}
 

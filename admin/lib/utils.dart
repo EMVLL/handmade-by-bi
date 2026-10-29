@@ -18,9 +18,13 @@ double? parsePrice(String text) {
   return (value * 100).roundToDouble() / 100;
 }
 
-/// "Verde, Rosa ,, Azzurro" -> ["Verde", "Rosa", "Azzurro"]
-List<String> splitValues(String text) =>
-    text.split(',').map((v) => v.trim()).where((v) => v.isNotEmpty).toList();
+/// Divide quello che si scrive nel campo "Aggiungi una scelta".
+/// "S, M, L" -> 3 scelte (virgola + spazio); "25,5" resta una sola (mezza taglia).
+List<String> splitChoices(String text) => text
+    .split(RegExp(r',\s+|;|\n'))
+    .map((v) => v.trim())
+    .where((v) => v.isNotEmpty)
+    .toList();
 
 const _accents = {
   'à': 'a', 'á': 'a', 'â': 'a', 'ä': 'a', 'ã': 'a',
@@ -32,14 +36,17 @@ const _accents = {
 };
 
 /// "Borsa Margherita – Rosa!" -> "borsa-margherita-rosa"
-String slugify(String text) {
-  final lower = text.toLowerCase();
+/// "Però È così" -> "pero e cosi"
+String removeAccents(String text) {
   final buffer = StringBuffer();
-  for (final char in lower.split('')) {
+  for (final char in text.toLowerCase().split('')) {
     buffer.write(_accents[char] ?? char);
   }
-  var slug = buffer
-      .toString()
+  return buffer.toString();
+}
+
+String slugify(String text) {
+  var slug = removeAccents(text)
       .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
       .replaceAll(RegExp(r'^-+|-+$'), '');
   if (slug.length > 70) {

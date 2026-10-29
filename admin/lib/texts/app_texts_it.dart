@@ -181,13 +181,24 @@ class AppTextsIt implements AppTexts {
   @override
   String get optionsSection => 'Opzioni';
   @override
-  String get optionsHint => 'Le scelte che fa il cliente, ad esempio colori o misure.';
+  String get optionsHint =>
+      'Le scelte che fa il cliente, ad esempio taglia o colore. Se non servono, lascia vuoto.';
   @override
-  String get optionName => 'Nome (es. Colore)';
+  String get optionName => 'Che cosa sceglie il cliente?';
   @override
-  String get optionValues => 'Scelte, separate da virgola';
+  List<String> get optionNameSuggestions => const ['Colore', 'Taglia', 'Misura'];
   @override
-  String get optionValuesHint => 'Verde, Rosa, Azzurro';
+  String get optionValues => 'Scelte';
+  @override
+  String get choiceInput => 'Aggiungi una scelta';
+  @override
+  String get choiceInputHint => 'es. 25,5 oppure M — poi premi +';
+  @override
+  String get colorChoiceHint => 'es. Rosa antico — se riconosco il colore compare il pallino';
+  @override
+  String get choiceAdd => 'Aggiungi';
+  @override
+  String get choiceAlreadyPresent => "Questa scelta c'è già";
   @override
   String get optionRemove => 'Rimuovi opzione';
   @override

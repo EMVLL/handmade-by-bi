@@ -8,7 +8,9 @@ import '../config.dart';
 import '../models.dart';
 import '../supa.dart';
 import '../utils.dart';
+import '../widgets/color_dot.dart';
 import '../app_theme.dart';
+import '../color_names.dart';
 import '../texts/app_texts.dart';
 
 /// Una foto del pezzo: già caricata (path) oppure appena scelta (bytes).
@@ -24,16 +26,23 @@ class _Photo {
 }
 
 class _OptionDraft {
-  _OptionDraft({String name = '', String values = ''})
+  _OptionDraft({String name = '', List<String>? values})
       : name = TextEditingController(text: name),
-        values = TextEditingController(text: values);
+        values = [...?values],
+        input = TextEditingController();
 
+  /// Che cosa sceglie il cliente (es. "Colore").
   final TextEditingController name;
-  final TextEditingController values;
+
+  /// Le scelte già aggiunte, mostrate come riquadri.
+  final List<String> values;
+
+  /// Campo "Aggiungi una scelta".
+  final TextEditingController input;
 
   void dispose() {
     name.dispose();
-    values.dispose();
+    input.dispose();
   }
 }
 
@@ -79,7 +88,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     _status = p?.status ?? 'disponibile';
     _photos.addAll((p?.photos ?? const <String>[]).map(_Photo.saved));
     _options.addAll((p?.options ?? const <ProductOption>[])
-        .map((o) => _OptionDraft(name: o.name, values: o.values.join(', '))));
+        .map((o) => _OptionDraft(name: o.name, values: o.values)));
   }
 
   @override
@@ -292,55 +301,160 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
 
   // ------------------------------------------------------------------ opzioni
 
+  /// Aggiunge quello che è scritto in "Aggiungi una scelta".
+  void _addChoices(_OptionDraft option) {
+    final parts = splitChoices(option.input.text);
+    if (parts.isEmpty) return;
+    if (parts.any((v) => v.length > 30)) {
+      _snack(t.errOptionValueLength(30));
+      return;
+    }
+    var duplicates = 0;
+    var full = false;
+    setState(() {
+      for (final value in parts) {
+        if (option.values.length >= Config.maxOptionValues) {
+          full = true;
+          break;
+        }
+        if (option.values.any((v) => v.toLowerCase() == value.toLowerCase())) {
+          duplicates++;
+          continue;
+        }
+        option.values.add(value);
+      }
+      option.input.clear();
+    });
+    if (full) {
+      _snack(t.errOptionValuesMax(Config.maxOptionValues));
+    } else if (duplicates > 0) {
+      _snack(t.choiceAlreadyPresent);
+    }
+  }
+
+  Widget _optionCard(_OptionDraft option) {
+    final isColor = isColorOption(option.name.text);
+    return Card(
+      key: ObjectKey(option),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: option.name,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(labelText: t.optionName),
+                    validator: _validateOptionName,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                ),
+                IconButton(
+                  tooltip: t.optionRemove,
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: () => setState(() {
+                    _options.remove(option);
+                    _removedOptions.add(option);
+                  }),
+                ),
+              ],
+            ),
+            // Suggerimenti veloci finché il nome è vuoto.
+            if (option.name.text.trim().isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8, right: 8),
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final suggestion in t.optionNameSuggestions)
+                      ActionChip(
+                        label: Text(suggestion),
+                        onPressed: () => setState(() => option.name.text = suggestion),
+                      ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: FormField<int>(
+                validator: (_) => option.values.isEmpty && option.input.text.trim().isEmpty
+                    ? t.errOptionValuesEmpty
+                    : null,
+                builder: (field) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (option.values.isNotEmpty) ...[
+                      Text(t.optionValues, style: Theme.of(context).textTheme.labelMedium),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          for (final value in option.values)
+                            InputChip(
+                              label: Text(value),
+                              avatar: _dotFor(isColor, value),
+                              onDeleted: () => setState(() => option.values.remove(value)),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    if (option.values.length < Config.maxOptionValues)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: option.input,
+                              textCapitalization: TextCapitalization.sentences,
+                              textInputAction: TextInputAction.done,
+                              onSubmitted: (_) => _addChoices(option),
+                              decoration: InputDecoration(
+                                labelText: t.choiceInput,
+                                hintText: isColor ? t.colorChoiceHint : t.choiceInputHint,
+                                errorText: field.errorText,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: IconButton.filledTonal(
+                              tooltip: t.choiceAdd,
+                              icon: const Icon(Icons.add),
+                              onPressed: () => _addChoices(option),
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget? _dotFor(bool isColor, String value) {
+    if (!isColor) return null;
+    final named = colorForName(value);
+    return named == null ? null : ColorDot(named);
+  }
+
   Widget _optionsEditor() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final option in _options)
-          Card(
-            key: ObjectKey(option),
-            margin: const EdgeInsets.only(bottom: 12),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: option.name,
-                          textCapitalization: TextCapitalization.sentences,
-                          decoration: InputDecoration(labelText: t.optionName),
-                          validator: _validateOptionName,
-                        ),
-                      ),
-                      IconButton(
-                        tooltip: t.optionRemove,
-                        icon: const Icon(Icons.delete_outline),
-                        onPressed: () => setState(() {
-                          _options.remove(option);
-                          _removedOptions.add(option);
-                        }),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: TextFormField(
-                      controller: option.values,
-                      textCapitalization: TextCapitalization.sentences,
-                      decoration: InputDecoration(
-                        labelText: t.optionValues,
-                        hintText: t.optionValuesHint,
-                      ),
-                      validator: _validateOptionValues,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+        for (final option in _options) _optionCard(option),
         if (_options.length < Config.maxOptions)
           OutlinedButton.icon(
             onPressed: () => setState(() => _options.add(_OptionDraft())),
@@ -400,16 +514,6 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     return null;
   }
 
-  String? _validateOptionValues(String? value) {
-    final values = splitValues(value ?? '');
-    if (values.isEmpty) return t.errOptionValuesEmpty;
-    if (values.length > Config.maxOptionValues) {
-      return t.errOptionValuesMax(Config.maxOptionValues);
-    }
-    if (values.any((v) => v.length > 30)) return t.errOptionValueLength(30);
-    return null;
-  }
-
   // ------------------------------------------------------------------ salvataggio
 
   Future<void> _insertWithUniqueSlug(Map<String, dynamic> data) async {
@@ -428,6 +532,10 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
 
   Future<void> _save() async {
     if (_saving) return;
+    // Una scelta scritta ma non confermata con + viene aggiunta lo stesso.
+    for (final option in _options) {
+      if (option.input.text.trim().isNotEmpty) _addChoices(option);
+    }
     if (!(_form.currentState?.validate() ?? false)) {
       _snack(t.checkFields);
       return;
@@ -470,7 +578,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         'photos': paths,
         'options': [
           for (final o in _options)
-            {'name': o.name.text.trim(), 'values': splitValues(o.values.text)},
+            {'name': o.name.text.trim(), 'values': o.values},
         ],
         'vinted_url': vinted.isEmpty ? null : vinted,
       };
