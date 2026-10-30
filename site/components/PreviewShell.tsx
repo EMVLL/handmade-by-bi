@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import PreviewLinks from "@/components/PreviewLinks";
+import PreviewNav from "@/components/PreviewNav";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import { themeStyle } from "@/lib/theme";
@@ -12,13 +12,10 @@ export default function PreviewShell({ site, token, children }: { site: LiveSite
       className="preview-root flex min-h-dvh flex-col bg-background font-body text-foreground"
       style={themeStyle(site.settings.theme)}
     >
-      <div className="sticky top-0 z-50 bg-foreground px-4 py-2 text-center text-sm font-semibold text-background">
-        Anteprima: queste modifiche non sono ancora online
-      </div>
+      <PreviewNav token={token} />
       <SiteHeader site={site} chrome={false} preview />
       <div className="flex-1">{children}</div>
       <SiteFooter site={site} chrome={false} />
-      <PreviewLinks token={token} />
     </div>
   );
 }
