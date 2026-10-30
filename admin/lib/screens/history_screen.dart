@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../supa.dart';
 import '../texts/app_texts.dart';
+import '../draft.dart';
 
 String _when(String iso) {
   final d = DateTime.tryParse(iso)?.toLocal();
@@ -71,8 +72,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
     if (ok != true) return;
     setState(() => _busy = true);
     try {
-      await supa.rpc('restore_version', params: {'p_version_id': version['id']});
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.historyRestored)));
+      await supa.rpc('load_version_to_draft', params: {'p_version_id': version['id']});
+      notifyDraftSaved();
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.historyLoaded)));
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(friendlyError(e))));
     } finally {

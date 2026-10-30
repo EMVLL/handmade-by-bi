@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../form_data.dart';
-import '../media.dart';
 import '../models.dart';
 import '../supa.dart';
 import '../texts/app_texts.dart';
 import '../widgets/schema_form.dart';
+import '../draft.dart';
 
 /// Modifica di una sezione: il modulo nasce dallo schema del database.
 class BlockEditScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _BlockEditScreenState extends State<BlockEditScreen> {
     setState(() => _saving = true);
     try {
       await supa.from('blocks').update({'props': _values}).eq('id', widget.block.id);
-      await publishSite(t.noteSectionEdited(widget.blockType.label));
+      notifyDraftSaved();
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } catch (e) {

@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
 import "./globals.css";
 import { getLiveSite } from "@/lib/data";
-import { fontFamily } from "@/lib/fonts";
 import { mediaUrl } from "@/lib/format";
+import { themeStyle } from "@/lib/theme";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
-
-const RADIUS: Record<string, string> = { none: "0px", small: "6px", medium: "12px", large: "24px" };
 
 export async function generateMetadata(): Promise<Metadata> {
   const site = await getLiveSite();
@@ -28,17 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getLiveSite();
-  const t = site?.settings.theme;
-
-  const style = {
-    "--c-primary": t?.primary,
-    "--c-accent": t?.accent,
-    "--c-background": t?.background,
-    "--c-text": t?.text,
-    "--f-heading": fontFamily(t?.font_heading, "Fraunces"),
-    "--f-body": fontFamily(t?.font_body, "Nunito"),
-    "--r-site": RADIUS[t?.radius ?? "medium"] ?? RADIUS.medium,
-  } as CSSProperties;
+  const style = themeStyle(site?.settings.theme);
 
   return (
     <html lang="it" style={style}>

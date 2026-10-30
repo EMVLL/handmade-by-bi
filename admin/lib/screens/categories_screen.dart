@@ -185,7 +185,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           builder: (_) => BlockEditScreen(block: PageBlock.fromMap(rows.first), blockType: BlockType.fromMap(type), data: data),
         ),
       );
-      if (saved == true) _snack(t.savedLive);
+      if (saved == true) _snack(t.savedDraft);
     } catch (e) {
       _snack(friendlyError(e));
     }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../form_data.dart';
-import '../media.dart';
 import '../models.dart';
 import '../supa.dart';
 import '../texts/app_texts.dart';
 import '../widgets/schema_form.dart';
 import 'block_edit_screen.dart';
+import '../draft.dart';
 
 IconData blockIcon(String type) => switch (type) {
       'hero' => Icons.web_asset,
@@ -101,14 +101,14 @@ class _PageBlocksScreenState extends State<PageBlocksScreen> {
     return t.blockDescription(b.type);
   }
 
-  /// Esegue una modifica, pubblica e ricarica.
+  /// Esegue una modifica (in bozza) e ricarica.
   Future<void> _run(String note, Future<void> Function() action) async {
     if (_busy) return;
     setState(() => _busy = true);
     try {
       await action();
-      await publishSite(note);
-      _snack(t.savedLive);
+      notifyDraftSaved();
+      _snack(t.savedDraft);
     } catch (e) {
       _snack(friendlyError(e));
     } finally {
@@ -158,7 +158,7 @@ class _PageBlocksScreenState extends State<PageBlocksScreen> {
       MaterialPageRoute(builder: (_) => BlockEditScreen(block: b, blockType: type, data: _data)),
     );
     if (saved == true) {
-      _snack(t.savedLive);
+      _snack(t.savedDraft);
       await _load();
     }
   }
@@ -205,7 +205,7 @@ class _PageBlocksScreenState extends State<PageBlocksScreen> {
           })
           .select()
           .single();
-      await publishSite(t.noteSectionAdded(type.label));
+      notifyDraftSaved();
       if (!mounted) return;
       setState(() => _busy = false);
       // Si apre subito il modulo della sezione nuova

@@ -297,8 +297,9 @@ class AppTextsIt implements AppTexts {
   String get shopTitle => 'Il mio negozio';
   @override
   String get shopIntro =>
-      'Qui decidi come appare il sito. Ogni modifica che salvi va online subito: '
-      'se cambi idea, dalla Cronologia torni a come era prima.';
+      'Qui decidi come appare il sito. Le modifiche restano in anteprima: '
+      'le vedi nella scheda Anteprima e vanno online solo quando premi Pubblica. '
+      'Pezzi e categorie invece si aggiornano subito.';
   @override
   String get shopStyle => 'Stile del sito';
   @override
@@ -317,6 +318,8 @@ class AppTextsIt implements AppTexts {
   String get shopHistoryHint => 'Torna a una versione precedente del sito';
   @override
   String get savedLive => 'Fatto! Il sito si aggiorna in pochi secondi';
+  @override
+  String get savedDraft => 'Salvato in anteprima. Quando sei pronta, premi Pubblica nella scheda Anteprima';
 
   // Stile
   @override
@@ -474,17 +477,18 @@ class AppTextsIt implements AppTexts {
   String get historyTitle => 'Cronologia';
   @override
   String get historyIntro =>
-      'Ogni volta che salvi qualcosa nel negozio il sito ne tiene una copia. Tocca una versione per tornare a com\'era. '
-      'I pezzi e le categorie non cambiano.';
+      'Ogni volta che pubblichi, il sito ne tiene una copia. Tocca una versione per riportarla in anteprima: '
+      'la controlli e, se va bene, premi Pubblica. I pezzi e le categorie non cambiano.';
   @override
   String get historyLive => 'Online adesso';
   @override
   String get historyRestoreTitle => 'Tornare a questa versione?';
   @override
   String historyRestoreBody(String when) =>
-      'Il sito tornerà com\'era il $when: stile, testi e sezioni. Potrai sempre tornare avanti da qui.';
+      'L\'anteprima tornerà com\'era il $when: stile, testi e sezioni. '
+      'Il sito online cambia solo quando premi Pubblica.';
   @override
-  String get historyRestore => 'Torna a questa versione';
+  String get historyRestore => 'Riporta in anteprima';
   @override
   String get historyRestored => 'Fatto! Il sito è tornato alla versione scelta';
 
@@ -503,6 +507,37 @@ class AppTextsIt implements AppTexts {
   String get categoryMenuLookHint => 'Riquadri, cerchi, scorrimento o pulsanti; titolo e foto';
   @override
   String get categoryMenuMissing => 'Il menu categorie non è nella pagina iniziale: aggiungilo da Negozio → Pagina iniziale.';
+
+  // ---------------------------------------------------------------- anteprima
+  @override
+  String get tabPreview => 'Anteprima';
+  @override
+  String get previewTitle2 => 'Anteprima del sito';
+  @override
+  String get previewChanges => 'Ci sono modifiche non ancora pubblicate';
+  @override
+  String get previewNoChanges => 'Il sito online è uguale a questa anteprima';
+  @override
+  String get publish => 'Pubblica';
+  @override
+  String get publishing => 'Pubblico…';
+  @override
+  String get published => 'Pubblicato! Il sito si aggiorna in pochi secondi';
+  @override
+  String get discard => 'Annulla modifiche';
+  @override
+  String get discardTitle => 'Annullare le modifiche?';
+  @override
+  String get discardBody =>
+      'L\'anteprima torna uguale al sito online. Le modifiche non pubblicate andranno perse.';
+  @override
+  String get discarded => 'Modifiche annullate';
+  @override
+  String get reload => 'Aggiorna';
+  @override
+  String get notePublish => 'Pubblicazione dall\'anteprima';
+  @override
+  String get historyLoaded => 'Versione riportata in anteprima: controllala e premi Pubblica';
 
   // ---------------------------------------------------------------- canali d'ordine
   @override

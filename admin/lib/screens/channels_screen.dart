@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app_theme.dart';
 import '../config.dart';
 import '../supa.dart';
+import '../draft.dart';
 import '../texts/app_texts.dart';
 
 final _phonePattern = RegExp(r'^[1-9][0-9]{7,14}$');
@@ -187,9 +188,9 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
         }),
       };
       await supa.from('site_settings').update({'contacts': contacts}).eq('id', 1);
-      // I contatti fanno parte del sito pubblicato: li pubblichiamo subito.
-      await supa.rpc('publish_site', params: {'p_note': t.channelsPublishNote});
-      _snack(t.channelsSaved);
+      // I contatti fanno parte dell'aspetto del sito: vanno online con "Pubblica".
+      notifyDraftSaved();
+      _snack(t.savedDraft);
     } catch (e) {
       _snack(friendlyError(e));
     } finally {
@@ -493,7 +494,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
             style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
             child: _saving
                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                : Text(t.saveAndPublish),
+                : Text(t.save),
           ),
         ],
       ),

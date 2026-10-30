@@ -4,7 +4,7 @@ import type { LiveSite } from "@/lib/types";
 import { mediaUrl, menuHref } from "@/lib/format";
 import SmartLink from "./SmartLink";
 
-export default function SiteHeader({ site }: { site: LiveSite }) {
+export default function SiteHeader({ site, chrome = true }: { site: LiveSite; chrome?: boolean }) {
   const logo = mediaUrl(site.settings.logo_path);
   const items = [...site.menu]
     .sort((a, b) => a.position - b.position)
@@ -12,7 +12,7 @@ export default function SiteHeader({ site }: { site: LiveSite }) {
     .filter((x): x is { item: typeof x.item; href: string } => Boolean(x.href));
 
   return (
-    <header className="border-b border-foreground/10">
+    <header className={`${chrome ? "site-chrome " : ""}border-b border-foreground/10`}>
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-4">
         <Link href="/" className="flex items-center gap-3 font-heading text-xl font-semibold">
           {logo ? (

@@ -175,6 +175,7 @@ abstract class AppTexts {
   String get shopHistory;
   String get shopHistoryHint;
   String get savedLive;
+  String get savedDraft;
 
   // Stile
   String get styleTitle;
@@ -261,6 +262,22 @@ abstract class AppTexts {
   String get categoryMenuLook;
   String get categoryMenuLookHint;
   String get categoryMenuMissing;
+
+  // ---------------------------------------------------------------- anteprima
+  String get tabPreview;
+  String get previewTitle2;
+  String get previewChanges;
+  String get previewNoChanges;
+  String get publish;
+  String get publishing;
+  String get published;
+  String get discard;
+  String get discardTitle;
+  String get discardBody;
+  String get discarded;
+  String get reload;
+  String get notePublish;
+  String get historyLoaded;
 
   // ---------------------------------------------------------------- canali d'ordine
   String get channelsTitle;

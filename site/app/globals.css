@@ -50,3 +50,9 @@ h3 {
 /* Su uno sfondo colorato i bottoni si invertono, così restano leggibili */
 .blk[data-bg="primary"] .btn { background: var(--c-background); color: var(--c-primary); }
 .blk[data-bg="accent"] .btn { background: var(--c-background); color: var(--c-accent); }
+
+/* Nella pagina di anteprima si nascondono intestazione e piè di pagina del sito online
+   (l'anteprima mostra i suoi, presi dalla bozza) */
+body:has(.preview-root) .site-chrome {
+  display: none;
+}

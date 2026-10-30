@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../app_theme.dart';
 import '../fonts_preview.dart';
-import '../media.dart';
 import '../supa.dart';
 import '../texts/app_texts.dart';
+import '../draft.dart';
 
 final _hexPattern = RegExp(r'^#[0-9a-fA-F]{6}$');
 
@@ -83,9 +83,9 @@ class _ThemeScreenState extends State<ThemeScreen> {
     setState(() => _saving = true);
     try {
       await supa.from('site_settings').update({'theme': _theme}).eq('id', 1);
-      await publishSite(t.noteStyle);
+      notifyDraftSaved();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.savedLive)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.savedDraft)));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(friendlyError(e))));
@@ -357,7 +357,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
                   child: _saving
                       ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
-                      : Text(t.saveAndPublish),
+                      : Text(t.save),
                 ),
               ),
             ),
