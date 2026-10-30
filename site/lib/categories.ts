@@ -5,27 +5,40 @@ import type { Collection, LiveSite, Product } from "./types";
 export const READY_SLUG = "pronta-consegna"; // pezzi con stato "disponibile"
 export const OTHER_SLUG = "altro"; // pezzi senza categoria
 
+export type MenuStyle = "tiles" | "circles" | "carousel" | "buttons";
+export type TileShape = "square" | "landscape" | "portrait";
+
 export interface MenuSettings {
   title: string;
-  style: "tiles" | "buttons";
+  style: MenuStyle;
+  columns: 2 | 3 | 4;
+  shape: TileShape;
   showReady: boolean;
   readyLabel: string;
+  readyCover: string | null;
   showOther: boolean;
   otherLabel: string;
+  otherCover: string | null;
   hideEmpty: boolean;
 }
 
 const str = (v: unknown, d: string) => (typeof v === "string" && v ? v : d);
 const bool = (v: unknown, d: boolean) => (typeof v === "boolean" ? v : d);
+const oneOf = <T extends string | number>(v: unknown, allowed: readonly T[], d: T): T =>
+  allowed.includes(v as T) ? (v as T) : d;
 
 export function menuSettings(props: Record<string, unknown> = {}): MenuSettings {
   return {
     title: typeof props.title === "string" ? props.title : "Scegli una categoria",
-    style: props.style === "buttons" ? "buttons" : "tiles",
+    style: oneOf(props.style, ["tiles", "circles", "carousel", "buttons"] as const, "tiles"),
+    columns: oneOf(props.columns, [2, 3, 4] as const, 4),
+    shape: oneOf(props.tile_shape, ["square", "landscape", "portrait"] as const, "landscape"),
     showReady: bool(props.show_ready, true),
     readyLabel: str(props.ready_label, "Disponibili in pronta consegna"),
+    readyCover: typeof props.ready_cover === "string" ? props.ready_cover : null,
     showOther: bool(props.show_other, true),
     otherLabel: str(props.other_label, "Altro"),
+    otherCover: typeof props.other_cover === "string" ? props.other_cover : null,
     hideEmpty: bool(props.hide_empty, true),
   };
 }
@@ -55,9 +68,17 @@ export function productsInCategory(slug: string, products: Product[], collection
 export interface CategoryEntry {
   slug: string;
   name: string;
+  description: string;
   href: string;
   count: number;
   cover: string | null;
+}
+
+/** Copertina: quella scelta da Benedetta, altrimenti la foto del primo pezzo. */
+function coverFor(chosen: string | null | undefined, items: Product[]): string | null {
+  if (chosen) return mediaUrl(chosen);
+  const withPhoto = items.find((p) => p.photos?.length);
+  return withPhoto ? mediaUrl(withPhoto.photos[0]) : null;
 }
 
 /** Voci del menu, nell'ordine: categorie di Benedetta, poi Pronta consegna e Altro. */
@@ -66,25 +87,30 @@ export function categoryEntries(
   products: Product[],
   collections: Collection[],
 ): CategoryEntry[] {
-  const make = (slug: string, name: string): CategoryEntry => {
+  const make = (slug: string, name: string, description: string, chosenCover: string | null): CategoryEntry => {
     const items = productsInCategory(slug, products, collections);
-    const withPhoto = items.find((p) => p.photos?.length);
     return {
       slug,
       name,
+      description,
       href: `/collezioni/${slug}`,
       count: items.length,
-      cover: withPhoto ? mediaUrl(withPhoto.photos[0]) : null,
+      cover: coverFor(chosenCover, items),
     };
   };
-  const entries = collections.map((c) => make(c.slug, c.name));
-  if (settings.showReady) entries.push(make(READY_SLUG, settings.readyLabel));
-  if (settings.showOther) entries.push(make(OTHER_SLUG, settings.otherLabel));
+  const entries = collections.map((c) => make(c.slug, c.name, c.description ?? "", c.cover_path));
+  if (settings.showReady) entries.push(make(READY_SLUG, settings.readyLabel, "", settings.readyCover));
+  if (settings.showOther) entries.push(make(OTHER_SLUG, settings.otherLabel, "", settings.otherCover));
   return settings.hideEmpty ? entries.filter((e) => e.count > 0) : entries;
 }
 
-export function categoryName(slug: string, settings: MenuSettings, collections: Collection[]): string | null {
-  if (slug === READY_SLUG) return settings.readyLabel;
-  if (slug === OTHER_SLUG) return settings.otherLabel;
-  return collections.find((c) => c.slug === slug)?.name ?? null;
+/** Nome, descrizione e copertina di una categoria (null se non esiste). */
+export function categoryInfo(
+  slug: string,
+  settings: MenuSettings,
+  products: Product[],
+  collections: Collection[],
+): CategoryEntry | null {
+  const all = categoryEntries({ ...settings, showReady: true, showOther: true, hideEmpty: false }, products, collections);
+  return all.find((e) => e.slug === slug) ?? null;
 }

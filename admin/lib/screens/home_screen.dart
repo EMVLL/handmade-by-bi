@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'categories_screen.dart';
 import 'channels_screen.dart';
 import 'products_screen.dart';
+import 'shop_screen.dart';
 import '../texts/app_texts.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: IndexedStack(
         index: _tab,
-        children: const [ProductsScreen(), CategoriesScreen(), ChannelsScreen()],
+        children: const [ProductsScreen(), CategoriesScreen(), ShopScreen(), ChannelsScreen()],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tab,
@@ -35,6 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.category_outlined),
             selectedIcon: const Icon(Icons.category),
             label: t.tabCategories,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.storefront_outlined),
+            selectedIcon: const Icon(Icons.storefront),
+            label: t.tabShop,
           ),
           NavigationDestination(
             icon: const Icon(Icons.chat_outlined),

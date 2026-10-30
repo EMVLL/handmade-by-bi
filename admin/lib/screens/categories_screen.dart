@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../app_theme.dart';
+import '../form_data.dart';
 import '../models.dart';
 import '../supa.dart';
 import '../texts/app_texts.dart';
 import '../utils.dart';
+import 'block_edit_screen.dart';
+import 'category_edit_screen.dart';
 
 /// Categorie del negozio: crea, rinomina, ordina, elimina.
 class CategoriesScreen extends StatefulWidget {
@@ -154,6 +158,57 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     });
   }
 
+  Future<void> _openEdit(ShopCategory category) async {
+    final saved = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => CategoryEditScreen(category: category)),
+    );
+    if (saved == true) {
+      _snack(t.categorySaved);
+      await _load();
+    }
+  }
+
+  /// Apre il modulo del "Menu categorie" della pagina iniziale.
+  Future<void> _openMenuLook() async {
+    try {
+      final page = await supa.from('pages').select('id').eq('is_home', true).single();
+      final rows = await supa.from('blocks').select().eq('page_id', page['id']).eq('type', 'category_menu').limit(1);
+      if (rows.isEmpty) {
+        _snack(t.categoryMenuMissing);
+        return;
+      }
+      final type = await supa.from('block_types').select().eq('type', 'category_menu').single();
+      final data = await loadFormData();
+      if (!mounted) return;
+      final saved = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder: (_) => BlockEditScreen(block: PageBlock.fromMap(rows.first), blockType: BlockType.fromMap(type), data: data),
+        ),
+      );
+      if (saved == true) _snack(t.savedLive);
+    } catch (e) {
+      _snack(friendlyError(e));
+    }
+  }
+
+  Widget _cover(ShopCategory c) {
+    final scheme = Theme.of(context).colorScheme;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+      child: SizedBox(
+        width: 48,
+        height: 48,
+        child: c.coverPath == null
+            ? ColoredBox(color: scheme.surfaceContainerHighest, child: const Icon(Icons.category_outlined))
+            : Image.network(
+                mediaUrl(c.coverPath!),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stack) => const Icon(Icons.broken_image_outlined),
+              ),
+      ),
+    );
+  }
+
   Future<void> _rename(ShopCategory category) async {
     final name = await _askName(initial: category.name, title: t.categoryRename);
     if (name == null || name == category.name) return;
@@ -237,6 +292,16 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       padding: const EdgeInsets.only(bottom: 96),
       children: [
         _autoCard(),
+        Card(
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: ListTile(
+            leading: const Icon(Icons.palette_outlined),
+            title: Text(t.categoryMenuLook),
+            subtitle: Text(t.categoryMenuLookHint),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: _busy ? null : _openMenuLook,
+          ),
+        ),
         if (_items.isEmpty)
           Padding(
             padding: const EdgeInsets.all(32),
@@ -244,9 +309,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ),
         for (var i = 0; i < _items.length; i++)
           ListTile(
+            leading: _cover(_items[i]),
             title: Text(_items[i].name),
             subtitle: Text(t.productsCount(_counts[_items[i].id] ?? 0)),
-            onTap: () => _rename(_items[i]),
+            onTap: () => _openEdit(_items[i]),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -261,8 +327,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   onPressed: i == _items.length - 1 || _busy ? null : () => _move(i, 1),
                 ),
                 PopupMenuButton<String>(
-                  onSelected: (action) => action == 'rename' ? _rename(_items[i]) : _delete(_items[i]),
+                  onSelected: (action) => switch (action) {
+                    'edit' => _openEdit(_items[i]),
+                    'rename' => _rename(_items[i]),
+                    _ => _delete(_items[i]),
+                  },
                   itemBuilder: (context) => [
+                    PopupMenuItem(value: 'edit', child: Text(t.sectionEdit)),
                     PopupMenuItem(value: 'rename', child: Text(t.categoryRename)),
                     PopupMenuItem(value: 'delete', child: Text(t.delete)),
                   ],

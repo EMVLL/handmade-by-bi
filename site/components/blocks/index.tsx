@@ -18,8 +18,9 @@ export interface BlockContext {
 type Renderer = (props: Props, ctx: BlockContext) => ReactNode;
 
 const wrap = "mx-auto w-full max-w-5xl px-5";
+// "btn": su uno sfondo colorato il bottone si inverte da solo (vedi globals.css)
 const button =
-  "inline-flex items-center justify-center rounded-site bg-primary px-6 py-3 font-semibold text-white transition hover:opacity-90";
+  "btn inline-flex items-center justify-center rounded-site bg-primary px-6 py-3 font-semibold text-white transition hover:opacity-90";
 
 const GRID: Record<number, string> = {
   2: "grid-cols-2",
@@ -155,14 +156,25 @@ const productGrid: Renderer = (p, ctx) => {
   if (!items.length) return null;
 
   const cols = num(p.columns, 3);
+  const showPrice = bool(p.show_price, true);
   return (
     <div className={`${wrap} py-10`}>
       <Title text={str(p.title)} />
-      <div className={`grid gap-x-4 gap-y-8 ${GRID[cols] ?? GRID[3]}`}>
-        {items.map((x) => (
-          <ProductCard key={x.id} product={x} showPrice={bool(p.show_price, true)} />
-        ))}
-      </div>
+      {str(p.style) === "carousel" ? (
+        <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2">
+          {items.map((x) => (
+            <div key={x.id} className="w-2/3 shrink-0 snap-start sm:w-1/3 md:w-1/4">
+              <ProductCard product={x} showPrice={showPrice} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className={`grid gap-x-4 gap-y-8 ${GRID[cols] ?? GRID[3]}`}>
+          {items.map((x) => (
+            <ProductCard key={x.id} product={x} showPrice={showPrice} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -175,7 +187,7 @@ const categoryMenu: Renderer = (p, ctx) => {
   return (
     <div className={`${wrap} py-10`}>
       <Title text={settings.title} />
-      <CategoryMenu entries={entries} style={settings.style} />
+      <CategoryMenu entries={entries} style={settings.style} columns={settings.columns} shape={settings.shape} />
     </div>
   );
 };

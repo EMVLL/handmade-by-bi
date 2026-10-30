@@ -162,6 +162,106 @@ abstract class AppTexts {
   String get filterAll;
   String get filterNoCategory;
 
+  // ---------------------------------------------------------------- il mio negozio
+  String get tabShop;
+  String get shopTitle;
+  String get shopIntro;
+  String get shopStyle;
+  String get shopStyleHint;
+  String get shopIdentity;
+  String get shopIdentityHint;
+  String get shopHome;
+  String get shopHomeHint;
+  String get shopHistory;
+  String get shopHistoryHint;
+  String get savedLive;
+
+  // Stile
+  String get styleTitle;
+  String get stylePresets;
+  String get styleColors;
+  String get colorPrimary;
+  String get colorAccent;
+  String get colorBackground;
+  String get colorText;
+  String get styleHeadingFont;
+  String get styleBodyFont;
+  String get styleCorners;
+  List<String> get cornerLabels;
+  String get stylePreviewTitle;
+  String get stylePreviewText;
+  String get stylePreviewButton;
+  String get stylePreviewTag;
+  String get colorPickerTitle;
+  String get colorHex;
+  String get colorHexInvalid;
+  String presetName(String key);
+  String get noteStyle;
+
+  // Nome, logo e Google
+  String get identityTitle;
+  String get siteName;
+  String get logo;
+  String get logoHint;
+  String get seoTitle;
+  String get seoDescription;
+  String get seoImage;
+  String get seoSection;
+  String get noteIdentity;
+
+  // Pagina iniziale e sezioni
+  String get homeTitle;
+  String get homeIntro;
+  String get addSection;
+  String get addSectionTitle;
+  String get sectionHidden;
+  String get sectionShow;
+  String get sectionHide;
+  String get sectionEdit;
+  String get sectionDeleteTitle;
+  String sectionDeleteBody(String label);
+  String blockDescription(String type);
+  String noteSectionEdited(String label);
+  String noteSectionAdded(String label);
+  String noteSectionRemoved(String label);
+  String get noteSectionsOrder;
+  String noteSectionVisibility(String label);
+
+  // Modulo di una sezione
+  String get formStyleSection;
+  String get fieldRequired;
+  String get linkHelp;
+  String get linkInvalid;
+  String get linkAllProducts;
+  String get choosePhoto;
+  String get changePhoto;
+  String get removePhoto;
+  String get uploading;
+  String get addPhotos;
+  String get allCategories;
+  String get chooseProduct;
+  String get noProduct;
+  String get addItem;
+  String get removeItem;
+
+  // Cronologia
+  String get historyTitle;
+  String get historyIntro;
+  String get historyLive;
+  String get historyRestoreTitle;
+  String historyRestoreBody(String when);
+  String get historyRestore;
+  String get historyRestored;
+
+  // Categoria
+  String get categoryEditTitle;
+  String get categoryDescription;
+  String get categoryCover;
+  String get categoryCoverHint;
+  String get categoryMenuLook;
+  String get categoryMenuLookHint;
+  String get categoryMenuMissing;
+
   // ---------------------------------------------------------------- canali d'ordine
   String get channelsTitle;
   String get channelsIntro;

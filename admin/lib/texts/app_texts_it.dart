@@ -61,7 +61,7 @@ class AppTextsIt implements AppTexts {
   @override
   String get tabCategories => 'Categorie';
   @override
-  String get tabChannels => "Canali d'ordine";
+  String get tabChannels => 'Contatti';
 
   // ---------------------------------------------------------------- pezzi
   @override
@@ -289,6 +289,220 @@ class AppTextsIt implements AppTexts {
   String get filterAll => 'Tutti';
   @override
   String get filterNoCategory => 'Senza categoria';
+
+  // ---------------------------------------------------------------- il mio negozio
+  @override
+  String get tabShop => 'Negozio';
+  @override
+  String get shopTitle => 'Il mio negozio';
+  @override
+  String get shopIntro =>
+      'Qui decidi come appare il sito. Ogni modifica che salvi va online subito: '
+      'se cambi idea, dalla Cronologia torni a come era prima.';
+  @override
+  String get shopStyle => 'Stile del sito';
+  @override
+  String get shopStyleHint => 'Colori, caratteri e angoli';
+  @override
+  String get shopIdentity => 'Nome, logo e Google';
+  @override
+  String get shopIdentityHint => 'Come si chiama il negozio e come appare nelle ricerche';
+  @override
+  String get shopHome => 'Pagina iniziale';
+  @override
+  String get shopHomeHint => 'Le sezioni della home: testi, foto, ordine';
+  @override
+  String get shopHistory => 'Cronologia';
+  @override
+  String get shopHistoryHint => 'Torna a una versione precedente del sito';
+  @override
+  String get savedLive => 'Fatto! Il sito si aggiorna in pochi secondi';
+
+  // Stile
+  @override
+  String get styleTitle => 'Stile del sito';
+  @override
+  String get stylePresets => 'Stili pronti';
+  @override
+  String get styleColors => 'Colori';
+  @override
+  String get colorPrimary => 'Colore principale';
+  @override
+  String get colorAccent => 'Colore secondario';
+  @override
+  String get colorBackground => 'Sfondo';
+  @override
+  String get colorText => 'Testo';
+  @override
+  String get styleHeadingFont => 'Carattere dei titoli';
+  @override
+  String get styleBodyFont => 'Carattere del testo';
+  @override
+  String get styleCorners => 'Angoli';
+  @override
+  List<String> get cornerLabels => const ['Squadrati', 'Poco arrotondati', 'Arrotondati', 'Molto arrotondati'];
+  @override
+  String get stylePreviewTitle => 'Fatto a mano';
+  @override
+  String get stylePreviewText => 'Così appariranno titoli, testi e bottoni sul sito.';
+  @override
+  String get stylePreviewButton => 'Ordina';
+  @override
+  String get stylePreviewTag => 'Novità';
+  @override
+  String get colorPickerTitle => 'Scegli un colore';
+  @override
+  String get colorHex => 'Oppure scrivi il codice (es. #B5838D)';
+  @override
+  String get colorHexInvalid => 'Codice non valido';
+  @override
+  String presetName(String key) => switch (key) {
+        'rosa' => 'Rosa antico',
+        'salvia' => 'Salvia',
+        'lavanda' => 'Lavanda',
+        'mare' => 'Mare',
+        'terracotta' => 'Terracotta',
+        'cioccolato' => 'Panna e cioccolato',
+        _ => key,
+      };
+  @override
+  String get noteStyle => 'Stile del sito aggiornato';
+
+  // Nome, logo e Google
+  @override
+  String get identityTitle => 'Nome, logo e Google';
+  @override
+  String get siteName => 'Nome del negozio';
+  @override
+  String get logo => 'Logo';
+  @override
+  String get logoHint => 'Se non metti un logo, in alto compare il nome del negozio.';
+  @override
+  String get seoSection => 'Come appare su Google e quando condividi il link';
+  @override
+  String get seoTitle => 'Titolo';
+  @override
+  String get seoDescription => 'Descrizione breve';
+  @override
+  String get seoImage => 'Immagine di anteprima';
+  @override
+  String get noteIdentity => 'Nome, logo e Google aggiornati';
+
+  // Pagina iniziale e sezioni
+  @override
+  String get homeTitle => 'Pagina iniziale';
+  @override
+  String get homeIntro =>
+      'Le sezioni compaiono sul sito in quest\'ordine. Tocca una sezione per cambiarne testi, foto e aspetto.';
+  @override
+  String get addSection => 'Aggiungi sezione';
+  @override
+  String get addSectionTitle => 'Che sezione vuoi aggiungere?';
+  @override
+  String get sectionHidden => 'Nascosta';
+  @override
+  String get sectionShow => 'Mostra sul sito';
+  @override
+  String get sectionHide => 'Nascondi dal sito';
+  @override
+  String get sectionEdit => 'Modifica';
+  @override
+  String get sectionDeleteTitle => 'Eliminare la sezione?';
+  @override
+  String sectionDeleteBody(String label) =>
+      'La sezione "$label" sparisce dal sito. Se cambi idea puoi tornare indietro dalla Cronologia.';
+  @override
+  String blockDescription(String type) => switch (type) {
+        'hero' => 'La grande immagine iniziale, con titolo e bottone',
+        'category_menu' => 'I riquadri per scegliere una categoria',
+        'product_grid' => 'I tuoi lavori: tutti oppure di una categoria',
+        'featured_product' => 'Un solo pezzo in grande, da mettere in risalto',
+        'text' => 'Un titolo e qualche paragrafo, ad esempio "Chi sono"',
+        'gallery' => 'Più foto insieme, in griglia o a scorrimento',
+        'testimonials' => 'Cosa dicono di te i clienti',
+        'faq' => 'Domande e risposte che si aprono con un tocco',
+        'contact' => 'I pulsanti per scriverti',
+        'banner' => 'Una striscia colorata con un avviso',
+        'spacer' => 'Un po\' di spazio o una linea tra le sezioni',
+        _ => '',
+      };
+  @override
+  String noteSectionEdited(String label) => 'Modificata la sezione "$label"';
+  @override
+  String noteSectionAdded(String label) => 'Aggiunta la sezione "$label"';
+  @override
+  String noteSectionRemoved(String label) => 'Eliminata la sezione "$label"';
+  @override
+  String get noteSectionsOrder => 'Cambiato l\'ordine delle sezioni';
+  @override
+  String noteSectionVisibility(String label) => 'Mostrata/nascosta la sezione "$label"';
+
+  // Modulo di una sezione
+  @override
+  String get formStyleSection => 'Aspetto: sfondo e carattere del titolo';
+  @override
+  String get fieldRequired => 'Questo campo serve';
+  @override
+  String get linkHelp => 'Una pagina del sito (tocca un suggerimento) oppure un indirizzo che inizia con https://';
+  @override
+  String get linkInvalid => 'Deve iniziare con / oppure con https://';
+  @override
+  String get linkAllProducts => 'Tutti i lavori';
+  @override
+  String get choosePhoto => 'Scegli foto';
+  @override
+  String get changePhoto => 'Cambia';
+  @override
+  String get removePhoto => 'Togli';
+  @override
+  String get uploading => 'Carico la foto…';
+  @override
+  String get addPhotos => 'Aggiungi foto';
+  @override
+  String get allCategories => 'Tutte';
+  @override
+  String get chooseProduct => 'Scegli il pezzo';
+  @override
+  String get noProduct => 'Nessun pezzo scelto';
+  @override
+  String get addItem => 'Aggiungi';
+  @override
+  String get removeItem => 'Togli';
+
+  // Cronologia
+  @override
+  String get historyTitle => 'Cronologia';
+  @override
+  String get historyIntro =>
+      'Ogni volta che salvi qualcosa nel negozio il sito ne tiene una copia. Tocca una versione per tornare a com\'era. '
+      'I pezzi e le categorie non cambiano.';
+  @override
+  String get historyLive => 'Online adesso';
+  @override
+  String get historyRestoreTitle => 'Tornare a questa versione?';
+  @override
+  String historyRestoreBody(String when) =>
+      'Il sito tornerà com\'era il $when: stile, testi e sezioni. Potrai sempre tornare avanti da qui.';
+  @override
+  String get historyRestore => 'Torna a questa versione';
+  @override
+  String get historyRestored => 'Fatto! Il sito è tornato alla versione scelta';
+
+  // Categoria
+  @override
+  String get categoryEditTitle => 'Categoria';
+  @override
+  String get categoryDescription => 'Descrizione (compare sotto il titolo della categoria)';
+  @override
+  String get categoryCover => 'Foto di copertina';
+  @override
+  String get categoryCoverHint => 'Se non scegli una foto, si usa quella del primo pezzo della categoria.';
+  @override
+  String get categoryMenuLook => 'Come appare il menu sul sito';
+  @override
+  String get categoryMenuLookHint => 'Riquadri, cerchi, scorrimento o pulsanti; titolo e foto';
+  @override
+  String get categoryMenuMissing => 'Il menu categorie non è nella pagina iniziale: aggiungilo da Negozio → Pagina iniziale.';
 
   // ---------------------------------------------------------------- canali d'ordine
   @override

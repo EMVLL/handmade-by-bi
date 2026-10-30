@@ -46,7 +46,7 @@ export async function getCollections(): Promise<Collection[]> {
 
   const { data, error } = await supabase
     .from("collections")
-    .select("id, slug, name, position")
+    .select("id, slug, name, description, cover_path, position")
     .order("position", { ascending: true })
     .order("name", { ascending: true });
 

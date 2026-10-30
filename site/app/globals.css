@@ -36,3 +36,17 @@ h2,
 h3 {
   font-family: var(--f-heading);
 }
+
+/* ---- Aspetto delle sezioni scelto nell'app ---- */
+.blk h1,
+.blk h2 {
+  font-family: var(--bt-font, var(--f-heading));
+}
+.blk[data-ts="s"] h1 { font-size: 2rem; }
+.blk[data-ts="s"] h2 { font-size: 1.4rem; }
+.blk[data-ts="l"] h1 { font-size: clamp(2.6rem, 7vw, 4.6rem); }
+.blk[data-ts="l"] h2 { font-size: clamp(2rem, 5vw, 2.8rem); }
+
+/* Su uno sfondo colorato i bottoni si invertono, così restano leggibili */
+.blk[data-bg="primary"] .btn { background: var(--c-background); color: var(--c-primary); }
+.blk[data-bg="accent"] .btn { background: var(--c-background); color: var(--c-accent); }

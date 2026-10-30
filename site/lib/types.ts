@@ -92,5 +92,7 @@ export interface Collection {
   id: string;
   slug: string;
   name: string;
+  description: string;
+  cover_path: string | null;
   position: number;
 }

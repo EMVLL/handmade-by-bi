@@ -69,20 +69,71 @@ class Product {
 /// Una categoria del negozio (tabella "collections").
 /// "Pronta consegna" e "Altro" non sono qui: il sito le calcola da solo.
 class ShopCategory {
-  const ShopCategory({required this.id, required this.slug, required this.name, required this.position});
+  const ShopCategory({
+    required this.id,
+    required this.slug,
+    required this.name,
+    required this.position,
+    this.description = '',
+    this.coverPath,
+  });
 
   factory ShopCategory.fromMap(Map<String, dynamic> map) => ShopCategory(
         id: map['id'] as String,
         slug: map['slug'] as String,
         name: map['name'] as String,
         position: (map['position'] as num?)?.toInt() ?? 0,
+        description: (map['description'] as String?) ?? '',
+        coverPath: map['cover_path'] as String?,
       );
 
   final String id;
   final String slug;
   final String name;
   final int position;
+  final String description;
+  final String? coverPath;
 }
 
 /// Indirizzi riservati alle due categorie automatiche del sito.
 const reservedCategorySlugs = {'altro', 'pronta-consegna'};
+
+/// Tipo di sezione disponibile (tabella block_types): nome e schema dei campi.
+class BlockType {
+  const BlockType({required this.type, required this.label, required this.schema});
+
+  factory BlockType.fromMap(Map<String, dynamic> map) => BlockType(
+        type: map['type'] as String,
+        label: map['label'] as String,
+        schema: Map<String, dynamic>.from(map['schema'] as Map),
+      );
+
+  final String type;
+  final String label;
+  final Map<String, dynamic> schema;
+}
+
+/// Una sezione di una pagina (tabella blocks).
+class PageBlock {
+  const PageBlock({
+    required this.id,
+    required this.type,
+    required this.position,
+    required this.visible,
+    required this.props,
+  });
+
+  factory PageBlock.fromMap(Map<String, dynamic> map) => PageBlock(
+        id: map['id'] as String,
+        type: map['type'] as String,
+        position: (map['position'] as num).toInt(),
+        visible: map['visible'] as bool? ?? true,
+        props: Map<String, dynamic>.from((map['props'] as Map?) ?? const {}),
+      );
+
+  final String id;
+  final String type;
+  final int position;
+  final bool visible;
+  final Map<String, dynamic> props;
+}

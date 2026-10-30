@@ -47,7 +47,7 @@ export default function ContactLinks({
           className={
             compact
               ? "text-sm underline-offset-4 hover:underline"
-              : `${btn} ${l.primary ? "bg-primary text-white" : "border border-foreground/20"}`
+              : `${btn} ${l.primary ? "btn bg-primary text-white" : "border border-foreground/20"}`
           }
         >
           {l.label}
