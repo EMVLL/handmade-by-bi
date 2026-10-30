@@ -24,6 +24,7 @@ export default function OrderPanel({
   options,
   vintedUrl,
   contacts,
+  preview = false,
 }: {
   title: string;
   priceText: string;
@@ -31,6 +32,8 @@ export default function OrderPanel({
   options: ProductOption[];
   vintedUrl: string | null;
   contacts: Contacts;
+  /** In anteprima i bottoni si vedono ma non aprono WhatsApp o l'email. */
+  preview?: boolean;
 }) {
   const [choices, setChoices] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState(false);
@@ -58,11 +61,13 @@ export default function OrderPanel({
   const anyChannel = waOn || mailOn || vintedHref || igHref;
 
   function openWhatsApp() {
+    if (preview) return;
     const text = fill(whatsapp?.template || DEFAULT_TEMPLATE, values());
     window.location.href = `https://wa.me/${whatsapp!.number}?text=${encodeURIComponent(text)}`;
   }
 
   function openEmail() {
+    if (preview) return;
     const v = values();
     const subject = fill(email?.subject_template || "Ordine: {prodotto}", v);
     const body = fill(email?.body_template || DEFAULT_TEMPLATE, v);
