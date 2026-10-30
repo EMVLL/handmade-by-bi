@@ -56,3 +56,9 @@ h3 {
 body:has(.preview-root) .site-chrome {
   display: none;
 }
+
+/* Nell'anteprima i link non portano altrove: si resta sulla pagina in bozza */
+.preview-root a {
+  pointer-events: none;
+  cursor: default;
+}
