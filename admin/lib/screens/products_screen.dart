@@ -68,10 +68,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
       ..showSnackBar(SnackBar(content: Text(text)));
   }
 
-  Future<void> _update(Product p, Map<String, dynamic> changes, String done) async {
+  Future<void> _update(Product p, Map<String, dynamic> changes) async {
     try {
       await supa.from('products').update(changes).eq('id', p.id);
-      _snack(done);
       await _load();
     } catch (e) {
       _snack(friendlyError(e));
@@ -100,7 +99,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
           // Le foto rimaste non danno fastidio: il pezzo è già eliminato.
         }
       }
-      _snack(t.doneDeleted);
       await _load();
     } catch (e) {
       _snack(friendlyError(e));
@@ -110,19 +108,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Future<void> _onAction(Product p, String action) async {
     switch (action) {
       case 'sold':
-        await _update(p, {'status': 'venduto'}, t.doneSold);
+        await _update(p, {'status': 'venduto'});
       case 'available':
-        await _update(p, {'status': 'disponibile'}, t.doneAvailable);
+        await _update(p, {'status': 'disponibile'});
       case 'hide':
-        await _update(p, {'status': 'nascosto'}, t.doneHidden);
+        await _update(p, {'status': 'nascosto'});
       case 'trash':
-        await _update(
-          p,
-          {'deleted_at': DateTime.now().toUtc().toIso8601String()},
-          t.doneTrashed,
-        );
+        await _update(p, {'deleted_at': DateTime.now().toUtc().toIso8601String()});
       case 'restore':
-        await _update(p, {'deleted_at': null}, t.doneRestored);
+        await _update(p, {'deleted_at': null});
       case 'delete':
         await _deleteForever(p);
     }
@@ -133,7 +127,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
       MaterialPageRoute(builder: (_) => ProductEditScreen(product: p)),
     );
     if (changed == true) {
-      _snack(p == null ? t.doneAdded : t.doneSaved);
       await _load();
     }
   }

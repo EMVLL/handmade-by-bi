@@ -176,6 +176,7 @@ abstract class AppTexts {
   String get shopHistoryHint;
   String get savedLive;
   String get savedDraft;
+  String get saved;
 
   // Stile
   String get styleTitle;

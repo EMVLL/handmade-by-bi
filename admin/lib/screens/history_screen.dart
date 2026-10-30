@@ -74,12 +74,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
     try {
       await supa.rpc('load_version_to_draft', params: {'p_version_id': version['id']});
       notifyDraftSaved();
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.historyLoaded)));
+      if (mounted) Navigator.of(context).pop(true);
+      return;
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(friendlyError(e))));
     } finally {
-      if (mounted) setState(() => _busy = false);
-      await _load();
+      if (mounted) {
+        setState(() => _busy = false);
+        await _load();
+      }
     }
   }
 

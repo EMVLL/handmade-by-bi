@@ -108,7 +108,6 @@ class _PageBlocksScreenState extends State<PageBlocksScreen> {
     try {
       await action();
       notifyDraftSaved();
-      _snack(t.savedDraft);
     } catch (e) {
       _snack(friendlyError(e));
     } finally {
@@ -157,10 +156,7 @@ class _PageBlocksScreenState extends State<PageBlocksScreen> {
     final saved = await Navigator.of(context).push<bool>(
       MaterialPageRoute(builder: (_) => BlockEditScreen(block: b, blockType: type, data: _data)),
     );
-    if (saved == true) {
-      _snack(t.savedDraft);
-      await _load();
-    }
+    if (saved == true) await _load();
   }
 
   Future<void> _add() async {

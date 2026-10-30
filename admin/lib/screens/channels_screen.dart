@@ -18,11 +18,11 @@ final _instagramUser = RegExp(r'^@?([A-Za-z0-9._]{1,30})$');
 const _tokens = ['{prodotto}', '{prezzo}', '{opzione}', '{link}'];
 
 String _tokenLabel(String token) => switch (token) {
-      '{prodotto}' => t.tokenProduct,
-      '{prezzo}' => t.tokenPrice,
-      '{opzione}' => t.tokenOption,
-      _ => t.tokenLink,
-    };
+  '{prodotto}' => t.tokenProduct,
+  '{prezzo}' => t.tokenPrice,
+  '{opzione}' => t.tokenOption,
+  _ => t.tokenLink,
+};
 
 /// "+39 333 123 4567" / "0039..." / "3331234567" -> "393331234567"
 String normalizePhone(String raw) {
@@ -68,6 +68,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
   final _form = GlobalKey<FormState>();
   bool _loading = true;
   bool _saving = false;
+  bool _justSaved = false;
   String? _error;
 
   bool _waOn = false;
@@ -104,8 +105,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
     try {
       final row = await supa.from('site_settings').select('contacts').eq('id', 1).single();
       final contacts = Map<String, dynamic>.from((row['contacts'] as Map?) ?? const {});
-      Map<String, dynamic> channel(String key) =>
-          Map<String, dynamic>.from((contacts[key] as Map?) ?? const {});
+      Map<String, dynamic> channel(String key) => Map<String, dynamic>.from((contacts[key] as Map?) ?? const {});
       String text(Map<String, dynamic> c, String key, [String fallback = '']) {
         final value = (c[key] as String?) ?? '';
         return value.isEmpty ? fallback : value;
@@ -150,16 +150,15 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
 
   /// Un campo viene salvato solo se è valido: così un canale spento con
   /// un valore sbagliato non blocca il salvataggio degli altri.
-  String? _ifValid(String value, bool Function(String) isValid) =>
-      value.isNotEmpty && isValid(value) ? value : null;
+  String? _ifValid(String value, bool Function(String) isValid) => value.isNotEmpty && isValid(value) ? value : null;
 
   bool _isTemplate(String value, int max) => value.length <= max && _templatePattern.hasMatch(value);
 
   Map<String, dynamic> _channel(bool enabled, Map<String, String?> fields) => {
-        'enabled': enabled,
-        for (final entry in fields.entries)
-          if (entry.value != null) entry.key: entry.value,
-      };
+    'enabled': enabled,
+    for (final entry in fields.entries)
+      if (entry.value != null) entry.key: entry.value,
+  };
 
   Future<void> _save() async {
     if (_saving) return;
@@ -183,14 +182,19 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
           'profile_url': _ifValid(normalizeUrl(_vintedUrl.text), (v) => v.length <= 300 && _vintedPattern.hasMatch(v)),
         }),
         'instagram': _channel(_igOn, {
-          'profile_url':
-              _ifValid(normalizeInstagram(_igUrl.text), (v) => v.length <= 300 && _instagramPattern.hasMatch(v)),
+          'profile_url': _ifValid(
+            normalizeInstagram(_igUrl.text),
+            (v) => v.length <= 300 && _instagramPattern.hasMatch(v),
+          ),
         }),
       };
       await supa.from('site_settings').update({'contacts': contacts}).eq('id', 1);
       // I contatti fanno parte dell'aspetto del sito: vanno online con "Pubblica".
       notifyDraftSaved();
-      _snack(t.savedDraft);
+      if (mounted) setState(() => _justSaved = true);
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) setState(() => _justSaved = false);
+      });
     } catch (e) {
       _snack(friendlyError(e));
     } finally {
@@ -289,11 +293,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
   }
 
   /// Sezione richiudibile: chi non vuole cambiare il messaggio non la apre mai.
-  Widget _messageEditor({
-    required String title,
-    required List<Widget> fields,
-    required VoidCallback onReset,
-  }) {
+  Widget _messageEditor({required String title, required List<Widget> fields, required VoidCallback onReset}) {
     return ExpansionTile(
       tilePadding: EdgeInsets.zero,
       childrenPadding: const EdgeInsets.only(bottom: 8),
@@ -307,11 +307,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
         ...fields,
         Align(
           alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            onPressed: onReset,
-            icon: const Icon(Icons.restart_alt),
-            label: Text(t.resetMessage),
-          ),
+          child: TextButton.icon(onPressed: onReset, icon: const Icon(Icons.restart_alt), label: Text(t.resetMessage)),
         ),
       ],
     );
@@ -455,11 +451,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
                 controller: _vintedUrl,
                 keyboardType: TextInputType.url,
                 autocorrect: false,
-                decoration: InputDecoration(
-                  labelText: t.profileLink,
-                  helperText: t.vintedLinkHelp,
-                  helperMaxLines: 2,
-                ),
+                decoration: InputDecoration(labelText: t.profileLink, helperText: t.vintedLinkHelp, helperMaxLines: 2),
                 validator: _required(t.linkRequired, (text) {
                   final url = normalizeUrl(text);
                   return _vintedPattern.hasMatch(url) && url.length <= 300 ? null : t.vintedInvalid;
@@ -494,6 +486,11 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
             style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
             child: _saving
                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))
+                : _justSaved
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [const Icon(Icons.check), const SizedBox(width: 8), Text(t.saved)],
+                  )
                 : Text(t.save),
           ),
         ],
@@ -506,13 +503,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(t.channelsTitle),
-        actions: [
-          IconButton(
-            tooltip: t.signOut,
-            icon: const Icon(Icons.logout),
-            onPressed: () => supa.auth.signOut(),
-          ),
-        ],
+        actions: [IconButton(tooltip: t.signOut, icon: const Icon(Icons.logout), onPressed: () => supa.auth.signOut())],
       ),
       body: _body(),
     );

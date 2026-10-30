@@ -80,7 +80,7 @@ class _IdentityScreenState extends State<IdentityScreen> {
       }).eq('id', 1);
       notifyDraftSaved();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.savedDraft)));
+      Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(friendlyError(e))));

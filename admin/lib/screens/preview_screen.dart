@@ -23,6 +23,20 @@ class _PreviewScreenState extends State<PreviewScreen> {
   bool _busy = false;
   int _reloads = 0;
 
+  /// La pagina del sito mostrata nell'app (serve per bloccarne i tocchi).
+  web.HTMLIFrameElement? _frame;
+
+  /// Sul web una pagina incorporata "ruba" i tocchi anche ai dialoghi disegnati sopra:
+  /// mentre un dialogo è aperto la rendiamo trasparente ai tocchi.
+  Future<T?> _overFrame<T>(Future<T?> Function() open) async {
+    _frame?.style.pointerEvents = 'none';
+    try {
+      return await open();
+    } finally {
+      _frame?.style.pointerEvents = 'auto';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -65,7 +79,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
     try {
       await publishSite(t.notePublish);
       await refreshDraftStatus();
-      _snack(t.published);
     } catch (e) {
       _snack(friendlyError(e));
     } finally {
@@ -74,15 +87,17 @@ class _PreviewScreenState extends State<PreviewScreen> {
   }
 
   Future<void> _discard() async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(t.discardTitle),
-        content: Text(t.discardBody),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(t.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(t.discard)),
-        ],
+    final ok = await _overFrame(
+      () => showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(t.discardTitle),
+          content: Text(t.discardBody),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(t.cancel)),
+            FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(t.discard)),
+          ],
+        ),
       ),
     );
     if (ok != true) return;
@@ -90,7 +105,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
     try {
       await supa.rpc('discard_draft');
       notifyDraftSaved();
-      _snack(t.discarded);
     } catch (e) {
       _snack(friendlyError(e));
     } finally {
@@ -145,7 +159,9 @@ class _PreviewScreenState extends State<PreviewScreen> {
   Widget build(BuildContext context) {
     Widget body;
     if (_error != null) {
-      body = Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(_error!)));
+      body = Center(
+        child: Padding(padding: const EdgeInsets.all(24), child: Text(_error!)),
+      );
     } else if (_token == null) {
       body = const Center(child: CircularProgressIndicator());
     } else {
@@ -155,6 +171,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
         tagName: 'iframe',
         onElementCreated: (Object element) {
           final frame = element as web.HTMLIFrameElement;
+          _frame = frame;
           frame.src = url;
           frame.style.border = 'none';
           frame.style.width = '100%';
@@ -175,7 +192,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
             ),
         ],
       ),
-      body: Column(children: [_statusBar(), Expanded(child: body)]),
+      body: Column(
+        children: [
+          _statusBar(),
+          Expanded(child: body),
+        ],
+      ),
     );
   }
 }

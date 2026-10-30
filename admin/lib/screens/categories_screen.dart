@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../app_theme.dart';
+import '../draft.dart';
 import '../form_data.dart';
 import '../models.dart';
 import '../supa.dart';
@@ -89,7 +90,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     setState(() => _busy = true);
     try {
       await action();
-      _snack(t.categorySaved);
     } catch (e) {
       _snack(friendlyError(e));
     } finally {
@@ -162,10 +162,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     final saved = await Navigator.of(context).push<bool>(
       MaterialPageRoute(builder: (_) => CategoryEditScreen(category: category)),
     );
-    if (saved == true) {
-      _snack(t.categorySaved);
-      await _load();
-    }
+    if (saved == true) await _load();
   }
 
   /// Apre il modulo del "Menu categorie" della pagina iniziale.
@@ -185,7 +182,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           builder: (_) => BlockEditScreen(block: PageBlock.fromMap(rows.first), blockType: BlockType.fromMap(type), data: data),
         ),
       );
-      if (saved == true) _snack(t.savedDraft);
+      if (saved == true) notifyDraftSaved();
     } catch (e) {
       _snack(friendlyError(e));
     }

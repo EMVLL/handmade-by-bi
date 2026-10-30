@@ -319,6 +319,8 @@ class AppTextsIt implements AppTexts {
   @override
   String get savedLive => 'Fatto! Il sito si aggiorna in pochi secondi';
   @override
+  String get saved => 'Salvato';
+  @override
   String get savedDraft => 'Salvato in anteprima. Quando sei pronta, premi Pubblica nella scheda Anteprima';
 
   // Stile

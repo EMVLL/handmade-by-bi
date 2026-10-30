@@ -85,7 +85,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
       await supa.from('site_settings').update({'theme': _theme}).eq('id', 1);
       notifyDraftSaved();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.savedDraft)));
+      Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(friendlyError(e))));
