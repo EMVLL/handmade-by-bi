@@ -779,7 +779,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         ),
         bottomNavigationBar: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16 + AppTheme.badgeSpace),
             child: FilledButton(
               onPressed: _saving ? null : _save,
               style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),

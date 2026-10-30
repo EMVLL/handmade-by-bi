@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'categories_screen.dart';
 import 'channels_screen.dart';
+import '../app_theme.dart';
 import '../draft.dart';
 import 'preview_screen.dart';
 import 'products_screen.dart';
@@ -33,39 +34,46 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: ValueListenableBuilder<bool>(
         valueListenable: draftChanged,
-        builder: (context, changed, _) => NavigationBar(
-          selectedIndex: _tab,
-          onDestinationSelected: (i) {
-            setState(() => _tab = i);
-            if (i == 4) refreshDraftStatus();
-          },
-          destinations: [
-            NavigationDestination(
-              icon: const Icon(Icons.inventory_2_outlined),
-              selectedIcon: const Icon(Icons.inventory_2),
-              label: t.tabProducts,
+        builder: (context, changed, _) => ColoredBox(
+          // stesso colore della barra: sembra un'unica barra, solo più alta
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: AppTheme.badgeSpace),
+            child: NavigationBar(
+              selectedIndex: _tab,
+              onDestinationSelected: (i) {
+                setState(() => _tab = i);
+                if (i == 4) refreshDraftStatus();
+              },
+              destinations: [
+                NavigationDestination(
+                  icon: const Icon(Icons.inventory_2_outlined),
+                  selectedIcon: const Icon(Icons.inventory_2),
+                  label: t.tabProducts,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.category_outlined),
+                  selectedIcon: const Icon(Icons.category),
+                  label: t.tabCategories,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.storefront_outlined),
+                  selectedIcon: const Icon(Icons.storefront),
+                  label: t.tabShop,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.chat_outlined),
+                  selectedIcon: const Icon(Icons.chat),
+                  label: t.tabChannels,
+                ),
+                NavigationDestination(
+                  icon: Badge(isLabelVisible: changed, child: const Icon(Icons.visibility_outlined)),
+                  selectedIcon: Badge(isLabelVisible: changed, child: const Icon(Icons.visibility)),
+                  label: t.tabPreview,
+                ),
+              ],
             ),
-            NavigationDestination(
-              icon: const Icon(Icons.category_outlined),
-              selectedIcon: const Icon(Icons.category),
-              label: t.tabCategories,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.storefront_outlined),
-              selectedIcon: const Icon(Icons.storefront),
-              label: t.tabShop,
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.chat_outlined),
-              selectedIcon: const Icon(Icons.chat),
-              label: t.tabChannels,
-            ),
-            NavigationDestination(
-              icon: Badge(isLabelVisible: changed, child: const Icon(Icons.visibility_outlined)),
-              selectedIcon: Badge(isLabelVisible: changed, child: const Icon(Icons.visibility)),
-              label: t.tabPreview,
-            ),
-          ],
+          ),
         ),
       ),
     );

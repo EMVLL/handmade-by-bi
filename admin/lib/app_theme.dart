@@ -32,6 +32,11 @@ abstract final class AppTheme {
   static const radius = 12.0;
   static const radiusSmall = 8.0;
 
+  /// Spazio libero in basso per il badge "Powered by Netlify" (piano gratuito):
+  /// schede e bottoni Salva stanno sopra, così il badge non li copre.
+  /// Se un giorno il badge sparisce, basta mettere 0.
+  static const badgeSpace = 56.0;
+
   static ThemeData light() {
     final scheme = ColorScheme.fromSeed(
       seedColor: AppColors.primary,

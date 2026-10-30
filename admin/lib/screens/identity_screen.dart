@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../app_theme.dart';
 import '../supa.dart';
 import '../texts/app_texts.dart';
 import '../widgets/schema_form.dart';
@@ -117,7 +118,7 @@ class _IdentityScreenState extends State<IdentityScreen> {
           ? null
           : SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16 + AppTheme.badgeSpace),
                 child: FilledButton(
                   onPressed: _saving ? null : _save,
                   style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),

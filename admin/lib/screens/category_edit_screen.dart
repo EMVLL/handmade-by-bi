@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../app_theme.dart';
 import '../models.dart';
 import '../supa.dart';
 import '../texts/app_texts.dart';
@@ -69,7 +70,7 @@ class _CategoryEditScreenState extends State<CategoryEditScreen> {
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16 + AppTheme.badgeSpace),
           child: FilledButton(
             onPressed: _saving ? null : _save,
             style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
