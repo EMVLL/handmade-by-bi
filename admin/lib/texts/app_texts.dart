@@ -234,7 +234,7 @@ abstract class AppTexts {
   String get fieldRequired;
   String get linkHelp;
   String get linkInvalid;
-  String get linkAllProducts;
+  String get linkCategories;
   String get choosePhoto;
   String get changePhoto;
   String get removePhoto;

@@ -38,6 +38,7 @@ export default async function BlockList({ blocks, site }: { blocks: Block[]; sit
     visible.some((b) => NEEDS_COLLECTIONS.has(b.type)) ? getCollections() : [],
   ]);
   const ctx: BlockContext = { site, products, collections };
+  const menuId = visible.find((b) => b.type === "category_menu")?.id;
 
   return (
     <>
@@ -50,7 +51,14 @@ export default async function BlockList({ blocks, site }: { blocks: Block[]; sit
           if (!content) return null;
           const look = sectionLook(props);
           return (
-            <section key={b.id} className={look.className} style={look.style} data-ts={look.size} data-bg={look.bg}>
+            <section
+              key={b.id}
+              id={b.id === menuId ? "categorie" : undefined}
+              className={look.className}
+              style={look.style}
+              data-ts={look.size}
+              data-bg={look.bg}
+            >
               {content}
             </section>
           );

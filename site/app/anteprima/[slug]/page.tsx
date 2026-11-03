@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import BackButton from "@/components/BackButton";
 import BlockList from "@/components/BlockList";
 import PreviewShell, { PreviewUnavailable, previewFallback } from "@/components/PreviewShell";
 import { loadDraft, type PreviewSearch } from "@/lib/preview";
@@ -14,6 +15,9 @@ async function Content({ params, searchParams }: Props) {
   if (!page) notFound();
   return (
     <PreviewShell site={draft.site} token={draft.token}>
+      <div className="mx-auto max-w-5xl px-5 pt-8">
+        <BackButton />
+      </div>
       <BlockList blocks={page.blocks} site={draft.site} />
     </PreviewShell>
   );

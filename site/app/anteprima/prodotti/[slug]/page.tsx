@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import PreviewShell, { PreviewUnavailable, previewFallback } from "@/components/PreviewShell";
 import ProductView from "@/components/views/ProductView";
@@ -12,9 +11,6 @@ async function Content({ params, searchParams }: Props) {
   return (
     <PreviewShell site={draft.site} token={draft.token}>
       <div className="mx-auto max-w-5xl px-5 py-10">
-        <Link href="/prodotti" className="mb-6 inline-block text-sm opacity-70 hover:opacity-100">
-          ← Tutti i lavori
-        </Link>
         <ProductView slug={slug} site={draft.site} preview />
       </div>
     </PreviewShell>

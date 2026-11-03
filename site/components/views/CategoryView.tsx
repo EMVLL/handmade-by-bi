@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import BackButton from "@/components/BackButton";
 import CategoryMenu from "@/components/CategoryMenu";
 import ProductCard from "@/components/ProductCard";
 import {
@@ -34,6 +35,7 @@ export default async function CategoryView({ slug, site }: { slug: string; site:
 
   return (
     <>
+      <BackButton />
       <CategoryMenu entries={entries} style="buttons" current={slug} />
       {chosenCover ? (
         <div className="relative mt-8 flex aspect-[3/1] min-h-44 items-end overflow-hidden rounded-site">

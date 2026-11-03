@@ -56,3 +56,21 @@ h3 {
 body:has(.preview-root) .site-chrome {
   display: none;
 }
+
+/* ---- Nastro dei lavori che scorre da solo ---- */
+@keyframes ribbon-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ribbon-track {
+  animation: ribbon-scroll linear infinite;
+}
+.ribbon:hover .ribbon-track {
+  animation-play-state: paused;
+}
+/* Chi ha chiesto meno animazioni al telefono può scorrerlo a mano */
+@media (prefers-reduced-motion: reduce) {
+  .ribbon { overflow-x: auto; }
+  .ribbon-track { animation: none; }
+}
+#categorie { scroll-margin-top: 1rem; }

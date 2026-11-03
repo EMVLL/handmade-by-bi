@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import ProductView from "@/components/views/ProductView";
 import { getLiveSite, getProduct, getProducts } from "@/lib/data";
@@ -44,9 +43,6 @@ async function ProductDetails({ params }: Params) {
 export default function ProductPage(props: Params) {
   return (
     <div className="mx-auto max-w-5xl px-5 py-10">
-      <Link href="/prodotti" className="mb-6 inline-block text-sm opacity-70 hover:opacity-100">
-        ← Tutti i lavori
-      </Link>
       <Suspense fallback={<div className="aspect-square max-w-md animate-pulse rounded-site bg-foreground/5" />}>
         <ProductDetails params={props.params} />
       </Suspense>

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { getLiveSite } from "@/lib/data";
 import { mediaUrl } from "@/lib/format";
 import { themeStyle } from "@/lib/theme";
+import NavHistory from "@/components/NavHistory";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 
@@ -33,6 +35,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {site && <SiteHeader site={site} />}
         <main className="flex-1">{children}</main>
         {site && <SiteFooter site={site} />}
+        <Suspense fallback={null}>
+          <NavHistory />
+        </Suspense>
       </body>
     </html>
   );

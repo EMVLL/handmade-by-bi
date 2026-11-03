@@ -1,24 +1,20 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import PreviewShell, { PreviewUnavailable, previewFallback } from "@/components/PreviewShell";
-import ProductsView from "@/components/views/ProductsView";
-import { loadDraft, type PreviewSearch } from "@/lib/preview";
+import type { PreviewSearch } from "@/lib/preview";
 
 type Props = { searchParams: PreviewSearch };
 
-async function Content({ searchParams }: Props) {
-  const draft = await loadDraft(searchParams);
-  if (!draft) return <PreviewUnavailable />;
-  return (
-    <PreviewShell site={draft.site} token={draft.token}>
-      <ProductsView site={draft.site} />
-    </PreviewShell>
-  );
+// Come sul sito: "Tutti i lavori" porta al menu categorie dell'anteprima.
+async function Go({ searchParams }: Props) {
+  const { t } = await searchParams;
+  redirect(`/anteprima?t=${encodeURIComponent(typeof t === "string" ? t : "")}#categorie`);
+  return null;
 }
 
 export default function PreviewProducts(props: Props) {
   return (
-    <Suspense fallback={previewFallback}>
-      <Content {...props} />
+    <Suspense fallback={null}>
+      <Go {...props} />
     </Suspense>
   );
 }

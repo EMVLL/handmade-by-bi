@@ -18,7 +18,7 @@ Future<SchemaFormData> loadFormData() async {
     categories: categories,
     products: results[1].map(Product.fromMap).toList(),
     links: [
-      LinkSuggestion(t.linkAllProducts, '/prodotti'),
+      LinkSuggestion(t.linkCategories, '/#categorie'),
       for (final c in categories) LinkSuggestion(c.name, '/collezioni/${c.slug}'),
     ],
   );

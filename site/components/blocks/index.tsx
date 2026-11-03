@@ -7,6 +7,7 @@ import { bool, list, mediaUrl, num, paragraphs, str } from "@/lib/format";
 import CategoryMenu from "../CategoryMenu";
 import ContactLinks from "../ContactLinks";
 import ProductCard, { PriceLine } from "../ProductCard";
+import ProductRibbon from "../ProductRibbon";
 import SmartLink from "../SmartLink";
 
 export interface BlockContext {
@@ -160,7 +161,9 @@ const productGrid: Renderer = (p, ctx) => {
   return (
     <div className={`${wrap} py-10`}>
       <Title text={str(p.title)} />
-      {str(p.style) === "carousel" ? (
+      {str(p.style, "ribbon") === "ribbon" ? (
+        <ProductRibbon products={items} showPrice={showPrice} />
+      ) : str(p.style) === "carousel" ? (
         <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2">
           {items.map((x) => (
             <div key={x.id} className="w-2/3 shrink-0 snap-start sm:w-1/3 md:w-1/4">

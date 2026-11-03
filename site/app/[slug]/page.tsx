@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+import BackButton from "@/components/BackButton";
 import BlockList from "@/components/BlockList";
 import { getLiveSite } from "@/lib/data";
 
@@ -30,7 +31,14 @@ async function PageContent({ params }: Params) {
   const page = site?.pages.find((p) => p.slug === slug);
   if (!site || !page) notFound();
   if (page.is_home) redirect("/");
-  return <BlockList blocks={page.blocks} site={site} />;
+  return (
+    <>
+      <div className="mx-auto max-w-5xl px-5 pt-8">
+        <BackButton />
+      </div>
+      <BlockList blocks={page.blocks} site={site} />
+    </>
+  );
 }
 
 export default function Page(props: Params) {

@@ -420,7 +420,7 @@ class AppTextsIt implements AppTexts {
   String blockDescription(String type) => switch (type) {
         'hero' => 'La grande immagine iniziale, con titolo e bottone',
         'category_menu' => 'I riquadri per scegliere una categoria',
-        'product_grid' => 'I tuoi lavori: tutti oppure di una categoria',
+        'product_grid' => 'I tuoi lavori in vetrina: un nastro che scorre oppure una griglia',
         'featured_product' => 'Un solo pezzo in grande, da mettere in risalto',
         'text' => 'Un titolo e qualche paragrafo, ad esempio "Chi sono"',
         'gallery' => 'Più foto insieme, in griglia o a scorrimento',
@@ -452,7 +452,7 @@ class AppTextsIt implements AppTexts {
   @override
   String get linkInvalid => 'Deve iniziare con / oppure con https://';
   @override
-  String get linkAllProducts => 'Tutti i lavori';
+  String get linkCategories => 'Menu categorie';
   @override
   String get choosePhoto => 'Scegli foto';
   @override
