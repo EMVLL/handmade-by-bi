@@ -124,7 +124,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Future<void> _open(Product? p) async {
     final changed = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => ProductEditScreen(product: p)),
+      MaterialPageRoute(
+        builder: (_) => ProductEditScreen(
+          product: p,
+          // Se l'elenco è filtrato su una categoria, il pezzo nuovo nasce già lì
+          initialCategoryIds: p == null && (_filter?.isNotEmpty ?? false) ? [_filter!] : const [],
+        ),
+      ),
     );
     if (changed == true) {
       await _load();

@@ -32,9 +32,9 @@ abstract final class AppTheme {
   static const radius = 12.0;
   static const radiusSmall = 8.0;
 
-  /// Spazio libero in basso per il badge "Powered by Netlify" (piano gratuito):
-  /// schede e bottoni Salva stanno sopra, così il badge non li copre.
-  /// Se un giorno il badge sparisce, basta mettere 0.
+  /// Spazio libero in fondo allo schermo per il badge "Powered by Netlify"
+  /// (piano gratuito): tutta l'app sta sopra (vedi main.dart), così il badge
+  /// non copre mai un pulsante. Se un giorno il badge sparisce, basta mettere 0.
   static const badgeSpace = 56.0;
 
   static ThemeData light() {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../app_theme.dart';
 import '../form_data.dart';
 import '../models.dart';
 import '../supa.dart';
@@ -66,7 +65,7 @@ class _BlockEditScreenState extends State<BlockEditScreen> {
         ),
         bottomNavigationBar: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16 + AppTheme.badgeSpace),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: FilledButton(
               onPressed: _saving ? null : _save,
               style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),

@@ -62,16 +62,22 @@ body:has(.preview-root) .site-chrome {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
-.ribbon-track {
-  animation: ribbon-scroll linear infinite;
+/* Il nastro si muove da solo (RibbonScroller) ma si può anche trascinare */
+.ribbon-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  cursor: grab;
+  overscroll-behavior-x: contain;
 }
-.ribbon:hover .ribbon-track {
-  animation-play-state: paused;
+.ribbon-scroll::-webkit-scrollbar {
+  display: none;
 }
-/* Chi ha chiesto meno animazioni al telefono può scorrerlo a mano */
-@media (prefers-reduced-motion: reduce) {
-  .ribbon { overflow-x: auto; }
-  .ribbon-track { animation: none; }
+.ribbon-scroll:active {
+  cursor: grabbing;
+}
+.ribbon-scroll a,
+.ribbon-scroll img {
+  -webkit-user-drag: none;
 }
 #categorie { scroll-margin-top: 1rem; }
 

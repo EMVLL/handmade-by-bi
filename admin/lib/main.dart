@@ -11,10 +11,7 @@ import 'texts/app_texts.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Supabase.initialize(
-    url: Config.supabaseUrl,
-    publishableKey: Config.supabaseKey,
-  );
+  await Supabase.initialize(url: Config.supabaseUrl, publishableKey: Config.supabaseKey);
   await applyRememberMe();
   runApp(const AdminApp());
 }
@@ -31,6 +28,14 @@ class AdminApp extends StatelessWidget {
       locale: t.locale,
       supportedLocales: [t.locale],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      // Tutta l'app sta sopra il badge "Powered by Netlify": pulsanti, menu e messaggi compresi.
+      builder: (context, child) => ColoredBox(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: AppTheme.badgeSpace),
+          child: child,
+        ),
+      ),
       home: const AuthGate(),
     );
   }

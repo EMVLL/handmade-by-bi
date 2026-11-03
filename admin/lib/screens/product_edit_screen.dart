@@ -49,10 +49,13 @@ class _OptionDraft {
 final _vintedPattern = RegExp(r'^https://(www\.)?vinted\.[a-z.]+/', caseSensitive: false);
 
 class ProductEditScreen extends StatefulWidget {
-  const ProductEditScreen({super.key, this.product});
+  const ProductEditScreen({super.key, this.product, this.initialCategoryIds = const []});
 
   /// null = nuovo pezzo
   final Product? product;
+
+  /// Per un pezzo nuovo: categorie già scelte (quella del filtro attivo nell'elenco).
+  final List<String> initialCategoryIds;
 
   @override
   State<ProductEditScreen> createState() => _ProductEditScreenState();
@@ -88,7 +91,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         text: p?.compareAtPrice == null ? '' : formatNumber(p!.compareAtPrice!));
     _vinted = TextEditingController(text: p?.vintedUrl ?? '');
     _status = p?.status ?? 'disponibile';
-    _categoryIds = {...?p?.categoryIds};
+    _categoryIds = {...?p?.categoryIds, if (p == null) ...widget.initialCategoryIds};
     _loadCategories();
     _photos.addAll((p?.photos ?? const <String>[]).map(_Photo.saved));
     _options.addAll((p?.options ?? const <ProductOption>[])
@@ -779,7 +782,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         ),
         bottomNavigationBar: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16 + AppTheme.badgeSpace),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: FilledButton(
               onPressed: _saving ? null : _save,
               style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),

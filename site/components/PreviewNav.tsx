@@ -27,6 +27,8 @@ export default function PreviewNav({ token }: { token: string }) {
       if (!link || !root.contains(link)) return;
       event.preventDefault();
       event.stopPropagation();
+      // Trascinando il nastro non si apre il pezzo
+      if (link.closest('[data-drag-moved="1"]')) return;
 
       const href = link.getAttribute("href") ?? "";
       if (!href.startsWith("/") || href.startsWith("//")) return;
