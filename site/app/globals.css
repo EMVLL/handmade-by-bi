@@ -74,3 +74,24 @@ body:has(.preview-root) .site-chrome {
   .ribbon-track { animation: none; }
 }
 #categorie { scroll-margin-top: 1rem; }
+
+/* ---- Avvisi animati ---- */
+.marquee-track {
+  animation: ribbon-scroll linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes banner-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes banner-up {
+  from { opacity: 0; transform: translateY(80%); }
+  to { opacity: 1; transform: none; }
+}
+.banner-fade { animation: banner-fade 0.6s ease both; }
+.banner-up { animation: banner-up 0.5s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track, .banner-fade, .banner-up { animation: none; }
+}

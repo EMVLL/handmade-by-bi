@@ -392,6 +392,10 @@ class AppTextsIt implements AppTexts {
   String get seoImage => 'Immagine di anteprima';
   @override
   String get noteIdentity => 'Nome, logo e Google aggiornati';
+  @override
+  String get headerSection => 'Intestazione (in alto nel sito)';
+  @override
+  String get headerHint => 'Cosa mostrare in alto e dove: logo, nome, grandezze e posizione.';
 
   // Pagina iniziale e sezioni
   @override

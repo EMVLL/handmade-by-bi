@@ -17,6 +17,8 @@ class IdentityScreen extends StatefulWidget {
 class _IdentityScreenState extends State<IdentityScreen> {
   final _form = GlobalKey<FormState>();
   final Map<String, dynamic> _values = {};
+  final Map<String, dynamic> _header = {};
+  Map<String, dynamic>? _headerSchema;
   bool _loading = true;
   bool _saving = false;
   String? _error;
@@ -42,7 +44,13 @@ class _IdentityScreenState extends State<IdentityScreen> {
 
   Future<void> _load() async {
     try {
-      final row = await supa.from('site_settings').select('site_name, logo_path, seo').eq('id', 1).single();
+      final row = await supa.from('site_settings').select('site_name, logo_path, seo, header').eq('id', 1).single();
+      final schemaRow = await supa.from('setting_schemas').select('schema').eq('key', 'header').maybeSingle();
+      _headerSchema = schemaRow == null ? null : Map<String, dynamic>.from(schemaRow['schema'] as Map);
+      _header.addAll(Map<String, dynamic>.from((row['header'] as Map?) ?? const {}));
+      // Valori di sempre: il logo si vede; il nome solo se non c'è un logo.
+      _header.putIfAbsent('show_logo', () => true);
+      _header.putIfAbsent('show_name', () => row['logo_path'] == null);
       final seo = Map<String, dynamic>.from((row['seo'] as Map?) ?? const {});
       void put(String key, dynamic value) {
         if (value is String && value.isNotEmpty) _values[key] = value;
@@ -73,6 +81,7 @@ class _IdentityScreenState extends State<IdentityScreen> {
       await supa.from('site_settings').update({
         'site_name': _values['site_name'],
         'logo_path': _values['logo_path'],
+        if (_headerSchema != null) 'header': _header,
         'seo': {
           if (_values['seo_title'] != null) 'title': _values['seo_title'],
           if (_values['seo_description'] != null) 'description': _values['seo_description'],
@@ -107,6 +116,14 @@ class _IdentityScreenState extends State<IdentityScreen> {
             const SizedBox(height: 16),
             SchemaForm(schema: _schema, values: _values),
             Text(t.seoSection, style: Theme.of(context).textTheme.bodySmall),
+            if (_headerSchema != null) ...[
+              const SizedBox(height: 28),
+              Text(t.headerSection, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(t.headerHint, style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 16),
+              SchemaForm(schema: _headerSchema!, values: _header),
+            ],
           ],
         ),
       );

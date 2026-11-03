@@ -53,6 +53,16 @@ export interface MenuItem {
   position: number;
 }
 
+export interface HeaderSettings {
+  show_logo?: boolean;
+  logo_size?: "s" | "m" | "l" | "xl";
+  show_name?: boolean;
+  name_size?: "s" | "m" | "l";
+  name_font?: string;
+  align?: "left" | "center" | "right";
+  arrangement?: "row" | "stack";
+}
+
 export interface LiveSite {
   settings: {
     site_name: string;
@@ -60,6 +70,7 @@ export interface LiveSite {
     theme: Theme;
     contacts: Contacts;
     seo: Seo;
+    header?: HeaderSettings;
   };
   pages: SitePage[];
   menu: MenuItem[];

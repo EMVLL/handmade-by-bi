@@ -210,6 +210,8 @@ abstract class AppTexts {
   String get seoImage;
   String get seoSection;
   String get noteIdentity;
+  String get headerSection;
+  String get headerHint;
 
   // Pagina iniziale e sezioni
   String get homeTitle;

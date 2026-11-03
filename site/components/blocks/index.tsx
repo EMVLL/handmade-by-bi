@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { categoryEntries, menuSettings } from "@/lib/categories";
 import type { Collection, LiveSite, Product, Props } from "@/lib/types";
 import { bool, list, mediaUrl, num, paragraphs, str } from "@/lib/format";
+import Banner from "../Banner";
 import CategoryMenu from "../CategoryMenu";
 import ContactLinks from "../ContactLinks";
 import ProductCard, { PriceLine } from "../ProductCard";
@@ -162,7 +163,7 @@ const productGrid: Renderer = (p, ctx) => {
     <div className={`${wrap} py-10`}>
       <Title text={str(p.title)} />
       {str(p.style, "ribbon") === "ribbon" ? (
-        <ProductRibbon products={items} showPrice={showPrice} />
+        <ProductRibbon products={items} showPrice={showPrice} links={bool(p.ribbon_links, false)} />
       ) : str(p.style) === "carousel" ? (
         <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2">
           {items.map((x) => (
@@ -289,24 +290,13 @@ const contact: Renderer = (p, ctx) => {
 };
 
 // ---------------------------------------------------------------- Avviso
-const BANNER: Record<string, string> = {
-  info: "bg-foreground/5",
-  highlight: "bg-primary text-white",
-  sale: "bg-accent text-white",
-};
-
 const banner: Renderer = (p) => {
-  const message = str(p.text);
-  if (!message) return null;
-  const link = str(p.link);
-  const cls = `block px-5 py-3 text-center text-sm font-semibold ${BANNER[str(p.style)] ?? BANNER.info}`;
-  return link ? (
-    <SmartLink href={link} className={`${cls} hover:underline`}>
-      {message}
-    </SmartLink>
-  ) : (
-    <div className={cls}>{message}</div>
-  );
+  const first = { text: str(p.text), link: str(p.link) || undefined };
+  const more = list<{ text?: unknown; link?: unknown }>(p.messages)
+    .map((m) => ({ text: str(m?.text), link: str(m?.link) || undefined }))
+    .filter((m) => m.text);
+  const messages = [first, ...more].filter((m) => m.text);
+  return <Banner messages={messages} effect={str(p.effect, "static")} speed={str(p.speed, "normal")} style={str(p.style, "info")} />;
 };
 
 // ---------------------------------------------------------------- Spazio
