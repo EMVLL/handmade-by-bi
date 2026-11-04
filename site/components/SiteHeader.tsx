@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { fontFamily } from "@/lib/fonts";
 import { mediaUrl, menuHref } from "@/lib/format";
+import { textStyleCss } from "@/lib/textStyle";
 import type { LiveSite } from "@/lib/types";
 import SmartLink from "./SmartLink";
 
@@ -35,8 +36,10 @@ export default function SiteHeader({
   const showName = (h.show_name ?? !logo) || (wantsLogo && !logo);
   const align = h.align ?? "left";
   const stack = h.arrangement === "stack";
-  const nameStyle: CSSProperties | undefined =
-    h.name_font && h.name_font !== "theme" ? { fontFamily: fontFamily(h.name_font, "Fraunces") } : undefined;
+  const nameStyle: CSSProperties = {
+    ...(h.name_font && h.name_font !== "theme" ? { fontFamily: fontFamily(h.name_font, "Fraunces") } : {}),
+    ...textStyleCss(h.name_style),
+  };
 
   const items = [...site.menu]
     .sort((a, b) => a.position - b.position)

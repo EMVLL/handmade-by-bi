@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../config.dart';
 import '../texts/app_texts.dart';
+import 'badges_screen.dart';
 import 'history_screen.dart';
 import 'identity_screen.dart';
 import 'page_blocks_screen.dart';
@@ -51,6 +52,7 @@ class ShopScreen extends StatelessWidget {
           entry(Icons.web_outlined, t.shopHome, t.shopHomeHint, () => const PageBlocksScreen()),
           entry(Icons.palette_outlined, t.shopStyle, t.shopStyleHint, () => const ThemeScreen()),
           entry(Icons.badge_outlined, t.shopIdentity, t.shopIdentityHint, () => const IdentityScreen()),
+          entry(Icons.sell_outlined, t.shopBadges, t.shopBadgesHint, () => const BadgesScreen()),
           entry(Icons.history, t.shopHistory, t.shopHistoryHint, () => const HistoryScreen()),
         ],
       ),

@@ -59,7 +59,7 @@ export default async function CategoryView({ slug, site }: { slug: string; site:
         {items.length ? (
           <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3">
             {items.map((p) => (
-              <ProductCard key={p.id} product={p} showPrice />
+              <ProductCard key={p.id} product={p} showPrice badges={site?.settings.badges} />
             ))}
           </div>
         ) : (

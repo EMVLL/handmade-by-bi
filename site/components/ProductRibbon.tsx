@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatPrice, mediaUrl } from "@/lib/format";
 import RibbonScroller from "./RibbonScroller";
-import type { Product } from "@/lib/types";
+import type { BadgeSettings, Product } from "@/lib/types";
+import StatusBadge from "./StatusBadge";
 
 // Nastro che scorre da solo: i lavori come in una vetrina.
 // Di base non si cliccano (si passa dalle categorie); con "links" toccando un lavoro si apre la sua scheda.
@@ -10,10 +11,14 @@ export default function ProductRibbon({
   products,
   showPrice,
   links = false,
+  showNames = true,
+  badges,
 }: {
   products: Product[];
   showPrice: boolean;
   links?: boolean;
+  showNames?: boolean;
+  badges?: BadgeSettings;
 }) {
   const withPhoto = products.filter((p) => p.photos?.length);
   if (!withPhoto.length) return null;
@@ -40,10 +45,11 @@ export default function ProductRibbon({
                 draggable={false}
                 className="select-none object-cover"
               />
+              <StatusBadge status={p.status} settings={badges} />
             </div>
-            <p className="mt-2 truncate font-heading">{p.title}</p>
+            {showNames && <p className="mt-2 truncate font-heading">{p.title}</p>}
             {showPrice && price && (
-              <p className="text-sm opacity-80">{price}</p>
+              <p className={`text-sm opacity-80 ${showNames ? "" : "mt-2"}`}>{price}</p>
             )}
           </>
         );

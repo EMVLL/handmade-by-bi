@@ -393,6 +393,20 @@ class AppTextsIt implements AppTexts {
   @override
   String get noteIdentity => 'Nome, logo e Google aggiornati';
   @override
+  String get colorAuto => 'Automatico (dal tema)';
+  @override
+  String get colorUseAuto => 'Usa automatico';
+  @override
+  String get shopBadges => 'Etichette dei pezzi';
+  @override
+  String get shopBadgesHint => 'Disponibile, Su ordinazione, Venduto: testo, colori, carattere';
+  @override
+  String get badgesTitle => 'Etichette dei pezzi';
+  @override
+  String get badgesHint =>
+      'Le scritte sulle foto dei pezzi. Scegli quali mostrare e come appaiono; '
+      'i colori su "Automatico" seguono lo stile del sito.';
+  @override
   String get headerSection => 'Intestazione (in alto nel sito)';
   @override
   String get headerHint => 'Cosa mostrare in alto e dove: logo, nome, grandezze e posizione.';

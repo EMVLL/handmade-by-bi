@@ -3,6 +3,7 @@ import BackButton from "@/components/BackButton";
 import OrderPanel from "@/components/OrderPanel";
 import { PriceLine } from "@/components/ProductCard";
 import ProductGallery from "@/components/ProductGallery";
+import { StatusPill } from "@/components/StatusBadge";
 import { getProduct } from "@/lib/data";
 import { mediaUrl, paragraphs, priceLabel } from "@/lib/format";
 import type { LiveSite } from "@/lib/types";
@@ -34,14 +35,9 @@ export default async function ProductView({
             {product.title}
           </h1>
           <PriceLine product={product} className="mt-3 text-xl" />
-          {product.status === "su_ordinazione" && (
-            <p className="mt-2 text-sm font-semibold text-accent">
-              Realizzato su ordinazione
-            </p>
-          )}
-          {product.status === "venduto" && (
-            <p className="mt-2 text-sm font-semibold">Venduto</p>
-          )}
+          <div className="mt-3">
+            <StatusPill status={product.status} settings={site.settings.badges} />
+          </div>
           <div className="mt-6 space-y-4 leading-relaxed">
             {paragraphs(product.description).map((para, i) => (
               <p key={i} className="whitespace-pre-line">

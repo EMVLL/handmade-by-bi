@@ -37,6 +37,13 @@ abstract final class AppTheme {
   /// non copre mai un pulsante. Se un giorno il badge sparisce, basta mettere 0.
   static const badgeSpace = 56.0;
 
+  /// Su PC l'app resta una colonna centrata, comoda da leggere;
+  /// sul telefono occupa tutto lo schermo.
+  static const maxContentWidth = 900.0;
+
+  /// Sotto questa larghezza (telefono) le azioni delle righe vanno nel menu ⋮.
+  static const compactWidth = 520.0;
+
   static ThemeData light() {
     final scheme = ColorScheme.fromSeed(
       seedColor: AppColors.primary,

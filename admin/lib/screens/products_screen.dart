@@ -191,11 +191,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
             onSelected: (_) => setState(() => _filter = value),
           ),
         );
-    return SizedBox(
-      height: 48,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: Wrap(
+        runSpacing: 6,
         children: [
           chip(t.filterAll, null),
           for (final c in _categories) chip(c.name, c.id),

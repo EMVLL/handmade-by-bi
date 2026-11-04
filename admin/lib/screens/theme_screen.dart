@@ -4,11 +4,10 @@ import '../app_theme.dart';
 import '../fonts_preview.dart';
 import '../supa.dart';
 import '../texts/app_texts.dart';
+import '../widgets/color_picker.dart';
 import '../draft.dart';
 
-final _hexPattern = RegExp(r'^#[0-9a-fA-F]{6}$');
-
-Color _color(String hex) => Color(int.parse('FF${hex.substring(1)}', radix: 16));
+Color _color(String hex) => hexColor(hex);
 
 const _radius = {'none': 0.0, 'small': 6.0, 'medium': 12.0, 'large': 24.0};
 const _radiusKeys = ['none', 'small', 'medium', 'large'];
@@ -28,16 +27,6 @@ const _presets = <String, Map<String, String>>{
   'cioccolato': {'primary': '#8B5E3C', 'accent': '#C9A227', 'background': '#FFFBF2', 'text': '#3B2A1E',
                  'font_heading': 'DM Serif Display', 'font_body': 'Nunito', 'radius': 'none'},
 };
-
-/// Colori proposti nella scelta (si può comunque scrivere un codice).
-const _palette = [
-  '#B5838D', '#E8B4B8', '#F48FB1', '#D81B60', '#C08081', '#800020',
-  '#C0673E', '#FB8C00', '#F2A65A', '#D9A05B', '#C9A227', '#E1AD01',
-  '#6D9773', '#7C9473', '#9CAF88', '#43A047', '#2E5E3A', '#66CDAA',
-  '#3D7EA6', '#64B5F6', '#1E40AF', '#1F2A44', '#4F6D7A', '#8E7CC3',
-  '#B57EDC', '#C8A2C8', '#8B5E3C', '#5C3317', '#3D3033', '#111111',
-  '#FFFFFF', '#FFF8F3', '#FFFBF2', '#F7F5EE', '#FAF7FF', '#F5FAFC',
-];
 
 class ThemeScreen extends StatefulWidget {
   const ThemeScreen({super.key});
@@ -95,80 +84,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
   }
 
   Future<void> _pickColor(String key, String title) async {
-    final hexController = TextEditingController(text: _theme[key]);
-    final chosen = await showModalBottomSheet<String>(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      builder: (context) {
-        String? error;
-        return StatefulBuilder(
-          builder: (context, setSheet) => Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + MediaQuery.of(context).viewInsets.bottom),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(title, style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: [
-                    for (final hex in _palette)
-                      InkWell(
-                        onTap: () => Navigator.pop(context, hex),
-                        customBorder: const CircleBorder(),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: _color(hex),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: _theme[key]?.toUpperCase() == hex ? Theme.of(context).colorScheme.onSurface : AppColors.swatchBorder,
-                              width: _theme[key]?.toUpperCase() == hex ? 3 : 1,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: hexController,
-                        autocorrect: false,
-                        decoration: InputDecoration(labelText: t.colorHex, errorText: error),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: FilledButton(
-                        onPressed: () {
-                          var hex = hexController.text.trim();
-                          if (!hex.startsWith('#')) hex = '#$hex';
-                          if (_hexPattern.hasMatch(hex)) {
-                            Navigator.pop(context, hex.toUpperCase());
-                          } else {
-                            setSheet(() => error = t.colorHexInvalid);
-                          }
-                        },
-                        child: Text(t.save),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+    final chosen = await showColorPicker(context, title: title, current: _theme[key]);
     if (chosen != null) setState(() => _theme[key] = chosen);
   }
 
@@ -307,15 +223,11 @@ class _ThemeScreenState extends State<ThemeScreen> {
         children: [
           _preview(),
           _section(t.stylePresets),
-          SizedBox(
-            height: 92,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                for (final e in _presets.entries)
-                  Padding(padding: const EdgeInsets.only(right: 10), child: _presetCard(e.key, e.value)),
-              ],
-            ),
+          // In griglia: si vedono tutti, senza scorrere di lato
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: [for (final e in _presets.entries) _presetCard(e.key, e.value)],
           ),
           _section(t.styleColors),
           _colorRow('primary', t.colorPrimary),

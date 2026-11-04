@@ -274,6 +274,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   Widget _body() {
+    final compact = MediaQuery.sizeOf(context).width < AppTheme.compactWidth;
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_error != null) {
       return ListView(
@@ -313,23 +314,31 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                  tooltip: t.categoryMoveUp,
-                  icon: const Icon(Icons.arrow_upward),
-                  onPressed: i == 0 || _busy ? null : () => _move(i, -1),
-                ),
-                IconButton(
-                  tooltip: t.categoryMoveDown,
-                  icon: const Icon(Icons.arrow_downward),
-                  onPressed: i == _items.length - 1 || _busy ? null : () => _move(i, 1),
-                ),
+                // Sul telefono le frecce stanno nel menu ⋮, così la riga non esce dallo schermo
+                if (!compact) ...[
+                  IconButton(
+                    tooltip: t.categoryMoveUp,
+                    icon: const Icon(Icons.arrow_upward),
+                    onPressed: i == 0 || _busy ? null : () => _move(i, -1),
+                  ),
+                  IconButton(
+                    tooltip: t.categoryMoveDown,
+                    icon: const Icon(Icons.arrow_downward),
+                    onPressed: i == _items.length - 1 || _busy ? null : () => _move(i, 1),
+                  ),
+                ],
                 PopupMenuButton<String>(
                   onSelected: (action) => switch (action) {
+                    'up' => _move(i, -1),
+                    'down' => _move(i, 1),
                     'edit' => _openEdit(_items[i]),
                     'rename' => _rename(_items[i]),
                     _ => _delete(_items[i]),
                   },
                   itemBuilder: (context) => [
+                    if (compact && i > 0) PopupMenuItem(value: 'up', child: Text(t.categoryMoveUp)),
+                    if (compact && i < _items.length - 1)
+                      PopupMenuItem(value: 'down', child: Text(t.categoryMoveDown)),
                     PopupMenuItem(value: 'edit', child: Text(t.sectionEdit)),
                     PopupMenuItem(value: 'rename', child: Text(t.categoryRename)),
                     PopupMenuItem(value: 'delete', child: Text(t.delete)),

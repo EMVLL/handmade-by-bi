@@ -17,7 +17,16 @@ const BACKGROUND: Record<string, string> = {
 const SIZES = new Set(["s", "l"]);
 
 /** Attributi della sezione: sfondo, carattere e grandezza del titolo. */
-function sectionLook(props: Props): { className?: string; style?: CSSProperties; size?: string; bg?: string } {
+const TEXT_STYLES = new Set(["italic", "uppercase", "italic_uppercase"]);
+
+function sectionLook(props: Props): {
+  className?: string;
+  style?: CSSProperties;
+  size?: string;
+  bg?: string;
+  titleStyle?: string;
+  textStyle?: string;
+} {
   const bg = typeof props.section_bg === "string" ? props.section_bg : "";
   const font = typeof props.title_font === "string" && props.title_font !== "theme" ? props.title_font : null;
   const size = typeof props.title_size === "string" && SIZES.has(props.title_size) ? props.title_size : undefined;
@@ -26,6 +35,8 @@ function sectionLook(props: Props): { className?: string; style?: CSSProperties;
     style: font ? ({ "--bt-font": fontFamily(font, "Fraunces") } as CSSProperties) : undefined,
     size,
     bg: BACKGROUND[bg] ? bg : undefined,
+    titleStyle: typeof props.title_style === "string" && TEXT_STYLES.has(props.title_style) ? props.title_style : undefined,
+    textStyle: typeof props.text_style === "string" && TEXT_STYLES.has(props.text_style) ? props.text_style : undefined,
   };
 }
 
@@ -58,6 +69,8 @@ export default async function BlockList({ blocks, site }: { blocks: Block[]; sit
               style={look.style}
               data-ts={look.size}
               data-bg={look.bg}
+              data-tst={look.titleStyle}
+              data-xst={look.textStyle}
             >
               {content}
             </section>

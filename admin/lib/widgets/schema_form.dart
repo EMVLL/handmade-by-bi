@@ -6,6 +6,7 @@ import '../media.dart';
 import '../models.dart';
 import '../supa.dart';
 import '../texts/app_texts.dart';
+import 'color_picker.dart';
 
 final _linkPattern = RegExp(r'^(https://|/)\S{0,299}$');
 
@@ -104,6 +105,7 @@ class _SchemaFormState extends State<SchemaForm> {
       case 'string':
         return switch (widgetType) {
           'image' => _imageField(key, values, label),
+          'color' => _colorField(key, values, label),
           'collection' => _collectionField(key, values, label),
           'product' => _productField(key, values, label),
           _ => _textField(key, spec, values, label, isRequired,
@@ -176,6 +178,37 @@ class _SchemaFormState extends State<SchemaForm> {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _colorField(String key, Map<String, dynamic> values, String label) {
+    final hex = values[key] as String?;
+    return _Labeled(
+      label: label,
+      child: Row(
+        children: [
+          InkWell(
+            customBorder: const CircleBorder(),
+            onTap: () async {
+              final chosen = await showColorPicker(context, title: label, current: hex);
+              if (chosen != null) setState(() => values[key] = chosen);
+            },
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: hex == null ? null : hexColor(hex),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.swatchBorder),
+              ),
+              child: hex == null ? const Icon(Icons.auto_awesome, size: 18) : null,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(child: Text(hex ?? t.colorAuto)),
+          if (hex != null) TextButton(onPressed: () => setState(() => values.remove(key)), child: Text(t.colorUseAuto)),
+        ],
+      ),
     );
   }
 
@@ -499,12 +532,24 @@ class _SchemaFormState extends State<SchemaForm> {
   Widget build(BuildContext context) {
     final props = Map<String, dynamic>.from((widget.schema['properties'] as Map?) ?? const {});
     final required = ((widget.schema['required'] as List?) ?? const []).whereType<String>().toSet();
+    final groupsDef = Map<String, dynamic>.from((widget.schema['x-groups'] as Map?) ?? const {});
     final keys = orderedKeys(widget.schema);
     Map<String, dynamic> spec(String k) => Map<String, dynamic>.from(props[k] as Map);
-    bool isStyle(String k) => spec(k)['x-group'] == 'style';
 
-    final main = keys.where((k) => !isStyle(k)).toList();
-    final style = keys.where(isStyle).toList();
+    // Campi senza gruppo, gruppi con titolo (nell'ordine in cui compaiono), "Aspetto" in fondo
+    final main = <String>[];
+    final groups = <String, List<String>>{};
+    final style = <String>[];
+    for (final k in keys) {
+      final g = spec(k)['x-group'] as String?;
+      if (g == null) {
+        main.add(k);
+      } else if (groupsDef.containsKey(g)) {
+        groups.putIfAbsent(g, () => []).add(k);
+      } else {
+        style.add(k);
+      }
+    }
 
     Widget padded(String k) => Padding(
           padding: const EdgeInsets.only(bottom: 16),
@@ -515,6 +560,24 @@ class _SchemaFormState extends State<SchemaForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final k in main) padded(k),
+        for (final entry in groups.entries)
+          Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    ((groupsDef[entry.key] as Map?)?['label'] as String?) ?? entry.key,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  for (final k in entry.value) padded(k),
+                ],
+              ),
+            ),
+          ),
         if (style.isNotEmpty)
           Card(
             margin: const EdgeInsets.only(top: 8),

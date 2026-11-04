@@ -1,25 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Product } from "@/lib/types";
+import type { BadgeSettings, Product } from "@/lib/types";
+import StatusBadge from "./StatusBadge";
 import { formatPrice, mediaUrl } from "@/lib/format";
-
-export function StatusBadge({ status }: { status: Product["status"] }) {
-  if (status === "venduto") {
-    return (
-      <span className="absolute left-3 top-3 rounded-full bg-foreground px-3 py-1 text-xs font-semibold text-background">
-        Venduto
-      </span>
-    );
-  }
-  if (status === "su_ordinazione") {
-    return (
-      <span className="absolute left-3 top-3 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-white">
-        Su ordinazione
-      </span>
-    );
-  }
-  return null;
-}
 
 export function PriceLine({ product, className = "" }: { product: Product; className?: string }) {
   const price = formatPrice(product.price);
@@ -38,7 +21,15 @@ export function PriceLine({ product, className = "" }: { product: Product; class
   );
 }
 
-export default function ProductCard({ product, showPrice }: { product: Product; showPrice: boolean }) {
+export default function ProductCard({
+  product,
+  showPrice,
+  badges,
+}: {
+  product: Product;
+  showPrice: boolean;
+  badges?: BadgeSettings;
+}) {
   const img = mediaUrl(product.photos?.[0]);
   return (
     <Link href={`/prodotti/${product.slug}`} className="group block">
@@ -56,7 +47,7 @@ export default function ProductCard({ product, showPrice }: { product: Product; 
         ) : (
           <div className="flex h-full items-center justify-center text-sm opacity-50">Foto in arrivo</div>
         )}
-        <StatusBadge status={product.status} />
+        <StatusBadge status={product.status} settings={badges} />
       </div>
       <h3 className="mt-3 font-heading text-lg leading-snug">{product.title}</h3>
       {showPrice && <PriceLine product={product} className="mt-1" />}

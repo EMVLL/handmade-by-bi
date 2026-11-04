@@ -7,6 +7,7 @@ import '../texts/app_texts.dart';
 import '../widgets/schema_form.dart';
 import 'block_edit_screen.dart';
 import '../draft.dart';
+import '../app_theme.dart';
 
 IconData blockIcon(String type) => switch (type) {
       'hero' => Icons.web_asset,
@@ -216,6 +217,7 @@ class _PageBlocksScreenState extends State<PageBlocksScreen> {
   Widget _tile(int i) {
     final b = _blocks[i];
     final theme = Theme.of(context);
+    final compact = MediaQuery.sizeOf(context).width < AppTheme.compactWidth;
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
       child: ListTile(
@@ -227,24 +229,31 @@ class _PageBlocksScreenState extends State<PageBlocksScreen> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              tooltip: t.categoryMoveUp,
-              onPressed: i == 0 || _busy ? null : () => _move(i, -1),
-              icon: const Icon(Icons.arrow_upward),
-            ),
-            IconButton(
-              tooltip: t.categoryMoveDown,
-              onPressed: i == _blocks.length - 1 || _busy ? null : () => _move(i, 1),
-              icon: const Icon(Icons.arrow_downward),
-            ),
+            // Sul telefono le frecce stanno nel menu ⋮, così la riga non esce dallo schermo
+            if (!compact) ...[
+              IconButton(
+                tooltip: t.categoryMoveUp,
+                onPressed: i == 0 || _busy ? null : () => _move(i, -1),
+                icon: const Icon(Icons.arrow_upward),
+              ),
+              IconButton(
+                tooltip: t.categoryMoveDown,
+                onPressed: i == _blocks.length - 1 || _busy ? null : () => _move(i, 1),
+                icon: const Icon(Icons.arrow_downward),
+              ),
+            ],
             PopupMenuButton<String>(
               enabled: !_busy,
               onSelected: (action) => switch (action) {
+                'up' => _move(i, -1),
+                'down' => _move(i, 1),
                 'edit' => _edit(b),
                 'toggle' => _toggle(b),
                 _ => _delete(b),
               },
               itemBuilder: (context) => [
+                if (compact && i > 0) PopupMenuItem(value: 'up', child: Text(t.categoryMoveUp)),
+                if (compact && i < _blocks.length - 1) PopupMenuItem(value: 'down', child: Text(t.categoryMoveDown)),
                 PopupMenuItem(value: 'edit', child: Text(t.sectionEdit)),
                 PopupMenuItem(value: 'toggle', child: Text(b.visible ? t.sectionHide : t.sectionShow)),
                 PopupMenuItem(value: 'delete', child: Text(t.delete)),

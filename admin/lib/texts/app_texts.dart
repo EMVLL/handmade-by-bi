@@ -211,6 +211,12 @@ abstract class AppTexts {
   String get seoSection;
   String get noteIdentity;
   String get headerSection;
+  String get colorAuto;
+  String get colorUseAuto;
+  String get shopBadges;
+  String get shopBadgesHint;
+  String get badgesTitle;
+  String get badgesHint;
   String get headerHint;
 
   // Pagina iniziale e sezioni

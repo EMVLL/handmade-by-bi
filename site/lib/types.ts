@@ -61,6 +61,29 @@ export interface HeaderSettings {
   name_font?: string;
   align?: "left" | "center" | "right";
   arrangement?: "row" | "stack";
+  name_style?: TextStyle;
+}
+
+export type TextStyle = "normal" | "italic" | "uppercase" | "italic_uppercase";
+
+/** Etichette sui pezzi (Negozio → Etichette dei pezzi). Colori vuoti = colori del tema. */
+export interface BadgeSettings {
+  show?: boolean;
+  font?: string;
+  text_style?: TextStyle;
+  position?: "top_left" | "top_right" | "bottom_left" | "bottom_right";
+  ready_show?: boolean;
+  ready_text?: string;
+  ready_bg?: string;
+  ready_color?: string;
+  order_show?: boolean;
+  order_text?: string;
+  order_bg?: string;
+  order_color?: string;
+  sold_show?: boolean;
+  sold_text?: string;
+  sold_bg?: string;
+  sold_color?: string;
 }
 
 export interface LiveSite {
@@ -71,6 +94,7 @@ export interface LiveSite {
     contacts: Contacts;
     seo: Seo;
     header?: HeaderSettings;
+    badges?: BadgeSettings;
   };
   pages: SitePage[];
   menu: MenuItem[];

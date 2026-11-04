@@ -33,7 +33,13 @@ class AdminApp extends StatelessWidget {
         color: Theme.of(context).colorScheme.surfaceContainer,
         child: Padding(
           padding: const EdgeInsets.only(bottom: AppTheme.badgeSpace),
-          child: child,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: AppTheme.maxContentWidth),
+              child: child,
+            ),
+          ),
         ),
       ),
       home: const AuthGate(),

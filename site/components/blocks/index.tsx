@@ -32,7 +32,11 @@ const GRID: Record<number, string> = {
 
 function Title({ text, center = false }: { text: string; center?: boolean }) {
   if (!text) return null;
-  return <h2 className={`mb-6 font-heading text-3xl ${center ? "text-center" : ""}`}>{text}</h2>;
+  return (
+    <h2 className={`mb-6 font-heading text-3xl ${center ? "text-center" : ""}`}>
+      {text}
+    </h2>
+  );
 }
 
 // ---------------------------------------------------------------- Copertina
@@ -43,16 +47,33 @@ const hero: Renderer = (p) => {
   const btnText = str(p.button_text);
   const btnLink = str(p.button_link);
   const layout = str(p.layout, "center");
-  const cta = btnText && btnLink ? <SmartLink href={btnLink} className={button}>{btnText}</SmartLink> : null;
+  const cta =
+    btnText && btnLink ? (
+      <SmartLink href={btnLink} className={button}>
+        {btnText}
+      </SmartLink>
+    ) : null;
 
   if (layout === "full_image" && image) {
     return (
       <div className="relative isolate flex min-h-[70vh] items-end">
-        <Image src={image} alt="" fill sizes="100vw" loading="eager" fetchPriority="high" className="-z-10 object-cover" />
+        <Image
+          src={image}
+          alt=""
+          fill
+          sizes="100vw"
+          loading="eager"
+          fetchPriority="high"
+          className="-z-10 object-cover"
+        />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/60 to-black/10" />
         <div className={`${wrap} pb-14 text-white`}>
-          <h1 className="max-w-2xl font-heading text-4xl leading-tight md:text-6xl">{title}</h1>
-          {subtitle && <p className="mt-4 max-w-xl text-lg opacity-90">{subtitle}</p>}
+          <h1 className="max-w-2xl font-heading text-4xl leading-tight md:text-6xl">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="mt-4 max-w-xl text-lg opacity-90">{subtitle}</p>
+          )}
           {cta && <div className="mt-8">{cta}</div>}
         </div>
       </div>
@@ -62,15 +83,27 @@ const hero: Renderer = (p) => {
   const left = layout === "left";
   return (
     <div className={`${wrap} py-14 md:py-20`}>
-      <div className={`grid items-center gap-10 ${image ? "md:grid-cols-2" : ""}`}>
+      <div
+        className={`grid items-center gap-10 ${image ? "md:grid-cols-2" : ""}`}
+      >
         <div className={left || image ? "" : "mx-auto max-w-2xl text-center"}>
-          <h1 className="font-heading text-4xl leading-tight md:text-6xl">{title}</h1>
+          <h1 className="font-heading text-4xl leading-tight md:text-6xl">
+            {title}
+          </h1>
           {subtitle && <p className="mt-4 text-lg opacity-80">{subtitle}</p>}
           {cta && <div className="mt-8">{cta}</div>}
         </div>
         {image && (
           <div className="relative aspect-[4/5] overflow-hidden rounded-site">
-            <Image src={image} alt="" fill sizes="(min-width: 768px) 50vw, 100vw" loading="eager" fetchPriority="high" className="object-cover" />
+            <Image
+              src={image}
+              alt=""
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              loading="eager"
+              fetchPriority="high"
+              className="object-cover"
+            />
           </div>
         )}
       </div>
@@ -114,16 +147,34 @@ const gallery: Renderer = (p) => {
       {carousel ? (
         <div className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2">
           {images.map((src) => (
-            <div key={src} className="relative aspect-square w-4/5 shrink-0 snap-center overflow-hidden rounded-site sm:w-1/3">
-              <Image src={src} alt="" fill sizes="(min-width: 640px) 33vw, 80vw" className="object-cover" />
+            <div
+              key={src}
+              className="relative aspect-square w-4/5 shrink-0 snap-center overflow-hidden rounded-site sm:w-1/3"
+            >
+              <Image
+                src={src}
+                alt=""
+                fill
+                sizes="(min-width: 640px) 33vw, 80vw"
+                className="object-cover"
+              />
             </div>
           ))}
         </div>
       ) : (
         <div className={`grid gap-3 ${GRID[cols] ?? GRID[3]}`}>
           {images.map((src) => (
-            <div key={src} className="relative aspect-square overflow-hidden rounded-site">
-              <Image src={src} alt="" fill sizes="(min-width: 768px) 33vw, 50vw" className="object-cover" />
+            <div
+              key={src}
+              className="relative aspect-square overflow-hidden rounded-site"
+            >
+              <Image
+                src={src}
+                alt=""
+                fill
+                sizes="(min-width: 768px) 33vw, 50vw"
+                className="object-cover"
+              />
             </div>
           ))}
         </div>
@@ -138,10 +189,16 @@ const productGrid: Renderer = (p, ctx) => {
   const sort = str(p.sort, "newest");
   let items = ctx.products;
 
-  if (collection) items = items.filter((x) => x.product_collections?.some((c) => c.collection_id === collection));
-  if (!bool(p.show_sold, true)) items = items.filter((x) => x.status !== "venduto");
+  if (collection)
+    items = items.filter((x) =>
+      x.product_collections?.some((c) => c.collection_id === collection),
+    );
+  if (!bool(p.show_sold, true))
+    items = items.filter((x) => x.status !== "venduto");
 
-  const collPos = (x: Product) => x.product_collections?.find((c) => c.collection_id === collection)?.position ?? 0;
+  const collPos = (x: Product) =>
+    x.product_collections?.find((c) => c.collection_id === collection)
+      ?.position ?? 0;
   items = [...items].sort((a, b) => {
     switch (sort) {
       case "manual":
@@ -163,19 +220,37 @@ const productGrid: Renderer = (p, ctx) => {
     <div className={`${wrap} py-10`}>
       <Title text={str(p.title)} />
       {str(p.style, "ribbon") === "ribbon" ? (
-        <ProductRibbon products={items} showPrice={showPrice} links={bool(p.ribbon_links, false)} />
+        <ProductRibbon
+          products={items}
+          showPrice={showPrice}
+          links={bool(p.ribbon_links, false)}
+          showNames={bool(p.ribbon_names, true)}
+          badges={ctx.site.settings.badges}
+        />
       ) : str(p.style) === "carousel" ? (
         <div className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2">
           {items.map((x) => (
-            <div key={x.id} className="w-2/3 shrink-0 snap-start sm:w-1/3 md:w-1/4">
-              <ProductCard product={x} showPrice={showPrice} />
+            <div
+              key={x.id}
+              className="w-2/3 shrink-0 snap-start sm:w-1/3 md:w-1/4"
+            >
+              <ProductCard
+                product={x}
+                showPrice={showPrice}
+                badges={ctx.site.settings.badges}
+              />
             </div>
           ))}
         </div>
       ) : (
         <div className={`grid gap-x-4 gap-y-8 ${GRID[cols] ?? GRID[3]}`}>
           {items.map((x) => (
-            <ProductCard key={x.id} product={x} showPrice={showPrice} />
+            <ProductCard
+              key={x.id}
+              product={x}
+              showPrice={showPrice}
+              badges={ctx.site.settings.badges}
+            />
           ))}
         </div>
       )}
@@ -191,7 +266,12 @@ const categoryMenu: Renderer = (p, ctx) => {
   return (
     <div className={`${wrap} py-10`}>
       <Title text={settings.title} />
-      <CategoryMenu entries={entries} style={settings.style} columns={settings.columns} shape={settings.shape} />
+      <CategoryMenu
+        entries={entries}
+        style={settings.style}
+        columns={settings.columns}
+        shape={settings.shape}
+      />
     </div>
   );
 };
@@ -206,8 +286,18 @@ const featuredProduct: Renderer = (p, ctx) => {
   return (
     <div className={`${wrap} py-10`}>
       <div className="grid items-center gap-8 md:grid-cols-2">
-        <div className={`relative aspect-square overflow-hidden rounded-site bg-foreground/5 ${right ? "md:order-2" : ""}`}>
-          {image && <Image src={image} alt={product.title} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />}
+        <div
+          className={`relative aspect-square overflow-hidden rounded-site bg-foreground/5 ${right ? "md:order-2" : ""}`}
+        >
+          {image && (
+            <Image
+              src={image}
+              alt={product.title}
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          )}
         </div>
         <div>
           <h2 className="font-heading text-3xl">{product.title}</h2>
@@ -224,7 +314,9 @@ const featuredProduct: Renderer = (p, ctx) => {
 
 // ---------------------------------------------------------------- Recensioni
 const testimonials: Renderer = (p) => {
-  const items = list<{ name?: unknown; text?: unknown }>(p.items).filter((i) => str(i?.text));
+  const items = list<{ name?: unknown; text?: unknown }>(p.items).filter((i) =>
+    str(i?.text),
+  );
   if (!items.length) return null;
   return (
     <div className={`${wrap} py-10`}>
@@ -233,7 +325,9 @@ const testimonials: Renderer = (p) => {
         {items.map((i, idx) => (
           <figure key={idx} className="rounded-site bg-foreground/5 p-6">
             <blockquote className="leading-relaxed">“{str(i.text)}”</blockquote>
-            <figcaption className="mt-4 text-sm font-semibold">{str(i.name)}</figcaption>
+            <figcaption className="mt-4 text-sm font-semibold">
+              {str(i.name)}
+            </figcaption>
           </figure>
         ))}
       </div>
@@ -243,7 +337,9 @@ const testimonials: Renderer = (p) => {
 
 // ---------------------------------------------------------------- FAQ
 const faq: Renderer = (p) => {
-  const items = list<{ question?: unknown; answer?: unknown }>(p.items).filter((i) => str(i?.question));
+  const items = list<{ question?: unknown; answer?: unknown }>(p.items).filter(
+    (i) => str(i?.question),
+  );
   if (!items.length) return null;
   return (
     <div className={`${wrap} py-10`}>
@@ -256,7 +352,9 @@ const faq: Renderer = (p) => {
                 {str(i.question)}
                 <span className="transition group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-3 whitespace-pre-line opacity-80">{str(i.answer)}</p>
+              <p className="mt-3 whitespace-pre-line opacity-80">
+                {str(i.answer)}
+              </p>
             </details>
           ))}
         </div>
@@ -282,7 +380,9 @@ const contact: Renderer = (p, ctx) => {
     <div className={`${wrap} py-12`}>
       <div className="mx-auto max-w-2xl rounded-site bg-foreground/5 px-6 py-10 text-center">
         <Title text={str(p.title)} center />
-        {str(p.text) && <p className="-mt-2 mb-6 text-lg opacity-80">{str(p.text)}</p>}
+        {str(p.text) && (
+          <p className="-mt-2 mb-6 text-lg opacity-80">{str(p.text)}</p>
+        )}
         <div className="flex justify-center">{links}</div>
       </div>
     </div>
@@ -296,14 +396,27 @@ const banner: Renderer = (p) => {
     .map((m) => ({ text: str(m?.text), link: str(m?.link) || undefined }))
     .filter((m) => m.text);
   const messages = [first, ...more].filter((m) => m.text);
-  return <Banner messages={messages} effect={str(p.effect, "static")} speed={str(p.speed, "normal")} style={str(p.style, "info")} />;
+  return (
+    <Banner
+      messages={messages}
+      effect={str(p.effect, "static")}
+      speed={str(p.speed, "normal")}
+      style={str(p.style, "info")}
+    />
+  );
 };
 
 // ---------------------------------------------------------------- Spazio
-const SPACE: Record<string, string> = { small: "h-6", medium: "h-12", large: "h-24" };
+const SPACE: Record<string, string> = {
+  small: "h-6",
+  medium: "h-12",
+  large: "h-24",
+};
 
 const spacer: Renderer = (p) => (
-  <div className={`${wrap} flex items-center ${SPACE[str(p.size)] ?? SPACE.medium}`}>
+  <div
+    className={`${wrap} flex items-center ${SPACE[str(p.size)] ?? SPACE.medium}`}
+  >
     {bool(p.divider, false) && <hr className="w-full border-foreground/10" />}
   </div>
 );

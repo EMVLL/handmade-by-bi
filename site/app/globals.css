@@ -101,3 +101,28 @@ body:has(.preview-root) .site-chrome {
 @media (prefers-reduced-motion: reduce) {
   .marquee-track, .banner-fade, .banner-up { animation: none; }
 }
+
+/* ---- Corsivo / stampatello scelti per titoli e testi di una sezione ---- */
+.blk[data-xst="italic"],
+.blk[data-xst="italic_uppercase"] {
+  font-style: italic;
+}
+.blk[data-xst="uppercase"],
+.blk[data-xst="italic_uppercase"] {
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.blk :is(h1, h2) {
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.blk[data-tst="italic"] :is(h1, h2),
+.blk[data-tst="italic_uppercase"] :is(h1, h2) {
+  font-style: italic;
+}
+.blk[data-tst="uppercase"] :is(h1, h2),
+.blk[data-tst="italic_uppercase"] :is(h1, h2) {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

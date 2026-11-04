@@ -341,15 +341,13 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
   }
 
   Widget _photoStrip() {
-    return SizedBox(
-      height: 108,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: [
-          for (var i = 0; i < _photos.length; i++) _photoTile(i),
-          if (_photos.length < Config.maxPhotos) _addPhotoTile(),
-        ],
-      ),
+    // In griglia: tutte le foto restano dentro lo schermo
+    return Wrap(
+      runSpacing: 8,
+      children: [
+        for (var i = 0; i < _photos.length; i++) _photoTile(i),
+        if (_photos.length < Config.maxPhotos) _addPhotoTile(),
+      ],
     );
   }
 
