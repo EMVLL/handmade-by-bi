@@ -8,21 +8,22 @@ import '../widgets/schema_form.dart';
 import 'block_edit_screen.dart';
 import '../draft.dart';
 import '../app_theme.dart';
+import '../widgets/shrinking_fab.dart';
 
 IconData blockIcon(String type) => switch (type) {
-      'hero' => Icons.web_asset,
-      'category_menu' => Icons.category_outlined,
-      'product_grid' => Icons.grid_view,
-      'featured_product' => Icons.star_outline,
-      'text' => Icons.notes,
-      'gallery' => Icons.photo_library_outlined,
-      'testimonials' => Icons.format_quote,
-      'faq' => Icons.quiz_outlined,
-      'contact' => Icons.chat_outlined,
-      'banner' => Icons.campaign_outlined,
-      'spacer' => Icons.space_bar,
-      _ => Icons.widgets_outlined,
-    };
+  'hero' => Icons.web_asset,
+  'category_menu' => Icons.category_outlined,
+  'product_grid' => Icons.grid_view,
+  'featured_product' => Icons.star_outline,
+  'text' => Icons.notes,
+  'gallery' => Icons.photo_library_outlined,
+  'testimonials' => Icons.format_quote,
+  'faq' => Icons.quiz_outlined,
+  'contact' => Icons.chat_outlined,
+  'banner' => Icons.campaign_outlined,
+  'spacer' => Icons.space_bar,
+  _ => Icons.widgets_outlined,
+};
 
 /// Sezioni della pagina iniziale: ordine, visibilità, modifica, aggiunta.
 /// Ogni modifica viene pubblicata subito.
@@ -33,7 +34,7 @@ class PageBlocksScreen extends StatefulWidget {
   State<PageBlocksScreen> createState() => _PageBlocksScreenState();
 }
 
-class _PageBlocksScreenState extends State<PageBlocksScreen> {
+class _PageBlocksScreenState extends State<PageBlocksScreen> with ShrinkingFab {
   String? _pageId;
   List<PageBlock> _blocks = [];
   Map<String, BlockType> _types = {};
@@ -132,8 +133,10 @@ class _PageBlocksScreenState extends State<PageBlocksScreen> {
     });
   }
 
-  Future<void> _toggle(PageBlock b) =>
-      _run(t.noteSectionVisibility(_label(b)), () => supa.from('blocks').update({'visible': !b.visible}).eq('id', b.id));
+  Future<void> _toggle(PageBlock b) => _run(
+    t.noteSectionVisibility(_label(b)),
+    () => supa.from('blocks').update({'visible': !b.visible}).eq('id', b.id),
+  );
 
   Future<void> _delete(PageBlock b) async {
     final ok = await showDialog<bool>(
@@ -155,7 +158,9 @@ class _PageBlocksScreenState extends State<PageBlocksScreen> {
     final type = _types[b.type];
     if (type == null) return;
     final saved = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => BlockEditScreen(block: b, blockType: type, data: _data)),
+      MaterialPageRoute(
+        builder: (_) => BlockEditScreen(block: b, blockType: type, data: _data),
+      ),
     );
     if (saved == true) await _load();
   }
@@ -276,7 +281,9 @@ class _PageBlocksScreenState extends State<PageBlocksScreen> {
         children: [
           Text(_error!, textAlign: TextAlign.center),
           const SizedBox(height: 16),
-          Center(child: FilledButton(onPressed: _load, child: Text(t.retry))),
+          Center(
+            child: FilledButton(onPressed: _load, child: Text(t.retry)),
+          ),
         ],
       );
     } else {
@@ -296,8 +303,13 @@ class _PageBlocksScreenState extends State<PageBlocksScreen> {
         title: Text(t.homeTitle),
         bottom: _busy ? const PreferredSize(preferredSize: Size.fromHeight(4), child: LinearProgressIndicator()) : null,
       ),
-      body: RefreshIndicator(onRefresh: _load, child: body),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: onScrollForFab,
+        child: RefreshIndicator(onRefresh: _load, child: body),
+      ),
       floatingActionButton: FloatingActionButton.extended(
+        isExtended: fabExtended,
+        tooltip: t.addSection,
         onPressed: _busy || _loading ? null : _add,
         icon: const Icon(Icons.add),
         label: Text(t.addSection),

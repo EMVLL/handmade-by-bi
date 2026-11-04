@@ -10,6 +10,7 @@ import '../texts/app_texts.dart';
 import '../utils.dart';
 import 'block_edit_screen.dart';
 import 'category_edit_screen.dart';
+import '../widgets/shrinking_fab.dart';
 
 /// Categorie del negozio: crea, rinomina, ordina, elimina.
 class CategoriesScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class CategoriesScreen extends StatefulWidget {
   State<CategoriesScreen> createState() => _CategoriesScreenState();
 }
 
-class _CategoriesScreenState extends State<CategoriesScreen> {
+class _CategoriesScreenState extends State<CategoriesScreen> with ShrinkingFab {
   List<ShopCategory> _items = [];
   Map<String, int> _counts = {};
   int _readyCount = 0;
@@ -159,9 +160,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   Future<void> _openEdit(ShopCategory category) async {
-    final saved = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => CategoryEditScreen(category: category)),
-    );
+    final saved = await Navigator.of(
+      context,
+    ).push<bool>(MaterialPageRoute(builder: (_) => CategoryEditScreen(category: category)));
     if (saved == true) await _load();
   }
 
@@ -179,7 +180,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       if (!mounted) return;
       final saved = await Navigator.of(context).push<bool>(
         MaterialPageRoute(
-          builder: (_) => BlockEditScreen(block: PageBlock.fromMap(rows.first), blockType: BlockType.fromMap(type), data: data),
+          builder: (_) =>
+              BlockEditScreen(block: PageBlock.fromMap(rows.first), blockType: BlockType.fromMap(type), data: data),
         ),
       );
       if (saved == true) notifyDraftSaved();
@@ -282,7 +284,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         children: [
           Text(_error!, textAlign: TextAlign.center),
           const SizedBox(height: 16),
-          Center(child: FilledButton(onPressed: _load, child: Text(t.retry))),
+          Center(
+            child: FilledButton(onPressed: _load, child: Text(t.retry)),
+          ),
         ],
       );
     }
@@ -337,8 +341,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   },
                   itemBuilder: (context) => [
                     if (compact && i > 0) PopupMenuItem(value: 'up', child: Text(t.categoryMoveUp)),
-                    if (compact && i < _items.length - 1)
-                      PopupMenuItem(value: 'down', child: Text(t.categoryMoveDown)),
+                    if (compact && i < _items.length - 1) PopupMenuItem(value: 'down', child: Text(t.categoryMoveDown)),
                     PopupMenuItem(value: 'edit', child: Text(t.sectionEdit)),
                     PopupMenuItem(value: 'rename', child: Text(t.categoryRename)),
                     PopupMenuItem(value: 'delete', child: Text(t.delete)),
@@ -355,8 +358,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(t.categoriesTitle)),
-      body: RefreshIndicator(onRefresh: _load, child: _body()),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: onScrollForFab,
+        child: RefreshIndicator(onRefresh: _load, child: _body()),
+      ),
       floatingActionButton: FloatingActionButton.extended(
+        isExtended: fabExtended,
+        tooltip: t.categoryNew,
         onPressed: _busy ? null : _create,
         icon: const Icon(Icons.add),
         label: Text(t.categoryNew),

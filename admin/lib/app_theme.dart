@@ -32,10 +32,10 @@ abstract final class AppTheme {
   static const radius = 12.0;
   static const radiusSmall = 8.0;
 
-  /// Spazio libero in fondo allo schermo per il badge "Powered by Netlify"
-  /// (piano gratuito): tutta l'app sta sopra (vedi main.dart), così il badge
-  /// non copre mai un pulsante. Se un giorno il badge sparisce, basta mettere 0.
-  static const badgeSpace = 56.0;
+  /// Spazio libero in fondo allo schermo per un eventuale badge dell'hosting.
+  /// Su Cloudflare Pages non c'è nessun badge, quindi è 0; se servisse di nuovo
+  /// (es. 56), tutta l'app salirebbe da sola (vedi main.dart).
+  static const badgeSpace = 0.0;
 
   /// Su PC l'app resta una colonna centrata, comoda da leggere;
   /// sul telefono occupa tutto lo schermo.
@@ -52,6 +52,9 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
+      // Elementi più compatti: sul telefono entra di più senza diventare scomodo
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       scaffoldBackgroundColor: AppColors.background,
       inputDecorationTheme: const InputDecorationTheme(
         border: OutlineInputBorder(

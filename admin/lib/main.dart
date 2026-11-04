@@ -29,15 +29,20 @@ class AdminApp extends StatelessWidget {
       supportedLocales: [t.locale],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       // Tutta l'app sta sopra il badge "Powered by Netlify": pulsanti, menu e messaggi compresi.
-      builder: (context, child) => ColoredBox(
-        color: Theme.of(context).colorScheme.surfaceContainer,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: AppTheme.badgeSpace),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: AppTheme.maxContentWidth),
-              child: child,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(textScaler: MediaQuery.textScalerOf(context).clamp(minScaleFactor: 0.9, maxScaleFactor: 1.1)),
+        child: ColoredBox(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: AppTheme.badgeSpace),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: AppTheme.maxContentWidth),
+                child: child,
+              ),
             ),
           ),
         ),

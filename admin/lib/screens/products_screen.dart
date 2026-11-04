@@ -7,6 +7,7 @@ import '../supa.dart';
 import 'product_edit_screen.dart';
 import '../app_theme.dart';
 import '../texts/app_texts.dart';
+import '../widgets/shrinking_fab.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
@@ -15,7 +16,7 @@ class ProductsScreen extends StatefulWidget {
   State<ProductsScreen> createState() => _ProductsScreenState();
 }
 
-class _ProductsScreenState extends State<ProductsScreen> {
+class _ProductsScreenState extends State<ProductsScreen> with ShrinkingFab {
   List<Product> _items = [];
   List<ShopCategory> _categories = [];
 
@@ -146,8 +147,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     }
     return [
       if (p.status != 'venduto') PopupMenuItem(value: 'sold', child: Text(t.actionSold)),
-      if (p.status != 'disponibile')
-        PopupMenuItem(value: 'available', child: Text(t.actionAvailable)),
+      if (p.status != 'disponibile') PopupMenuItem(value: 'available', child: Text(t.actionAvailable)),
       if (p.status != 'nascosto') PopupMenuItem(value: 'hide', child: Text(t.actionHide)),
       PopupMenuItem(value: 'trash', child: Text(t.actionTrash)),
     ];
@@ -184,17 +184,18 @@ class _ProductsScreenState extends State<ProductsScreen> {
   /// Filtri per categoria, sopra l'elenco.
   Widget _filters() {
     Widget chip(String label, String? value) => Padding(
-          padding: const EdgeInsets.only(right: 6),
-          child: ChoiceChip(
-            label: Text(label),
-            selected: _filter == value,
-            onSelected: (_) => setState(() => _filter = value),
-          ),
-        );
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-      child: Wrap(
-        runSpacing: 6,
+      padding: const EdgeInsets.only(right: 6),
+      child: ChoiceChip(
+        label: Text(label),
+        selected: _filter == value,
+        onSelected: (_) => setState(() => _filter = value),
+      ),
+    );
+    // Una sola riga che scorre di lato: la lista dei pezzi resta in vista
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.fromLTRB(16, 4, 10, 4),
+      child: Row(
         children: [
           chip(t.filterAll, null),
           for (final c in _categories) chip(c.name, c.id),
@@ -212,7 +213,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
         children: [
           Text(_error!, textAlign: TextAlign.center),
           const SizedBox(height: 16),
-          Center(child: FilledButton(onPressed: _load, child: Text(t.retry))),
+          Center(
+            child: FilledButton(onPressed: _load, child: Text(t.retry)),
+          ),
         ],
       );
     }
@@ -270,15 +273,22 @@ class _ProductsScreenState extends State<ProductsScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          if (!_trash && !_loading && _error == null && _items.isNotEmpty) _filters(),
-          Expanded(child: RefreshIndicator(onRefresh: _load, child: _body())),
-        ],
+      body: NotificationListener<ScrollNotification>(
+        onNotification: onScrollForFab,
+        child: Column(
+          children: [
+            if (!_trash && !_loading && _error == null && _items.isNotEmpty) _filters(),
+            Expanded(
+              child: RefreshIndicator(onRefresh: _load, child: _body()),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: _trash
           ? null
           : FloatingActionButton.extended(
+              isExtended: fabExtended,
+              tooltip: t.newProduct,
               onPressed: () => _open(null),
               icon: const Icon(Icons.add_a_photo_outlined),
               label: Text(t.newProduct),
