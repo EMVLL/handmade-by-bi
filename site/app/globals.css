@@ -26,6 +26,8 @@ html {
 }
 
 body {
+  /* sicurezza: niente può allargare la pagina oltre lo schermo */
+  overflow-x: clip;
   background: var(--c-background);
   color: var(--c-text);
   font-family: var(--f-body);

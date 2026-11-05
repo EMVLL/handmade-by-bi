@@ -38,7 +38,7 @@ export default async function CategoryView({ slug, site }: { slug: string; site:
       <BackButton />
       <CategoryMenu entries={entries} style="buttons" current={slug} />
       {chosenCover ? (
-        <div className="relative mt-8 flex aspect-[3/1] min-h-44 items-end overflow-hidden rounded-site">
+        <div className="relative mt-8 flex h-44 w-full items-end overflow-hidden rounded-site sm:h-56 md:h-72">
           <Image src={chosenCover} alt="" fill sizes="(min-width: 1024px) 1024px, 100vw" className="object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           <h1 className="relative p-6 font-heading text-4xl text-white md:text-5xl">{info.name}</h1>
