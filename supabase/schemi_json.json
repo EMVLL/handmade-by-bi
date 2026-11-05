@@ -1,0 +1,2233 @@
+{
+    "nota": "Schemi JSON attuali (dopo gli script 001-007): validano i contenuti nel database e generano i moduli dell app. Le chiavi x- (x-label, x-widget, x-group, x-groups, x-order, x-enum-labels) comandano l app.",
+    "impostazioni": [
+        {
+            "key": "badges",
+            "label": "Etichette dei pezzi",
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "show",
+                    "font",
+                    "text_style",
+                    "position",
+                    "ready_show",
+                    "ready_text",
+                    "ready_bg",
+                    "ready_color",
+                    "order_show",
+                    "order_text",
+                    "order_bg",
+                    "order_color",
+                    "sold_show",
+                    "sold_text",
+                    "sold_bg",
+                    "sold_color"
+                ],
+                "x-groups": {
+                    "all": {
+                        "label": "Per tutte le etichette"
+                    },
+                    "sold": {
+                        "label": "Venduto"
+                    },
+                    "order": {
+                        "label": "Su ordinazione"
+                    },
+                    "ready": {
+                        "label": "Disponibile"
+                    }
+                },
+                "properties": {
+                    "font": {
+                        "enum": [
+                            "theme",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ],
+                        "default": "theme",
+                        "x-group": "all",
+                        "x-label": "Carattere",
+                        "x-widget": "font",
+                        "x-enum-labels": [
+                            "Come i testi del sito",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ]
+                    },
+                    "show": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-group": "all",
+                        "x-label": "Mostra le etichette sui pezzi"
+                    },
+                    "sold_bg": {
+                        "type": "string",
+                        "pattern": "^#[0-9a-fA-F]{6}$",
+                        "x-group": "sold",
+                        "x-label": "Colore di sfondo",
+                        "x-widget": "color"
+                    },
+                    "order_bg": {
+                        "type": "string",
+                        "pattern": "^#[0-9a-fA-F]{6}$",
+                        "x-group": "order",
+                        "x-label": "Colore di sfondo",
+                        "x-widget": "color"
+                    },
+                    "position": {
+                        "enum": [
+                            "top_left",
+                            "top_right",
+                            "bottom_left",
+                            "bottom_right"
+                        ],
+                        "default": "top_left",
+                        "x-group": "all",
+                        "x-label": "Posizione sulla foto",
+                        "x-enum-labels": [
+                            "In alto a sinistra",
+                            "In alto a destra",
+                            "In basso a sinistra",
+                            "In basso a destra"
+                        ]
+                    },
+                    "ready_bg": {
+                        "type": "string",
+                        "pattern": "^#[0-9a-fA-F]{6}$",
+                        "x-group": "ready",
+                        "x-label": "Colore di sfondo",
+                        "x-widget": "color"
+                    },
+                    "sold_show": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-group": "sold",
+                        "x-label": "Mostra"
+                    },
+                    "sold_text": {
+                        "type": "string",
+                        "default": "Venduto",
+                        "x-group": "sold",
+                        "x-label": "Testo",
+                        "maxLength": 30,
+                        "minLength": 1
+                    },
+                    "order_show": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-group": "order",
+                        "x-label": "Mostra"
+                    },
+                    "order_text": {
+                        "type": "string",
+                        "default": "Su ordinazione",
+                        "x-group": "order",
+                        "x-label": "Testo",
+                        "maxLength": 30,
+                        "minLength": 1
+                    },
+                    "ready_show": {
+                        "type": "boolean",
+                        "default": false,
+                        "x-group": "ready",
+                        "x-label": "Mostra"
+                    },
+                    "ready_text": {
+                        "type": "string",
+                        "default": "Disponibile",
+                        "x-group": "ready",
+                        "x-label": "Testo",
+                        "maxLength": 30,
+                        "minLength": 1
+                    },
+                    "sold_color": {
+                        "type": "string",
+                        "pattern": "^#[0-9a-fA-F]{6}$",
+                        "x-group": "sold",
+                        "x-label": "Colore del testo",
+                        "x-widget": "color"
+                    },
+                    "text_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "all",
+                        "x-label": "Stile",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "order_color": {
+                        "type": "string",
+                        "pattern": "^#[0-9a-fA-F]{6}$",
+                        "x-group": "order",
+                        "x-label": "Colore del testo",
+                        "x-widget": "color"
+                    },
+                    "ready_color": {
+                        "type": "string",
+                        "pattern": "^#[0-9a-fA-F]{6}$",
+                        "x-group": "ready",
+                        "x-label": "Colore del testo",
+                        "x-widget": "color"
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        {
+            "key": "contacts",
+            "label": "Contatti e canali d'ordine",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "if": {
+                            "required": [
+                                "enabled"
+                            ],
+                            "properties": {
+                                "enabled": {
+                                    "const": true
+                                }
+                            }
+                        },
+                        "then": {
+                            "required": [
+                                "address"
+                            ]
+                        },
+                        "type": "object",
+                        "x-label": "Email",
+                        "properties": {
+                            "address": {
+                                "type": "string",
+                                "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+                                "x-label": "Indirizzo",
+                                "maxLength": 200
+                            },
+                            "enabled": {
+                                "type": "boolean",
+                                "x-label": "Attiva"
+                            },
+                            "body_template": {
+                                "type": "string",
+                                "pattern": "^([^{}]|\\{(prodotto|prezzo|opzione|link)\\})*$",
+                                "x-label": "Testo precompilato",
+                                "x-widget": "template",
+                                "maxLength": 1000
+                            },
+                            "subject_template": {
+                                "type": "string",
+                                "pattern": "^([^{}]|\\{(prodotto|prezzo|opzione|link)\\})*$",
+                                "x-label": "Oggetto precompilato",
+                                "x-widget": "template",
+                                "maxLength": 150
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "vinted": {
+                        "if": {
+                            "required": [
+                                "enabled"
+                            ],
+                            "properties": {
+                                "enabled": {
+                                    "const": true
+                                }
+                            }
+                        },
+                        "then": {
+                            "required": [
+                                "profile_url"
+                            ]
+                        },
+                        "type": "object",
+                        "x-label": "Vinted",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "x-label": "Attivo"
+                            },
+                            "profile_url": {
+                                "type": "string",
+                                "pattern": "^https://(www\\.)?vinted\\.[a-z.]+/",
+                                "x-label": "Link al profilo Vinted",
+                                "maxLength": 300
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "whatsapp": {
+                        "if": {
+                            "required": [
+                                "enabled"
+                            ],
+                            "properties": {
+                                "enabled": {
+                                    "const": true
+                                }
+                            }
+                        },
+                        "then": {
+                            "required": [
+                                "number"
+                            ]
+                        },
+                        "type": "object",
+                        "x-label": "WhatsApp",
+                        "properties": {
+                            "number": {
+                                "type": "string",
+                                "pattern": "^[1-9][0-9]{7,14}$",
+                                "x-label": "Numero con prefisso, senza + (es. 393331234567)"
+                            },
+                            "enabled": {
+                                "type": "boolean",
+                                "x-label": "Attivo"
+                            },
+                            "template": {
+                                "type": "string",
+                                "pattern": "^([^{}]|\\{(prodotto|prezzo|opzione|link)\\})*$",
+                                "x-label": "Messaggio precompilato",
+                                "x-widget": "template",
+                                "maxLength": 500
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "instagram": {
+                        "if": {
+                            "required": [
+                                "enabled"
+                            ],
+                            "properties": {
+                                "enabled": {
+                                    "const": true
+                                }
+                            }
+                        },
+                        "then": {
+                            "required": [
+                                "profile_url"
+                            ]
+                        },
+                        "type": "object",
+                        "x-label": "Instagram",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "x-label": "Attivo"
+                            },
+                            "profile_url": {
+                                "type": "string",
+                                "pattern": "^https://(www\\.)?instagram\\.com/",
+                                "x-label": "Link al profilo Instagram",
+                                "maxLength": 300
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        {
+            "key": "header",
+            "label": "Intestazione",
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "show_logo",
+                    "logo_size",
+                    "show_name",
+                    "name_size",
+                    "name_font",
+                    "name_style",
+                    "align",
+                    "arrangement"
+                ],
+                "properties": {
+                    "align": {
+                        "enum": [
+                            "left",
+                            "center",
+                            "right"
+                        ],
+                        "default": "left",
+                        "x-label": "Posizione",
+                        "x-enum-labels": [
+                            "A sinistra",
+                            "Al centro",
+                            "A destra"
+                        ]
+                    },
+                    "logo_size": {
+                        "enum": [
+                            "s",
+                            "m",
+                            "l",
+                            "xl"
+                        ],
+                        "default": "m",
+                        "x-label": "Grandezza del logo",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande",
+                            "Molto grande"
+                        ]
+                    },
+                    "name_font": {
+                        "enum": [
+                            "theme",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ],
+                        "default": "theme",
+                        "x-label": "Carattere del nome",
+                        "x-widget": "font",
+                        "x-enum-labels": [
+                            "Come i titoli del sito",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ]
+                    },
+                    "name_size": {
+                        "enum": [
+                            "s",
+                            "m",
+                            "l"
+                        ],
+                        "default": "m",
+                        "x-label": "Grandezza del nome",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande"
+                        ]
+                    },
+                    "show_logo": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Mostra il logo"
+                    },
+                    "show_name": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Mostra il nome del negozio"
+                    },
+                    "name_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-label": "Stile del nome",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "arrangement": {
+                        "enum": [
+                            "row",
+                            "stack"
+                        ],
+                        "default": "row",
+                        "x-label": "Logo e nome",
+                        "x-enum-labels": [
+                            "Uno accanto all'altro",
+                            "Logo sopra il nome"
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        {
+            "key": "product_options",
+            "label": "Opzioni prodotto",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "name",
+                        "values"
+                    ],
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "x-label": "Nome opzione (es. Colore)",
+                            "maxLength": 30,
+                            "minLength": 1
+                        },
+                        "values": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "maxLength": 30,
+                                "minLength": 1
+                            },
+                            "x-label": "Valori",
+                            "maxItems": 20,
+                            "minItems": 1
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "maxItems": 5
+            }
+        },
+        {
+            "key": "product_photos",
+            "label": "Foto prodotto",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9/_.-]{1,300}$"
+                },
+                "maxItems": 12
+            }
+        },
+        {
+            "key": "seo",
+            "label": "SEO",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "pattern": "^[a-zA-Z0-9/_.-]{1,300}$",
+                        "x-label": "Immagine di anteprima",
+                        "x-widget": "image"
+                    },
+                    "title": {
+                        "type": "string",
+                        "x-label": "Titolo per Google",
+                        "maxLength": 70
+                    },
+                    "description": {
+                        "type": "string",
+                        "x-label": "Descrizione per Google",
+                        "x-widget": "textarea",
+                        "maxLength": 160
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        {
+            "key": "theme",
+            "label": "Tema",
+            "schema": {
+                "type": "object",
+                "required": [
+                    "primary",
+                    "background",
+                    "text",
+                    "accent",
+                    "font_heading",
+                    "font_body",
+                    "radius"
+                ],
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "pattern": "^#[0-9a-fA-F]{6}$",
+                        "x-label": "Colore del testo",
+                        "x-widget": "color"
+                    },
+                    "accent": {
+                        "type": "string",
+                        "pattern": "^#[0-9a-fA-F]{6}$",
+                        "x-label": "Colore secondario",
+                        "x-widget": "color"
+                    },
+                    "radius": {
+                        "enum": [
+                            "none",
+                            "small",
+                            "medium",
+                            "large"
+                        ],
+                        "x-label": "Angoli",
+                        "x-enum-labels": [
+                            "Squadrati",
+                            "Poco arrotondati",
+                            "Arrotondati",
+                            "Molto arrotondati"
+                        ]
+                    },
+                    "primary": {
+                        "type": "string",
+                        "pattern": "^#[0-9a-fA-F]{6}$",
+                        "x-label": "Colore principale",
+                        "x-widget": "color"
+                    },
+                    "font_body": {
+                        "enum": [
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato",
+                            "Lora"
+                        ],
+                        "x-label": "Font del testo"
+                    },
+                    "background": {
+                        "type": "string",
+                        "pattern": "^#[0-9a-fA-F]{6}$",
+                        "x-label": "Sfondo",
+                        "x-widget": "color"
+                    },
+                    "font_heading": {
+                        "enum": [
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand"
+                        ],
+                        "x-label": "Font dei titoli"
+                    }
+                },
+                "additionalProperties": false
+            }
+        }
+    ],
+    "tipi_di_sezione": [
+        {
+            "type": "hero",
+            "label": "Copertina",
+            "active": true,
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "title",
+                    "subtitle",
+                    "image",
+                    "layout",
+                    "button_text",
+                    "button_link"
+                ],
+                "required": [
+                    "title"
+                ],
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "pattern": "^[a-zA-Z0-9/_.-]{1,300}$",
+                        "x-label": "Immagine",
+                        "x-widget": "image"
+                    },
+                    "title": {
+                        "type": "string",
+                        "default": "Fatto a mano, con amore",
+                        "x-label": "Titolo",
+                        "maxLength": 80,
+                        "minLength": 1
+                    },
+                    "layout": {
+                        "enum": [
+                            "center",
+                            "left",
+                            "full_image"
+                        ],
+                        "default": "center",
+                        "x-label": "Disposizione",
+                        "x-enum-labels": [
+                            "Centrata",
+                            "A sinistra",
+                            "Immagine a tutto schermo"
+                        ]
+                    },
+                    "subtitle": {
+                        "type": "string",
+                        "x-label": "Sottotitolo",
+                        "x-widget": "textarea",
+                        "maxLength": 200
+                    },
+                    "section_bg": {
+                        "enum": [
+                            "none",
+                            "soft",
+                            "primary",
+                            "accent"
+                        ],
+                        "default": "none",
+                        "x-group": "style",
+                        "x-label": "Sfondo della sezione",
+                        "x-enum-labels": [
+                            "Nessuno",
+                            "Leggero",
+                            "Colore principale",
+                            "Colore secondario"
+                        ]
+                    },
+                    "text_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile dei testi",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "title_font": {
+                        "enum": [
+                            "theme",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ],
+                        "default": "theme",
+                        "x-group": "style",
+                        "x-label": "Carattere del titolo",
+                        "x-widget": "font",
+                        "x-enum-labels": [
+                            "Come il resto del sito",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ]
+                    },
+                    "title_size": {
+                        "enum": [
+                            "s",
+                            "m",
+                            "l"
+                        ],
+                        "default": "m",
+                        "x-group": "style",
+                        "x-label": "Grandezza del titolo",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande"
+                        ]
+                    },
+                    "button_link": {
+                        "type": "string",
+                        "pattern": "^(https://|/)[^\\s]{0,299}$",
+                        "x-label": "Link del bottone",
+                        "x-widget": "link"
+                    },
+                    "button_text": {
+                        "type": "string",
+                        "x-label": "Testo del bottone",
+                        "maxLength": 30
+                    },
+                    "title_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile del titolo",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "position": 10
+        },
+        {
+            "type": "text",
+            "label": "Testo",
+            "active": true,
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "title",
+                    "body",
+                    "align"
+                ],
+                "properties": {
+                    "body": {
+                        "type": "string",
+                        "default": "",
+                        "x-label": "Testo",
+                        "x-widget": "textarea",
+                        "maxLength": 5000
+                    },
+                    "align": {
+                        "enum": [
+                            "left",
+                            "center"
+                        ],
+                        "default": "left",
+                        "x-label": "Allineamento",
+                        "x-enum-labels": [
+                            "A sinistra",
+                            "Centrato"
+                        ]
+                    },
+                    "title": {
+                        "type": "string",
+                        "x-label": "Titolo",
+                        "maxLength": 80
+                    },
+                    "section_bg": {
+                        "enum": [
+                            "none",
+                            "soft",
+                            "primary",
+                            "accent"
+                        ],
+                        "default": "none",
+                        "x-group": "style",
+                        "x-label": "Sfondo della sezione",
+                        "x-enum-labels": [
+                            "Nessuno",
+                            "Leggero",
+                            "Colore principale",
+                            "Colore secondario"
+                        ]
+                    },
+                    "text_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile dei testi",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "title_font": {
+                        "enum": [
+                            "theme",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ],
+                        "default": "theme",
+                        "x-group": "style",
+                        "x-label": "Carattere del titolo",
+                        "x-widget": "font",
+                        "x-enum-labels": [
+                            "Come il resto del sito",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ]
+                    },
+                    "title_size": {
+                        "enum": [
+                            "s",
+                            "m",
+                            "l"
+                        ],
+                        "default": "m",
+                        "x-group": "style",
+                        "x-label": "Grandezza del titolo",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande"
+                        ]
+                    },
+                    "title_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile del titolo",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "position": 20
+        },
+        {
+            "type": "gallery",
+            "label": "Galleria foto",
+            "active": true,
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "title",
+                    "images",
+                    "style",
+                    "columns"
+                ],
+                "properties": {
+                    "style": {
+                        "enum": [
+                            "grid",
+                            "carousel"
+                        ],
+                        "default": "grid",
+                        "x-label": "Stile",
+                        "x-enum-labels": [
+                            "Griglia",
+                            "Scorrimento"
+                        ]
+                    },
+                    "title": {
+                        "type": "string",
+                        "x-label": "Titolo",
+                        "maxLength": 80
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9/_.-]{1,300}$"
+                        },
+                        "default": [
+                        ],
+                        "x-label": "Foto",
+                        "maxItems": 24,
+                        "x-widget": "images"
+                    },
+                    "columns": {
+                        "enum": [
+                            2,
+                            3,
+                            4
+                        ],
+                        "default": 3,
+                        "x-label": "Colonne"
+                    },
+                    "section_bg": {
+                        "enum": [
+                            "none",
+                            "soft",
+                            "primary",
+                            "accent"
+                        ],
+                        "default": "none",
+                        "x-group": "style",
+                        "x-label": "Sfondo della sezione",
+                        "x-enum-labels": [
+                            "Nessuno",
+                            "Leggero",
+                            "Colore principale",
+                            "Colore secondario"
+                        ]
+                    },
+                    "text_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile dei testi",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "title_font": {
+                        "enum": [
+                            "theme",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ],
+                        "default": "theme",
+                        "x-group": "style",
+                        "x-label": "Carattere del titolo",
+                        "x-widget": "font",
+                        "x-enum-labels": [
+                            "Come il resto del sito",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ]
+                    },
+                    "title_size": {
+                        "enum": [
+                            "s",
+                            "m",
+                            "l"
+                        ],
+                        "default": "m",
+                        "x-group": "style",
+                        "x-label": "Grandezza del titolo",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande"
+                        ]
+                    },
+                    "title_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile del titolo",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "position": 30
+        },
+        {
+            "type": "category_menu",
+            "label": "Menu categorie",
+            "active": true,
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "title",
+                    "style",
+                    "columns",
+                    "tile_shape",
+                    "show_ready",
+                    "ready_label",
+                    "ready_cover",
+                    "show_other",
+                    "other_label",
+                    "other_cover",
+                    "hide_empty"
+                ],
+                "properties": {
+                    "style": {
+                        "enum": [
+                            "tiles",
+                            "circles",
+                            "carousel",
+                            "buttons"
+                        ],
+                        "default": "tiles",
+                        "x-label": "Aspetto",
+                        "x-enum-labels": [
+                            "Riquadri con foto",
+                            "Cerchi con foto",
+                            "Riquadri a scorrimento",
+                            "Pulsanti"
+                        ]
+                    },
+                    "title": {
+                        "type": "string",
+                        "default": "Scegli una categoria",
+                        "x-label": "Titolo",
+                        "maxLength": 80
+                    },
+                    "columns": {
+                        "enum": [
+                            2,
+                            3,
+                            4
+                        ],
+                        "default": 4,
+                        "x-label": "Riquadri per riga (su computer)"
+                    },
+                    "hide_empty": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Nascondi le categorie vuote"
+                    },
+                    "section_bg": {
+                        "enum": [
+                            "none",
+                            "soft",
+                            "primary",
+                            "accent"
+                        ],
+                        "default": "none",
+                        "x-group": "style",
+                        "x-label": "Sfondo della sezione",
+                        "x-enum-labels": [
+                            "Nessuno",
+                            "Leggero",
+                            "Colore principale",
+                            "Colore secondario"
+                        ]
+                    },
+                    "show_other": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Mostra i pezzi senza categoria"
+                    },
+                    "show_ready": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Mostra i pezzi pronti"
+                    },
+                    "text_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile dei testi",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "tile_shape": {
+                        "enum": [
+                            "square",
+                            "landscape",
+                            "portrait"
+                        ],
+                        "default": "landscape",
+                        "x-label": "Forma dei riquadri",
+                        "x-enum-labels": [
+                            "Quadrati",
+                            "Orizzontali",
+                            "Verticali"
+                        ]
+                    },
+                    "title_font": {
+                        "enum": [
+                            "theme",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ],
+                        "default": "theme",
+                        "x-group": "style",
+                        "x-label": "Carattere del titolo",
+                        "x-widget": "font",
+                        "x-enum-labels": [
+                            "Come il resto del sito",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ]
+                    },
+                    "title_size": {
+                        "enum": [
+                            "s",
+                            "m",
+                            "l"
+                        ],
+                        "default": "m",
+                        "x-group": "style",
+                        "x-label": "Grandezza del titolo",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande"
+                        ]
+                    },
+                    "other_cover": {
+                        "type": "string",
+                        "pattern": "^[a-zA-Z0-9/_.-]{1,300}$",
+                        "x-label": "Foto per i pezzi senza categoria",
+                        "x-widget": "image"
+                    },
+                    "other_label": {
+                        "type": "string",
+                        "default": "Altro",
+                        "x-label": "Nome per i pezzi senza categoria",
+                        "maxLength": 40,
+                        "minLength": 1
+                    },
+                    "ready_cover": {
+                        "type": "string",
+                        "pattern": "^[a-zA-Z0-9/_.-]{1,300}$",
+                        "x-label": "Foto per i pezzi pronti",
+                        "x-widget": "image"
+                    },
+                    "ready_label": {
+                        "type": "string",
+                        "default": "Disponibili in pronta consegna",
+                        "x-label": "Nome per i pezzi pronti",
+                        "maxLength": 40,
+                        "minLength": 1
+                    },
+                    "title_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile del titolo",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "position": 35
+        },
+        {
+            "type": "product_grid",
+            "label": "Griglia prodotti",
+            "active": true,
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "title",
+                    "collection_id",
+                    "style",
+                    "ribbon_links",
+                    "ribbon_names",
+                    "columns",
+                    "limit",
+                    "sort",
+                    "show_price",
+                    "show_sold"
+                ],
+                "properties": {
+                    "sort": {
+                        "enum": [
+                            "manual",
+                            "newest",
+                            "price_asc",
+                            "price_desc"
+                        ],
+                        "default": "newest",
+                        "x-label": "Ordine",
+                        "x-enum-labels": [
+                            "Manuale",
+                            "Più recenti",
+                            "Prezzo crescente",
+                            "Prezzo decrescente"
+                        ]
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "default": 12,
+                        "maximum": 48,
+                        "minimum": 1,
+                        "x-label": "Quanti prodotti mostrare"
+                    },
+                    "style": {
+                        "enum": [
+                            "ribbon",
+                            "grid",
+                            "carousel"
+                        ],
+                        "default": "ribbon",
+                        "x-label": "Aspetto",
+                        "x-enum-labels": [
+                            "Nastro che scorre (solo vetrina)",
+                            "Griglia",
+                            "A scorrimento"
+                        ]
+                    },
+                    "title": {
+                        "type": "string",
+                        "default": "I miei lavori",
+                        "x-label": "Titolo",
+                        "maxLength": 80
+                    },
+                    "columns": {
+                        "enum": [
+                            2,
+                            3,
+                            4
+                        ],
+                        "default": 3,
+                        "x-label": "Colonne"
+                    },
+                    "show_sold": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Mostra anche i venduti"
+                    },
+                    "section_bg": {
+                        "enum": [
+                            "none",
+                            "soft",
+                            "primary",
+                            "accent"
+                        ],
+                        "default": "none",
+                        "x-group": "style",
+                        "x-label": "Sfondo della sezione",
+                        "x-enum-labels": [
+                            "Nessuno",
+                            "Leggero",
+                            "Colore principale",
+                            "Colore secondario"
+                        ]
+                    },
+                    "show_price": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Mostra prezzi"
+                    },
+                    "text_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile dei testi",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "title_font": {
+                        "enum": [
+                            "theme",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ],
+                        "default": "theme",
+                        "x-group": "style",
+                        "x-label": "Carattere del titolo",
+                        "x-widget": "font",
+                        "x-enum-labels": [
+                            "Come il resto del sito",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ]
+                    },
+                    "title_size": {
+                        "enum": [
+                            "s",
+                            "m",
+                            "l"
+                        ],
+                        "default": "m",
+                        "x-group": "style",
+                        "x-label": "Grandezza del titolo",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande"
+                        ]
+                    },
+                    "title_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile del titolo",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "ribbon_links": {
+                        "type": "boolean",
+                        "default": false,
+                        "x-label": "Nel nastro, toccando un lavoro si apre la sua scheda"
+                    },
+                    "ribbon_names": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Nel nastro, mostra i nomi dei lavori"
+                    },
+                    "collection_id": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                        "x-label": "Collezione (vuoto = tutti i prodotti)",
+                        "x-widget": "collection"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "position": 40
+        },
+        {
+            "type": "featured_product",
+            "label": "Prodotto in evidenza",
+            "active": true,
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "product_id",
+                    "text",
+                    "layout"
+                ],
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "x-label": "Testo aggiuntivo",
+                        "x-widget": "textarea",
+                        "maxLength": 300
+                    },
+                    "layout": {
+                        "enum": [
+                            "image_left",
+                            "image_right"
+                        ],
+                        "default": "image_left",
+                        "x-label": "Disposizione",
+                        "x-enum-labels": [
+                            "Foto a sinistra",
+                            "Foto a destra"
+                        ]
+                    },
+                    "product_id": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                        "x-label": "Prodotto",
+                        "x-widget": "product"
+                    },
+                    "section_bg": {
+                        "enum": [
+                            "none",
+                            "soft",
+                            "primary",
+                            "accent"
+                        ],
+                        "default": "none",
+                        "x-group": "style",
+                        "x-label": "Sfondo della sezione",
+                        "x-enum-labels": [
+                            "Nessuno",
+                            "Leggero",
+                            "Colore principale",
+                            "Colore secondario"
+                        ]
+                    },
+                    "text_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile dei testi",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "title_font": {
+                        "enum": [
+                            "theme",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ],
+                        "default": "theme",
+                        "x-group": "style",
+                        "x-label": "Carattere del titolo",
+                        "x-widget": "font",
+                        "x-enum-labels": [
+                            "Come il resto del sito",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ]
+                    },
+                    "title_size": {
+                        "enum": [
+                            "s",
+                            "m",
+                            "l"
+                        ],
+                        "default": "m",
+                        "x-group": "style",
+                        "x-label": "Grandezza del titolo",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande"
+                        ]
+                    },
+                    "title_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile del titolo",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "position": 50
+        },
+        {
+            "type": "testimonials",
+            "label": "Recensioni",
+            "active": true,
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "title",
+                    "items"
+                ],
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "x-order": [
+                                "name",
+                                "text"
+                            ],
+                            "required": [
+                                "name",
+                                "text"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "x-label": "Nome",
+                                    "maxLength": 40,
+                                    "minLength": 1
+                                },
+                                "text": {
+                                    "type": "string",
+                                    "x-label": "Recensione",
+                                    "x-widget": "textarea",
+                                    "maxLength": 400,
+                                    "minLength": 1
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "default": [
+                        ],
+                        "x-label": "Recensioni",
+                        "maxItems": 12
+                    },
+                    "title": {
+                        "type": "string",
+                        "default": "Dicono di me",
+                        "x-label": "Titolo",
+                        "maxLength": 80
+                    },
+                    "section_bg": {
+                        "enum": [
+                            "none",
+                            "soft",
+                            "primary",
+                            "accent"
+                        ],
+                        "default": "none",
+                        "x-group": "style",
+                        "x-label": "Sfondo della sezione",
+                        "x-enum-labels": [
+                            "Nessuno",
+                            "Leggero",
+                            "Colore principale",
+                            "Colore secondario"
+                        ]
+                    },
+                    "text_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile dei testi",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "title_font": {
+                        "enum": [
+                            "theme",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ],
+                        "default": "theme",
+                        "x-group": "style",
+                        "x-label": "Carattere del titolo",
+                        "x-widget": "font",
+                        "x-enum-labels": [
+                            "Come il resto del sito",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ]
+                    },
+                    "title_size": {
+                        "enum": [
+                            "s",
+                            "m",
+                            "l"
+                        ],
+                        "default": "m",
+                        "x-group": "style",
+                        "x-label": "Grandezza del titolo",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande"
+                        ]
+                    },
+                    "title_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile del titolo",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "position": 60
+        },
+        {
+            "type": "faq",
+            "label": "Domande frequenti",
+            "active": true,
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "title",
+                    "items"
+                ],
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "x-order": [
+                                "question",
+                                "answer"
+                            ],
+                            "required": [
+                                "question",
+                                "answer"
+                            ],
+                            "properties": {
+                                "answer": {
+                                    "type": "string",
+                                    "x-label": "Risposta",
+                                    "x-widget": "textarea",
+                                    "maxLength": 1000,
+                                    "minLength": 1
+                                },
+                                "question": {
+                                    "type": "string",
+                                    "x-label": "Domanda",
+                                    "maxLength": 150,
+                                    "minLength": 1
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "default": [
+                        ],
+                        "x-label": "Domande",
+                        "maxItems": 20
+                    },
+                    "title": {
+                        "type": "string",
+                        "default": "Domande frequenti",
+                        "x-label": "Titolo",
+                        "maxLength": 80
+                    },
+                    "section_bg": {
+                        "enum": [
+                            "none",
+                            "soft",
+                            "primary",
+                            "accent"
+                        ],
+                        "default": "none",
+                        "x-group": "style",
+                        "x-label": "Sfondo della sezione",
+                        "x-enum-labels": [
+                            "Nessuno",
+                            "Leggero",
+                            "Colore principale",
+                            "Colore secondario"
+                        ]
+                    },
+                    "text_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile dei testi",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "title_font": {
+                        "enum": [
+                            "theme",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ],
+                        "default": "theme",
+                        "x-group": "style",
+                        "x-label": "Carattere del titolo",
+                        "x-widget": "font",
+                        "x-enum-labels": [
+                            "Come il resto del sito",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ]
+                    },
+                    "title_size": {
+                        "enum": [
+                            "s",
+                            "m",
+                            "l"
+                        ],
+                        "default": "m",
+                        "x-group": "style",
+                        "x-label": "Grandezza del titolo",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande"
+                        ]
+                    },
+                    "title_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile del titolo",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "position": 70
+        },
+        {
+            "type": "contact",
+            "label": "Contatti",
+            "active": true,
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "title",
+                    "text",
+                    "show_whatsapp",
+                    "show_email",
+                    "show_vinted",
+                    "show_instagram"
+                ],
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "x-label": "Testo",
+                        "x-widget": "textarea",
+                        "maxLength": 500
+                    },
+                    "title": {
+                        "type": "string",
+                        "default": "Scrivimi",
+                        "x-label": "Titolo",
+                        "maxLength": 80
+                    },
+                    "section_bg": {
+                        "enum": [
+                            "none",
+                            "soft",
+                            "primary",
+                            "accent"
+                        ],
+                        "default": "none",
+                        "x-group": "style",
+                        "x-label": "Sfondo della sezione",
+                        "x-enum-labels": [
+                            "Nessuno",
+                            "Leggero",
+                            "Colore principale",
+                            "Colore secondario"
+                        ]
+                    },
+                    "show_email": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Mostra email"
+                    },
+                    "text_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile dei testi",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "title_font": {
+                        "enum": [
+                            "theme",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ],
+                        "default": "theme",
+                        "x-group": "style",
+                        "x-label": "Carattere del titolo",
+                        "x-widget": "font",
+                        "x-enum-labels": [
+                            "Come il resto del sito",
+                            "Fraunces",
+                            "Playfair Display",
+                            "Lora",
+                            "DM Serif Display",
+                            "Nunito",
+                            "Quicksand",
+                            "DM Sans",
+                            "Lato"
+                        ]
+                    },
+                    "title_size": {
+                        "enum": [
+                            "s",
+                            "m",
+                            "l"
+                        ],
+                        "default": "m",
+                        "x-group": "style",
+                        "x-label": "Grandezza del titolo",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande"
+                        ]
+                    },
+                    "show_vinted": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Mostra Vinted"
+                    },
+                    "title_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile del titolo",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    },
+                    "show_whatsapp": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Mostra WhatsApp"
+                    },
+                    "show_instagram": {
+                        "type": "boolean",
+                        "default": true,
+                        "x-label": "Mostra Instagram"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "position": 80
+        },
+        {
+            "type": "banner",
+            "label": "Avviso",
+            "active": true,
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "text",
+                    "link",
+                    "messages",
+                    "effect",
+                    "speed",
+                    "style"
+                ],
+                "required": [
+                    "text"
+                ],
+                "properties": {
+                    "link": {
+                        "type": "string",
+                        "pattern": "^(https://|/)[^\\s]{0,299}$",
+                        "x-label": "Link (facoltativo)",
+                        "x-widget": "link"
+                    },
+                    "text": {
+                        "type": "string",
+                        "default": "Spedizioni in tutta Italia",
+                        "x-label": "Messaggio",
+                        "maxLength": 140,
+                        "minLength": 1
+                    },
+                    "speed": {
+                        "enum": [
+                            "slow",
+                            "normal",
+                            "fast"
+                        ],
+                        "default": "normal",
+                        "x-label": "Velocità",
+                        "x-enum-labels": [
+                            "Lenta",
+                            "Normale",
+                            "Veloce"
+                        ]
+                    },
+                    "style": {
+                        "enum": [
+                            "info",
+                            "highlight",
+                            "sale"
+                        ],
+                        "default": "info",
+                        "x-label": "Stile",
+                        "x-enum-labels": [
+                            "Informazione",
+                            "In evidenza",
+                            "Saldi"
+                        ]
+                    },
+                    "effect": {
+                        "enum": [
+                            "static",
+                            "marquee",
+                            "fade",
+                            "slide"
+                        ],
+                        "default": "static",
+                        "x-label": "Effetto",
+                        "x-enum-labels": [
+                            "Fisso",
+                            "Scorre da destra a sinistra",
+                            "Cambia in dissolvenza",
+                            "Cambia salendo dal basso"
+                        ]
+                    },
+                    "messages": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "x-order": [
+                                "text",
+                                "link"
+                            ],
+                            "required": [
+                                "text"
+                            ],
+                            "properties": {
+                                "link": {
+                                    "type": "string",
+                                    "pattern": "^(https://|/)[^\\s]{0,299}$",
+                                    "x-label": "Link (facoltativo)",
+                                    "x-widget": "link"
+                                },
+                                "text": {
+                                    "type": "string",
+                                    "x-label": "Messaggio",
+                                    "maxLength": 140,
+                                    "minLength": 1
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "default": [
+                        ],
+                        "x-label": "Altri messaggi (si alternano con il primo)",
+                        "maxItems": 6
+                    },
+                    "text_style": {
+                        "enum": [
+                            "normal",
+                            "italic",
+                            "uppercase",
+                            "italic_uppercase"
+                        ],
+                        "default": "normal",
+                        "x-group": "style",
+                        "x-label": "Stile del testo",
+                        "x-enum-labels": [
+                            "Normale",
+                            "Corsivo",
+                            "Stampatello",
+                            "Corsivo stampatello"
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "position": 90
+        },
+        {
+            "type": "spacer",
+            "label": "Spazio",
+            "active": true,
+            "schema": {
+                "type": "object",
+                "x-order": [
+                    "size",
+                    "divider"
+                ],
+                "properties": {
+                    "size": {
+                        "enum": [
+                            "small",
+                            "medium",
+                            "large"
+                        ],
+                        "default": "medium",
+                        "x-label": "Altezza",
+                        "x-enum-labels": [
+                            "Piccolo",
+                            "Medio",
+                            "Grande"
+                        ]
+                    },
+                    "divider": {
+                        "type": "boolean",
+                        "default": false,
+                        "x-label": "Mostra una linea"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "position": 100
+        }
+    ]
+}
