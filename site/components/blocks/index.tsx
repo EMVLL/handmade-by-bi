@@ -84,7 +84,7 @@ const hero: Renderer = (p) => {
   return (
     <div className={`${wrap} py-14 md:py-20`}>
       <div
-        className={`grid items-center gap-10 ${image ? "md:grid-cols-2" : ""}`}
+        className={`grid grid-cols-1 items-center gap-10 ${image ? "md:grid-cols-2" : ""}`}
       >
         <div className={left || image ? "" : "mx-auto max-w-2xl text-center"}>
           <h1 className="font-heading text-4xl leading-tight md:text-6xl">
@@ -285,7 +285,7 @@ const featuredProduct: Renderer = (p, ctx) => {
   const extra = str(p.text);
   return (
     <div className={`${wrap} py-10`}>
-      <div className="grid items-center gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
         <div
           className={`relative aspect-square overflow-hidden rounded-site bg-foreground/5 ${right ? "md:order-2" : ""}`}
         >
@@ -321,7 +321,7 @@ const testimonials: Renderer = (p) => {
   return (
     <div className={`${wrap} py-10`}>
       <Title text={str(p.title)} center />
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {items.map((i, idx) => (
           <figure key={idx} className="rounded-site bg-foreground/5 p-6">
             <blockquote className="leading-relaxed">“{str(i.text)}”</blockquote>

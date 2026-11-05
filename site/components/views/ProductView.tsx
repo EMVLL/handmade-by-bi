@@ -28,7 +28,9 @@ export default async function ProductView({
   return (
     <>
       <BackButton />
-      <div className="grid gap-10 md:grid-cols-2">
+      {/* grid-cols-1 = colonna che non si allarga mai oltre lo schermo:
+          senza, le miniature (tante foto) spingevano fuori la foto grande */}
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
         <ProductGallery images={images} alt={product.title} />
         <div>
           <h1 className="font-heading text-4xl leading-tight">

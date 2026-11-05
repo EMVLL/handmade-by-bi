@@ -15,7 +15,7 @@ export default function ProductGallery({ images, alt }: { images: string[]; alt:
   }
 
   return (
-    <div className="space-y-3">
+    <div className="min-w-0 space-y-3">
       <div className="relative aspect-square overflow-hidden rounded-site bg-foreground/5">
         <Image
           src={images[current]}
