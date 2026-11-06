@@ -68,6 +68,8 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
   late final TextEditingController _price;
   late final TextEditingController _compare;
   late final TextEditingController _vinted;
+  late final TextEditingController _leadTime;
+  late bool _showLeadTime;
   late String _status;
   final List<_Photo> _photos = [];
   final List<_OptionDraft> _options = [];
@@ -90,6 +92,8 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     _compare = TextEditingController(
         text: p?.compareAtPrice == null ? '' : formatNumber(p!.compareAtPrice!));
     _vinted = TextEditingController(text: p?.vintedUrl ?? '');
+    _leadTime = TextEditingController(text: p?.leadTime ?? '');
+    _showLeadTime = p?.showLeadTime ?? false;
     _status = p?.status ?? 'disponibile';
     _categoryIds = {...?p?.categoryIds, if (p == null) ...widget.initialCategoryIds};
     _loadCategories();
@@ -100,7 +104,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
 
   @override
   void dispose() {
-    for (final c in [_title, _description, _price, _compare, _vinted]) {
+    for (final c in [_title, _description, _price, _compare, _vinted, _leadTime]) {
       c.dispose();
     }
     for (final o in [..._options, ..._removedOptions]) {
@@ -550,6 +554,13 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     return null;
   }
 
+  String? _validateLeadTime(String? value) {
+    final text = value?.trim() ?? '';
+    if (text.isEmpty) return _showLeadTime ? t.errLeadTimeRequired : null;
+    if (text.length > 80) return t.errLeadTimeLength(80);
+    return null;
+  }
+
   String? _validateVinted(String? value) {
     final text = value?.trim() ?? '';
     if (text.isEmpty) return null;
@@ -621,6 +632,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
 
       if (mounted) setState(() => _progress = t.progressSaving);
       final vinted = _vinted.text.trim();
+      final leadTime = _leadTime.text.trim();
       final data = <String, dynamic>{
         'title': _title.text.trim(),
         'description': _description.text.trim(),
@@ -633,6 +645,9 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
             {'name': o.name.text.trim(), 'values': o.values},
         ],
         'vinted_url': vinted.isEmpty ? null : vinted,
+        // il testo resta salvato anche a interruttore spento, così non va riscritto
+        'lead_time': leadTime.isEmpty ? null : leadTime,
+        'show_lead_time': _showLeadTime,
       };
 
       final String productId;
@@ -764,6 +779,25 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                       ),
                   ],
                 ),
+                _section(t.leadTimeSection, t.leadTimeHint),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(t.leadTimeShow),
+                  value: _showLeadTime,
+                  onChanged: (v) => setState(() => _showLeadTime = v),
+                ),
+                // Il campo compare solo con l'interruttore acceso.
+                if (_showLeadTime)
+                  TextFormField(
+                    controller: _leadTime,
+                    maxLength: 80,
+                    decoration: InputDecoration(
+                      labelText: t.leadTimeField,
+                      hintText: t.leadTimeExample,
+                      helperText: t.leadTimeHelp,
+                    ),
+                    validator: _validateLeadTime,
+                  ),
                 _section(t.optionsSection, t.optionsHint),
                 _optionsEditor(),
                 _section(t.vintedSection, t.vintedHint),

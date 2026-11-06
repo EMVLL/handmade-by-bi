@@ -21,6 +21,8 @@ export default async function ProductView({
   const product = await getProduct(slug);
   if (!product || !site) notFound();
 
+  const leadTime = product.show_lead_time ? product.lead_time?.trim() : "";
+
   const images = product.photos
     .map((p) => mediaUrl(p))
     .filter((u): u is string => Boolean(u));
@@ -40,6 +42,11 @@ export default async function ProductView({
           <div className="mt-3">
             <StatusPill status={product.status} settings={site.settings.badges} />
           </div>
+          {leadTime ? (
+            <p className="mt-3 opacity-80">
+              Tempi di realizzazione: <span className="font-semibold">{leadTime}</span>
+            </p>
+          ) : null}
           <div className="mt-6 space-y-4 leading-relaxed">
             {paragraphs(product.description).map((para, i) => (
               <p key={i} className="whitespace-pre-line">

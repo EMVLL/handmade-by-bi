@@ -43,7 +43,7 @@ export async function getProducts(): Promise<Product[]> {
     supabase
       .from("products")
       .select(
-        "id, slug, title, description, price, compare_at_price, status, photos, options, vinted_url, position, created_at, product_collections(collection_id, position)",
+        "id, slug, title, description, price, compare_at_price, status, photos, options, vinted_url, lead_time, show_lead_time, position, created_at, product_collections(collection_id, position)",
       )
       .order("position", { ascending: true })
       .order("created_at", { ascending: false }),

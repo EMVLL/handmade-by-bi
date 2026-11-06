@@ -207,6 +207,23 @@ class AppTextsIt implements AppTexts {
   String get optionAdd => 'Aggiungi opzione';
 
   @override
+  String get leadTimeSection => 'Tempi di realizzazione';
+  @override
+  String get leadTimeHint => 'Quanto ci vuole per realizzarlo. Sul sito compare sotto il prezzo.';
+  @override
+  String get leadTimeShow => 'Mostra sul sito';
+  @override
+  String get leadTimeField => 'Tempi di realizzazione';
+  @override
+  String get leadTimeExample => 'es. 7–10 giorni';
+  @override
+  String get leadTimeHelp => 'Sul sito: «Tempi di realizzazione: 7–10 giorni»';
+  @override
+  String get errLeadTimeRequired => 'Scrivi i tempi, es. 7–10 giorni';
+  @override
+  String errLeadTimeLength(int max) => 'Al massimo $max caratteri';
+
+  @override
   String get vintedSection => 'Vinted';
   @override
   String get vintedHint => 'Se il pezzo è anche in vendita su Vinted.';

@@ -27,6 +27,8 @@ class Product {
     required this.photos,
     required this.options,
     required this.vintedUrl,
+    required this.leadTime,
+    required this.showLeadTime,
     required this.deletedAt,
     required this.categoryIds,
   });
@@ -44,6 +46,8 @@ class Product {
             .map((o) => ProductOption.fromMap(Map<String, dynamic>.from(o as Map)))
             .toList(),
         vintedUrl: map['vinted_url'] as String?,
+        leadTime: map['lead_time'] as String?,
+        showLeadTime: (map['show_lead_time'] as bool?) ?? false,
         deletedAt: map['deleted_at'] == null ? null : DateTime.tryParse(map['deleted_at'] as String),
         categoryIds: ((map['product_collections'] as List?) ?? const [])
             .map((pc) => (pc as Map)['collection_id'] as String)
@@ -60,6 +64,10 @@ class Product {
   final List<String> photos;
   final List<ProductOption> options;
   final String? vintedUrl;
+
+  /// Tempi di realizzazione (es. "7–10 giorni") e se mostrarli sul sito.
+  final String? leadTime;
+  final bool showLeadTime;
   final DateTime? deletedAt;
 
   /// Categorie scelte da Benedetta (tabella product_collections).

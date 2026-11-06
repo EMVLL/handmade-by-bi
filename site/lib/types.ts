@@ -118,6 +118,9 @@ export interface Product {
   photos: string[];
   options: ProductOption[];
   vinted_url: string | null;
+  /** Tempi di realizzazione, es. "7–10 giorni" (script 008) */
+  lead_time: string | null;
+  show_lead_time: boolean;
   position: number;
   created_at: string;
   product_collections: { collection_id: string; position: number }[];

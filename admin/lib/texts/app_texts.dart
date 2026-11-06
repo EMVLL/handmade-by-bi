@@ -119,6 +119,15 @@ abstract class AppTexts {
   String get optionRemove;
   String get optionAdd;
 
+  String get leadTimeSection;
+  String get leadTimeHint;
+  String get leadTimeShow;
+  String get leadTimeField;
+  String get leadTimeExample;
+  String get leadTimeHelp;
+  String get errLeadTimeRequired;
+  String errLeadTimeLength(int max);
+
   String get vintedSection;
   String get vintedHint;
   String get vintedField;
