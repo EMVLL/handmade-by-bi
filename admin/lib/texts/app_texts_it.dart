@@ -346,6 +346,8 @@ class AppTextsIt implements AppTexts {
   @override
   String get stylePresets => 'Stili pronti';
   @override
+  String get styleFontsSection => 'Caratteri e angoli';
+  @override
   String get styleColors => 'Colori';
   @override
   String get colorPrimary => 'Colore principale';
@@ -399,6 +401,8 @@ class AppTextsIt implements AppTexts {
   String get logo => 'Logo';
   @override
   String get logoHint => 'Se non metti un logo, in alto compare il nome del negozio.';
+  @override
+  String get identityBrandSection => 'Nome e logo';
   @override
   String get seoSection => 'Come appare su Google e quando condividi il link';
   @override
@@ -479,7 +483,11 @@ class AppTextsIt implements AppTexts {
 
   // Modulo di una sezione
   @override
-  String get formStyleSection => 'Aspetto: sfondo e carattere del titolo';
+  String get formStyleSection => 'Aspetto della sezione';
+  @override
+  String get formStyleHint => 'Sfondo, caratteri, grandezza e stile di titoli e testi';
+  @override
+  String get formContentSection => 'Contenuto';
   @override
   String get fieldRequired => 'Questo campo serve';
   @override
@@ -532,6 +540,8 @@ class AppTextsIt implements AppTexts {
   // Categoria
   @override
   String get categoryEditTitle => 'Categoria';
+  @override
+  String get categoryDetailsSection => 'Nome, foto e descrizione';
   @override
   String get categoryDescription => 'Descrizione (compare sotto il titolo della categoria)';
   @override

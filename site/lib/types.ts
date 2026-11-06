@@ -84,6 +84,8 @@ export interface BadgeSettings {
   sold_text?: string;
   sold_bg?: string;
   sold_color?: string;
+  /** Tempi di realizzazione anche nei riquadri dei pezzi (script 009) */
+  lead_time_cards?: boolean;
 }
 
 export interface LiveSite {

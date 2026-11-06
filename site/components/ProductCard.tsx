@@ -31,6 +31,9 @@ export default function ProductCard({
   badges?: BadgeSettings;
 }) {
   const img = mediaUrl(product.photos?.[0]);
+  // Tempi di realizzazione: interruttore generale in "Etichette dei pezzi" + quello del pezzo
+  const leadTime =
+    badges?.lead_time_cards && product.show_lead_time ? product.lead_time?.trim() : "";
   return (
     <Link href={`/prodotti/${product.slug}`} className="group block">
       <div className="relative aspect-square overflow-hidden rounded-site bg-foreground/5">
@@ -51,6 +54,7 @@ export default function ProductCard({
       </div>
       <h3 className="mt-3 font-heading text-lg leading-snug">{product.title}</h3>
       {showPrice && <PriceLine product={product} className="mt-1" />}
+      {leadTime ? <p className="mt-1 text-sm opacity-70">Realizzazione: {leadTime}</p> : null}
     </Link>
   );
 }

@@ -5,6 +5,7 @@ import '../config.dart';
 import '../supa.dart';
 import '../draft.dart';
 import '../texts/app_texts.dart';
+import '../widgets/section_card.dart';
 
 final _phonePattern = RegExp(r'^[1-9][0-9]{7,14}$');
 final _templatePattern = RegExp(r'^([^{}]|\{(prodotto|prezzo|opzione|link)\})*$');
@@ -322,7 +323,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
     required ValueChanged<bool> onChanged,
     required List<Widget> children,
   }) {
-    return Card(
+    return SectionFrame(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
@@ -331,7 +332,7 @@ class _ChannelsScreenState extends State<ChannelsScreen> {
           children: [
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: Text(title),
+              title: Text(title, style: sectionTitleStyle(context)),
               subtitle: Text(subtitle),
               value: value,
               onChanged: onChanged,

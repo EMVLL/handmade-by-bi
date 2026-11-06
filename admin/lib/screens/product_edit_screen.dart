@@ -9,6 +9,7 @@ import '../models.dart';
 import '../supa.dart';
 import '../utils.dart';
 import '../widgets/color_dot.dart';
+import '../widgets/section_card.dart';
 import '../app_theme.dart';
 import '../color_names.dart';
 import '../texts/app_texts.dart';
@@ -685,24 +686,6 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
 
   // ------------------------------------------------------------------ interfaccia
 
-  Widget _section(String title, [String? hint]) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: 24, bottom: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: theme.textTheme.titleMedium),
-          if (hint != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Text(hint, style: theme.textTheme.bodySmall),
-            ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     const decimal = TextInputType.numberWithOptions(decimal: true);
@@ -717,96 +700,125 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
               children: [
-                _section(t.photosSection, t.photosHint),
-                _photoStrip(),
-                _section(t.productSection),
-                TextFormField(
-                  controller: _title,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(labelText: t.fieldName),
-                  validator: _validateTitle,
+                SectionCard(
+                  title: t.photosSection,
+                  hint: t.photosHint,
+                  children: [_photoStrip()],
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _description,
-                  textCapitalization: TextCapitalization.sentences,
-                  minLines: 3,
-                  maxLines: 10,
-                  decoration: InputDecoration(labelText: t.fieldDescription, alignLabelWithHint: true),
-                  validator: _validateDescription,
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                SectionCard(
+                  title: t.productSection,
                   children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _price,
-                        keyboardType: decimal,
-                        decoration: InputDecoration(
-                          labelText: t.fieldPrice,
-                          helperText: t.fieldPriceHelp,
-                        ),
-                        validator: _validatePrice,
-                      ),
+                    TextFormField(
+                      controller: _title,
+                      textCapitalization: TextCapitalization.sentences,
+                      decoration: InputDecoration(labelText: t.fieldName),
+                      validator: _validateTitle,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _compare,
-                        keyboardType: decimal,
-                        decoration: InputDecoration(
-                          labelText: t.fieldCompare,
-                          helperText: t.fieldCompareHelp,
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _description,
+                      textCapitalization: TextCapitalization.sentences,
+                      minLines: 3,
+                      maxLines: 10,
+                      decoration: InputDecoration(labelText: t.fieldDescription, alignLabelWithHint: true),
+                      validator: _validateDescription,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _price,
+                            keyboardType: decimal,
+                            decoration: InputDecoration(
+                              labelText: t.fieldPrice,
+                              helperText: t.fieldPriceHelp,
+                            ),
+                            validator: _validatePrice,
+                          ),
                         ),
-                        validator: _validateCompare,
-                      ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _compare,
+                            keyboardType: decimal,
+                            decoration: InputDecoration(
+                              labelText: t.fieldCompare,
+                              helperText: t.fieldCompareHelp,
+                            ),
+                            validator: _validateCompare,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                _section(t.editCategoriesSection, t.editCategoriesHint),
-                _categoriesPicker(),
-                _section(t.statusSection),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                SectionCard(
+                  title: t.editCategoriesSection,
+                  hint: t.editCategoriesHint,
+                  children: [_categoriesPicker()],
+                ),
+                SectionCard(
+                  title: t.statusSection,
                   children: [
-                    for (final s in productStatuses)
-                      ChoiceChip(
-                        label: Text(t.statusLabel(s)),
-                        selected: _status == s,
-                        onSelected: (_) => setState(() => _status = s),
-                      ),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final s in productStatuses)
+                          ChoiceChip(
+                            label: Text(t.statusLabel(s)),
+                            selected: _status == s,
+                            onSelected: (_) => setState(() => _status = s),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
-                _section(t.leadTimeSection, t.leadTimeHint),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(t.leadTimeShow),
-                  value: _showLeadTime,
-                  onChanged: (v) => setState(() => _showLeadTime = v),
-                ),
-                // Il campo compare solo con l'interruttore acceso.
-                if (_showLeadTime)
-                  TextFormField(
-                    controller: _leadTime,
-                    maxLength: 80,
-                    decoration: InputDecoration(
-                      labelText: t.leadTimeField,
-                      hintText: t.leadTimeExample,
-                      helperText: t.leadTimeHelp,
+                SectionCard(
+                  title: t.leadTimeSection,
+                  hint: t.leadTimeHint,
+                  children: [
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(t.leadTimeShow),
+                      value: _showLeadTime,
+                      onChanged: (v) => setState(() => _showLeadTime = v),
                     ),
-                    validator: _validateLeadTime,
-                  ),
-                _section(t.optionsSection, t.optionsHint),
-                _optionsEditor(),
-                _section(t.vintedSection, t.vintedHint),
-                TextFormField(
-                  controller: _vinted,
-                  keyboardType: TextInputType.url,
-                  autocorrect: false,
-                  decoration: InputDecoration(labelText: t.vintedField),
-                  validator: _validateVinted,
+                    // Il campo compare solo con l'interruttore acceso.
+                    if (_showLeadTime) ...[
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _leadTime,
+                        maxLength: 80,
+                        decoration: InputDecoration(
+                          labelText: t.leadTimeField,
+                          hintText: t.leadTimeExample,
+                          helperText: t.leadTimeHelp,
+                        ),
+                        validator: _validateLeadTime,
+                      ),
+                    ],
+                  ],
+                ),
+                SectionCard(
+                  title: t.optionsSection,
+                  hint: t.optionsHint,
+                  children: [_optionsEditor()],
+                ),
+                SectionCard(
+                  title: t.vintedSection,
+                  hint: t.vintedHint,
+                  children: [
+                    TextFormField(
+                      controller: _vinted,
+                      keyboardType: TextInputType.url,
+                      autocorrect: false,
+                      decoration: InputDecoration(labelText: t.vintedField),
+                      validator: _validateVinted,
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../config.dart';
 import '../texts/app_texts.dart';
+import '../widgets/section_card.dart';
 import 'badges_screen.dart';
 import 'history_screen.dart';
 import 'identity_screen.dart';
@@ -16,7 +17,7 @@ class ShopScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    Widget entry(IconData icon, String title, String subtitle, Widget Function() page) => Card(
+    Widget entry(IconData icon, String title, String subtitle, Widget Function() page) => SectionFrame(
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -24,7 +25,7 @@ class ShopScreen extends StatelessWidget {
               backgroundColor: theme.colorScheme.primaryContainer,
               child: Icon(icon, color: theme.colorScheme.onPrimaryContainer),
             ),
-            title: Text(title, style: theme.textTheme.titleMedium),
+            title: Text(title, style: sectionTitleStyle(context)),
             subtitle: Text(subtitle),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => page())),

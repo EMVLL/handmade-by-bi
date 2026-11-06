@@ -26,12 +26,22 @@ class _IdentityScreenState extends State<IdentityScreen> {
   Map<String, dynamic> get _schema => {
         'required': ['site_name'],
         'x-order': ['site_name', 'logo_path', 'seo_title', 'seo_description', 'seo_image'],
+        'x-groups': {
+          'brand': {'label': t.identityBrandSection, 'hint': t.logoHint},
+          'seo': {'label': t.seoSection},
+        },
         'properties': {
-          'site_name': {'type': 'string', 'maxLength': 60, 'x-label': t.siteName},
-          'logo_path': {'type': 'string', 'x-widget': 'image', 'x-label': t.logo},
-          'seo_title': {'type': 'string', 'maxLength': 70, 'x-label': t.seoTitle},
-          'seo_description': {'type': 'string', 'maxLength': 160, 'x-widget': 'textarea', 'x-label': t.seoDescription},
-          'seo_image': {'type': 'string', 'x-widget': 'image', 'x-label': t.seoImage},
+          'site_name': {'type': 'string', 'maxLength': 60, 'x-label': t.siteName, 'x-group': 'brand'},
+          'logo_path': {'type': 'string', 'x-widget': 'image', 'x-label': t.logo, 'x-group': 'brand'},
+          'seo_title': {'type': 'string', 'maxLength': 70, 'x-label': t.seoTitle, 'x-group': 'seo'},
+          'seo_description': {
+            'type': 'string',
+            'maxLength': 160,
+            'x-widget': 'textarea',
+            'x-label': t.seoDescription,
+            'x-group': 'seo',
+          },
+          'seo_image': {'type': 'string', 'x-widget': 'image', 'x-label': t.seoImage, 'x-group': 'seo'},
         },
       };
 
@@ -111,17 +121,15 @@ class _IdentityScreenState extends State<IdentityScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
           children: [
-            Text(t.logoHint, style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(height: 16),
             SchemaForm(schema: _schema, values: _values),
-            Text(t.seoSection, style: Theme.of(context).textTheme.bodySmall),
             if (_headerSchema != null) ...[
-              const SizedBox(height: 28),
-              Text(t.headerSection, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 4),
-              Text(t.headerHint, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: 16),
-              SchemaForm(schema: _headerSchema!, values: _header),
+              SchemaForm(
+                schema: _headerSchema!,
+                values: _header,
+                title: t.headerSection,
+                hint: t.headerHint,
+              ),
             ],
           ],
         ),

@@ -62,8 +62,12 @@ class _CategoryEditScreenState extends State<CategoryEditScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
           children: [
-            SchemaForm(schema: _schema, values: _values),
-            Text(t.categoryCoverHint, style: Theme.of(context).textTheme.bodySmall),
+            SchemaForm(
+              schema: _schema,
+              values: _values,
+              title: t.categoryDetailsSection,
+              hint: t.categoryCoverHint,
+            ),
           ],
         ),
       ),

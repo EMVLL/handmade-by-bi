@@ -190,6 +190,7 @@ abstract class AppTexts {
   // Stile
   String get styleTitle;
   String get stylePresets;
+  String get styleFontsSection;
   String get styleColors;
   String get colorPrimary;
   String get colorAccent;
@@ -214,6 +215,7 @@ abstract class AppTexts {
   String get siteName;
   String get logo;
   String get logoHint;
+  String get identityBrandSection;
   String get seoTitle;
   String get seoDescription;
   String get seoImage;
@@ -248,6 +250,8 @@ abstract class AppTexts {
 
   // Modulo di una sezione
   String get formStyleSection;
+  String get formStyleHint;
+  String get formContentSection;
   String get fieldRequired;
   String get linkHelp;
   String get linkInvalid;
@@ -274,6 +278,7 @@ abstract class AppTexts {
 
   // Categoria
   String get categoryEditTitle;
+  String get categoryDetailsSection;
   String get categoryDescription;
   String get categoryCover;
   String get categoryCoverHint;

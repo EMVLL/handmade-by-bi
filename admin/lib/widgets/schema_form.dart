@@ -7,6 +7,7 @@ import '../models.dart';
 import '../supa.dart';
 import '../texts/app_texts.dart';
 import 'color_picker.dart';
+import 'section_card.dart';
 
 final _linkPattern = RegExp(r'^(https://|/)\S{0,299}$');
 
@@ -34,12 +35,27 @@ class SchemaFormData {
 /// Lo schema è lo stesso che il database usa per validare: qui decide quali
 /// campi mostrare e come (testo, foto, scelte, interruttori, liste).
 /// [values] viene modificata direttamente; va messa in un [Form] per la validazione.
+///
+/// Ogni gruppo di campi sta nel suo riquadro: i campi senza gruppo in un primo
+/// riquadro ([title], altrimenti "Contenuto"), i gruppi di "x-groups" ciascuno
+/// nel proprio (con "label" e, se c'è, "hint"), "Aspetto" in fondo, richiudibile.
 class SchemaForm extends StatefulWidget {
-  const SchemaForm({super.key, required this.schema, required this.values, this.data = const SchemaFormData()});
+  const SchemaForm({
+    super.key,
+    required this.schema,
+    required this.values,
+    this.data = const SchemaFormData(),
+    this.title,
+    this.hint,
+  });
 
   final Map<String, dynamic> schema;
   final Map<String, dynamic> values;
   final SchemaFormData data;
+
+  /// Titolo e spiegazione del riquadro con i campi senza gruppo.
+  final String? title;
+  final String? hint;
 
   @override
   State<SchemaForm> createState() => _SchemaFormState();
@@ -551,47 +567,54 @@ class _SchemaFormState extends State<SchemaForm> {
       }
     }
 
-    Widget padded(String k) => Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: _field(k, spec(k), widget.values, required),
-        );
+    // I campi di un riquadro, con lo stesso spazio tra uno e l'altro
+    List<Widget> fieldsOf(List<String> ks) => [
+          for (var i = 0; i < ks.length; i++) ...[
+            if (i > 0) const SizedBox(height: 16),
+            _field(ks[i], spec(ks[i]), widget.values, required),
+          ],
+        ];
+
+    // Il primo riquadro sta attaccato a ciò che c'è sopra, gli altri distanziati
+    final cards = <Widget>[];
+    EdgeInsetsGeometry nextMargin() => cards.isEmpty ? EdgeInsets.zero : const EdgeInsets.only(top: 16);
+
+    if (main.isNotEmpty) {
+      cards.add(SectionCard(
+        title: widget.title ?? t.formContentSection,
+        hint: widget.hint,
+        margin: nextMargin(),
+        children: fieldsOf(main),
+      ));
+    }
+    for (final entry in groups.entries) {
+      final def = (groupsDef[entry.key] as Map?) ?? const {};
+      cards.add(SectionCard(
+        title: (def['label'] as String?) ?? entry.key,
+        hint: def['hint'] as String?,
+        margin: nextMargin(),
+        children: fieldsOf(entry.value),
+      ));
+    }
+    if (style.isNotEmpty) {
+      cards.add(SectionFrame(
+        margin: nextMargin(),
+        child: ExpansionTile(
+          shape: const Border(),
+          collapsedShape: const Border(),
+          leading: const Icon(Icons.palette_outlined, color: AppColors.sectionTitle),
+          title: Text(t.formStyleSection, style: sectionTitleStyle(context)),
+          subtitle: Text(t.formStyleHint),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+          children: fieldsOf(style),
+        ),
+      ));
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (final k in main) padded(k),
-        for (final entry in groups.entries)
-          Card(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    ((groupsDef[entry.key] as Map?)?['label'] as String?) ?? entry.key,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  for (final k in entry.value) padded(k),
-                ],
-              ),
-            ),
-          ),
-        if (style.isNotEmpty)
-          Card(
-            margin: const EdgeInsets.only(top: 8),
-            child: ExpansionTile(
-              shape: const Border(),
-              collapsedShape: const Border(),
-              leading: const Icon(Icons.palette_outlined),
-              title: Text(t.formStyleSection),
-              childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [for (final k in style) padded(k)],
-            ),
-          ),
-      ],
+      children: cards,
     );
   }
 }

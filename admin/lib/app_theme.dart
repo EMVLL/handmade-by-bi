@@ -13,6 +13,10 @@ abstract final class AppColors {
   /// Sfondo delle schermate.
   static const background = Color(0xFFFFF8F3);
 
+  /// Titoli dei riquadri delle sezioni: più acceso del colore principale,
+  /// per capire a colpo d'occhio dove inizia ogni sezione.
+  static const sectionTitle = Color(0xFFC2185B);
+
   /// Fascia "Copertina" sopra la prima foto.
   static const photoLabelBackground = Color(0x8A000000);
   static const photoLabelText = Color(0xFFFFFFFF);

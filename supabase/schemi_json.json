@@ -22,7 +22,8 @@
                     "sold_show",
                     "sold_text",
                     "sold_bg",
-                    "sold_color"
+                    "sold_color",
+                    "lead_time_cards"
                 ],
                 "x-groups": {
                     "all": {
@@ -36,6 +37,10 @@
                     },
                     "ready": {
                         "label": "Disponibile"
+                    },
+                    "lead": {
+                        "label": "Tempi di realizzazione",
+                        "hint": "Sotto il prezzo, nelle griglie dei lavori. Solo per i pezzi con «Mostra sul sito» acceso."
                     }
                 },
                 "properties": {
@@ -190,6 +195,12 @@
                         "x-group": "ready",
                         "x-label": "Colore del testo",
                         "x-widget": "color"
+                    },
+                    "lead_time_cards": {
+                        "type": "boolean",
+                        "default": false,
+                        "x-group": "lead",
+                        "x-label": "Mostra i tempi nei riquadri dei pezzi"
                     }
                 },
                 "additionalProperties": false
@@ -969,8 +980,7 @@
                             "type": "string",
                             "pattern": "^[a-zA-Z0-9/_.-]{1,300}$"
                         },
-                        "default": [
-                        ],
+                        "default": [],
                         "x-label": "Foto",
                         "maxItems": 24,
                         "x-widget": "images"
@@ -1659,8 +1669,7 @@
                             },
                             "additionalProperties": false
                         },
-                        "default": [
-                        ],
+                        "default": [],
                         "x-label": "Recensioni",
                         "maxItems": 12
                     },
@@ -1809,8 +1818,7 @@
                             },
                             "additionalProperties": false
                         },
-                        "default": [
-                        ],
+                        "default": [],
                         "x-label": "Domande",
                         "maxItems": 20
                     },
@@ -2167,8 +2175,7 @@
                             },
                             "additionalProperties": false
                         },
-                        "default": [
-                        ],
+                        "default": [],
                         "x-label": "Altri messaggi (si alternano con il primo)",
                         "maxItems": 6
                     },

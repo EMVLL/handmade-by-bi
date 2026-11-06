@@ -4,7 +4,7 @@
 
 | File | A cosa serve |
 |---|---|
-| `001_schema_iniziale.sql` … `008_tempi_realizzazione.sql` | Gli script numerati, nell'ordine in cui vanno eseguiti nel SQL Editor di Supabase |
+| `001_schema_iniziale.sql` … `009_tempi_nei_riquadri.sql` | Gli script numerati, nell'ordine in cui vanno eseguiti nel SQL Editor di Supabase |
 | `schema_attuale_completo.sql` | Fotografia dello schema DOPO tutti gli script (tabelle, vincoli, funzioni, trigger, RLS, permessi + tipi di sezione e schemi delle impostazioni). **Solo da consultare, non da eseguire** |
 | `schemi_json.json` | Gli schemi JSON attuali di ogni tipo di sezione e di ogni impostazione, leggibili |
 
@@ -19,11 +19,12 @@
 | 005_nastro | Lavori in home come nastro che scorre | Eseguito |
 | 006_intestazione_avvisi | Intestazione personalizzabile, avvisi con più messaggi ed effetti, nastro cliccabile | Eseguito |
 | 007_testi_etichette | Corsivo/stampatello, nomi nel nastro, etichette dei pezzi personalizzabili | Eseguito |
-| 008_tempi_realizzazione | Tempi di realizzazione per pezzo (`lead_time`) con interruttore per mostrarli (`show_lead_time`) | Da eseguire prima di sito v2.5 e app v2.9 |
+| 008_tempi_realizzazione | Tempi di realizzazione per pezzo (`lead_time`) con interruttore per mostrarli (`show_lead_time`) | Eseguito |
+| 009_tempi_nei_riquadri | In "Etichette dei pezzi": interruttore `lead_time_cards` per mostrare i tempi anche nei riquadri delle griglie | Da eseguire prima di sito v2.6 |
 
 Dal 005 in poi gli script si possono rieseguire senza danni. Se non ci sono modifiche in sospeso ripubblicano il sito con aspetto identico, altrimenti lasciano la novità in bozza.
 
-**Progetto Supabase nuovo da zero:** prima creare gli utenti in Authentication, poi mettere le loro email nella sezione 11 dello script 001, poi eseguire 001 → 008 in ordine. Alla fine del 003 copiare il `revalidate_secret` mostrato nella variabile `REVALIDATE_SECRET` di Netlify.
+**Progetto Supabase nuovo da zero:** prima creare gli utenti in Authentication, poi mettere le loro email nella sezione 11 dello script 001, poi eseguire 001 → 009 in ordine. Alla fine del 003 copiare il `revalidate_secret` mostrato nella variabile `REVALIDATE_SECRET` di Netlify.
 
 ## Tabelle
 

@@ -5,6 +5,7 @@ import '../fonts_preview.dart';
 import '../supa.dart';
 import '../texts/app_texts.dart';
 import '../widgets/color_picker.dart';
+import '../widgets/section_card.dart';
 import '../draft.dart';
 
 Color _color(String hex) => hexColor(hex);
@@ -205,11 +206,6 @@ class _ThemeScreenState extends State<ThemeScreen> {
     );
   }
 
-  Widget _section(String title) => Padding(
-        padding: const EdgeInsets.only(top: 24, bottom: 8),
-        child: Text(title, style: Theme.of(context).textTheme.titleMedium),
-      );
-
   @override
   Widget build(BuildContext context) {
     Widget body;
@@ -222,35 +218,47 @@ class _ThemeScreenState extends State<ThemeScreen> {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
           _preview(),
-          _section(t.stylePresets),
-          // In griglia: si vedono tutti, senza scorrere di lato
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: [for (final e in _presets.entries) _presetCard(e.key, e.value)],
-          ),
-          _section(t.styleColors),
-          _colorRow('primary', t.colorPrimary),
-          _colorRow('accent', t.colorAccent),
-          _colorRow('background', t.colorBackground),
-          _colorRow('text', t.colorText),
-          const SizedBox(height: 16),
-          _fontChoice('font_heading', t.styleHeadingFont, headingFonts),
-          const SizedBox(height: 20),
-          _fontChoice('font_body', t.styleBodyFont, bodyFonts),
-          const SizedBox(height: 20),
-          Text(t.styleCorners, style: Theme.of(context).textTheme.labelLarge),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          SectionCard(
+            title: t.stylePresets,
             children: [
-              for (var i = 0; i < _radiusKeys.length; i++)
-                ChoiceChip(
-                  label: Text(t.cornerLabels[i]),
-                  selected: _theme['radius'] == _radiusKeys[i],
-                  onSelected: (_) => setState(() => _theme['radius'] = _radiusKeys[i]),
-                ),
+              // In griglia: si vedono tutti, senza scorrere di lato
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [for (final e in _presets.entries) _presetCard(e.key, e.value)],
+              ),
+            ],
+          ),
+          SectionCard(
+            title: t.styleColors,
+            children: [
+              _colorRow('primary', t.colorPrimary),
+              _colorRow('accent', t.colorAccent),
+              _colorRow('background', t.colorBackground),
+              _colorRow('text', t.colorText),
+            ],
+          ),
+          SectionCard(
+            title: t.styleFontsSection,
+            children: [
+              _fontChoice('font_heading', t.styleHeadingFont, headingFonts),
+              const SizedBox(height: 20),
+              _fontChoice('font_body', t.styleBodyFont, bodyFonts),
+              const SizedBox(height: 20),
+              Text(t.styleCorners, style: Theme.of(context).textTheme.labelLarge),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (var i = 0; i < _radiusKeys.length; i++)
+                    ChoiceChip(
+                      label: Text(t.cornerLabels[i]),
+                      selected: _theme['radius'] == _radiusKeys[i],
+                      onSelected: (_) => setState(() => _theme['radius'] = _radiusKeys[i]),
+                    ),
+                ],
+              ),
             ],
           ),
         ],
