@@ -4,7 +4,15 @@ import { useMemo, useState } from "react";
 import FilterMenu from "./FilterMenu";
 import ProductCard from "./ProductCard";
 import SortMenu from "./SortMenu";
-import { activeMaxPrice, buildFilters, matchingIds, priceLabel, type FacetOption, type Selection } from "@/lib/facets";
+import {
+  activeMaxPrice,
+  buildFilters,
+  matchingIds,
+  priceLabel,
+  toggleChoice,
+  type FacetOption,
+  type Selection,
+} from "@/lib/facets";
 import type { BadgeSettings, Product } from "@/lib/types";
 
 /** Una categoria con cui filtrare: i pezzi che ne fanno parte. */
@@ -61,11 +69,11 @@ export default function ProductBrowser({
   const chips: { id: string; label: string; remove: () => void }[] = [
     ...facets.flatMap((f) =>
       f.options
-        .filter((o) => selection[f.key]?.includes(o.value))
+        .filter((o) => selection.choices?.[f.key]?.includes(o.value))
         .map((o) => ({
           id: `${f.key}-${o.value}`,
           label: o.label,
-          remove: () => setSelection((s) => ({ ...s, [f.key]: (s[f.key] ?? []).filter((v) => v !== o.value) })),
+          remove: () => setSelection((s) => toggleChoice(s, f.key, o.value)),
         })),
     ),
     ...(maxPrice != null

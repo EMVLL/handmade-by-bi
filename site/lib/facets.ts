@@ -1,9 +1,12 @@
 import { FAMILIES, colorFamilies, familiesInText, isColorOption, type ColorFamily } from "./colors";
 import type { Product } from "./types";
 
-// Filtri della pagina di una categoria: categoria e colore (scelte da spuntare) e prezzo
-// (cursore "fino a quanto spendere"). Dentro un filtro le scelte si sommano (Borse O Cappelli);
-// tra filtri diversi devono valere tutte (Borse E rosso E fino a 30 €).
+// Filtri della pagina di una categoria, calcolati dai pezzi:
+// - Categoria e Colore (sempre, se servono);
+// - un gruppo per ogni altra opzione che Benedetta usa nei pezzi (Taglia, Materiale…);
+// - Prezzo, con un cursore "fino a quanto spendere".
+// Dentro un gruppo le scelte si sommano (Borse O Cappelli); tra gruppi diversi devono
+// valere tutte (Borse E rosso E taglia M E fino a 30 €).
 
 export interface FacetOption {
   value: string;
@@ -15,7 +18,8 @@ export interface FacetOption {
 }
 
 export interface Facet {
-  key: "category" | "color";
+  /** "category", "color" oppure "opt:<nome dell'opzione>" */
+  key: string;
   label: string;
   options: FacetOption[];
 }
@@ -28,8 +32,8 @@ export interface PriceRange {
 }
 
 export interface Selection {
-  category?: string[];
-  color?: string[];
+  /** Scelte spuntate, per gruppo */
+  choices?: Record<string, string[]>;
   /** Prezzo massimo scelto; assente = qualsiasi prezzo */
   maxPrice?: number;
 }
@@ -39,12 +43,14 @@ export interface Filters {
   price: PriceRange | null;
 }
 
-/** Il cursore arriva al massimo a 999 €, come sul resto del sito. */
+/** Il cursore arriva al massimo a 999 €. */
 export const PRICE_CEILING = 999;
 
 const key = (s: string) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim().replace(/\s+/g, " ");
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+// ------------------------------------------------------------------ colore
 
 /**
  * Colori per il filtro, raggruppati per famiglia (Verde, Rosa…).
@@ -81,6 +87,71 @@ function colorOptions(items: Product[]): FacetOption[] {
   return [...byKey.values()].sort((a, b) => order(a) - order(b) || a.label.localeCompare(b.label, "it"));
 }
 
+// ------------------------------------------------------------------ altre opzioni
+
+/** Nomi diversi per la stessa opzione: finiscono nello stesso gruppo. */
+const SYNONYMS: Record<string, { key: string; label: string }> = {
+  taglia: { key: "taglia", label: "Taglia" },
+  taglie: { key: "taglia", label: "Taglia" },
+  misura: { key: "taglia", label: "Taglia" },
+  misure: { key: "taglia", label: "Taglia" },
+  grandezza: { key: "taglia", label: "Taglia" },
+  dimensione: { key: "taglia", label: "Taglia" },
+  dimensioni: { key: "taglia", label: "Taglia" },
+  size: { key: "taglia", label: "Taglia" },
+  materiale: { key: "materiale", label: "Materiale" },
+  materiali: { key: "materiale", label: "Materiale" },
+  filato: { key: "materiale", label: "Materiale" },
+};
+
+/** Ordine logico delle taglie in lettere. */
+const SIZE_ORDER = ["xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl", "unica", "taglia unica"];
+
+/** "m" -> "M", "taglia unica" -> "Taglia unica", "0-3 mesi" resta com'è. */
+function valueLabel(raw: string): string {
+  const t = raw.trim().replace(/\s+/g, " ");
+  return /^(x{0,3}s|m|x{0,3}l)$/i.test(t) ? t.toUpperCase() : capitalize(t);
+}
+
+function compareValues(a: FacetOption, b: FacetOption): number {
+  const sa = SIZE_ORDER.indexOf(a.value), sb = SIZE_ORDER.indexOf(b.value);
+  if (sa !== -1 || sb !== -1) return (sa === -1 ? 99 : sa) - (sb === -1 ? 99 : sb);
+  // numeri in ordine di grandezza ("2 anni" prima di "10 anni")
+  const na = parseFloat(a.value.replace(",", ".")), nb = parseFloat(b.value.replace(",", "."));
+  if (!Number.isNaN(na) && !Number.isNaN(nb) && na !== nb) return na - nb;
+  return a.label.localeCompare(b.label, "it", { numeric: true });
+}
+
+/** Un gruppo per ogni opzione (non di colore) usata dai pezzi della pagina. */
+function optionFacets(items: Product[]): Facet[] {
+  const groups = new Map<string, { label: string; values: Map<string, FacetOption>; products: Set<string> }>();
+  for (const p of items) {
+    for (const o of p.options ?? []) {
+      const name = key(o.name ?? "");
+      if (!name || isColorOption(o.name)) continue;
+      const syn = SYNONYMS[name];
+      const gKey = `opt:${syn?.key ?? name}`;
+      const group = groups.get(gKey) ?? { label: syn?.label ?? capitalize(o.name.trim()), values: new Map(), products: new Set() };
+      for (const v of o.values ?? []) {
+        const vKey = key(v);
+        if (!vKey) continue;
+        const entry = group.values.get(vKey) ?? { value: vKey, label: valueLabel(v), ids: [] };
+        if (!entry.ids.includes(p.id)) entry.ids.push(p.id);
+        group.values.set(vKey, entry);
+        group.products.add(p.id);
+      }
+      groups.set(gKey, group);
+    }
+  }
+  return [...groups.entries()]
+    // un gruppo ha senso solo se almeno due pezzi hanno quell'opzione
+    .filter(([, g]) => g.products.size >= 2)
+    .map(([k, g]) => ({ key: k, label: g.label, options: [...g.values.values()].sort(compareValues) }))
+    .sort((a, b) => (a.key === "opt:taglia" ? -1 : b.key === "opt:taglia" ? 1 : a.label.localeCompare(b.label, "it")));
+}
+
+// ------------------------------------------------------------------ prezzo
+
 /** Passo del cursore: fine con prezzi bassi, più largo con prezzi alti. */
 function stepFor(max: number): number {
   return max <= 100 ? 1 : max <= 300 ? 5 : 10;
@@ -96,15 +167,18 @@ function priceRange(items: Product[]): PriceRange | null {
   return { min, max, step };
 }
 
-/** Un filtro a scelte serve solo se divide davvero i pezzi. */
+// ------------------------------------------------------------------ insieme
+
+/** Un gruppo a scelte serve solo se divide davvero i pezzi. */
 function useful(options: FacetOption[], total: number): boolean {
   return options.length >= 2 || (options.length === 1 && options[0].ids.length < total);
 }
 
 export function buildFilters(items: Product[], categories: FacetOption[]): Filters {
   const facets: Facet[] = [
-    { key: "category" as const, label: "Categoria", options: categories },
-    { key: "color" as const, label: "Colore", options: colorOptions(items) },
+    { key: "category", label: "Categoria", options: categories },
+    { key: "color", label: "Colore", options: colorOptions(items) },
+    ...optionFacets(items),
   ].filter((f) => useful(f.options, items.length));
   return { facets, price: priceRange(items) };
 }
@@ -115,20 +189,15 @@ export function activeMaxPrice(filters: Filters, selection: Selection): number |
   return filters.price && m != null && m < filters.price.max ? m : null;
 }
 
-/** Pezzi che passano i filtri scelti, ignorando eventualmente un filtro (per i conteggi). */
-export function matchingIds(
-  items: Product[],
-  filters: Filters,
-  selection: Selection,
-  skip?: Facet["key"],
-): Set<string> {
+/** Pezzi che passano i filtri scelti, ignorando eventualmente un gruppo (per i conteggi). */
+export function matchingIds(items: Product[], filters: Filters, selection: Selection, skip?: string): Set<string> {
   // Con un prezzo massimo scelto, i pezzi "su richiesta" non si possono confrontare: restano fuori
   const maxPrice = activeMaxPrice(filters, selection);
   let ids = new Set(
     items.filter((p) => maxPrice == null || (p.price != null && p.price <= maxPrice)).map((p) => p.id),
   );
   for (const f of filters.facets) {
-    const chosen = selection[f.key];
+    const chosen = selection.choices?.[f.key];
     if (f.key === skip || !chosen?.length) continue;
     const allowed = new Set(f.options.filter((o) => chosen.includes(o.value)).flatMap((o) => o.ids));
     ids = new Set([...ids].filter((id) => allowed.has(id)));
@@ -149,11 +218,15 @@ export function optionCount(
 }
 
 export function selectedCount(filters: Filters, selection: Selection): number {
-  return (
-    (selection.category?.length ?? 0) +
-    (selection.color?.length ?? 0) +
-    (activeMaxPrice(filters, selection) != null ? 1 : 0)
-  );
+  const choices = Object.values(selection.choices ?? {}).reduce((n, v) => n + v.length, 0);
+  return choices + (activeMaxPrice(filters, selection) != null ? 1 : 0);
+}
+
+/** Scelte di un gruppo, aggiornate (aggiunge o toglie un valore). */
+export function toggleChoice(selection: Selection, facetKey: string, value: string): Selection {
+  const current = selection.choices?.[facetKey] ?? [];
+  const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
+  return { ...selection, choices: { ...selection.choices, [facetKey]: next } };
 }
 
 export function priceLabel(value: number): string {

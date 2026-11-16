@@ -6,6 +6,7 @@ import {
   optionCount,
   priceLabel,
   selectedCount,
+  toggleChoice,
   type Facet,
   type Filters,
   type Selection,
@@ -13,8 +14,8 @@ import {
 import type { Product } from "@/lib/types";
 
 /**
- * Menu "Filtra" accanto a "Ordina per": categoria e colore da spuntare, prezzo con un
- * cursore "fino a quanto spendere"; anche tutti insieme.
+ * Menu "Filtra" accanto a "Ordina per": categoria, colore e le altre opzioni dei pezzi
+ * (Taglia, Materiale…) da spuntare, prezzo con un cursore "fino a quanto spendere"; anche insieme.
  * Le scelte si applicano subito; "Mostra N lavori" chiude il pannello.
  */
 export default function FilterMenu({
@@ -57,11 +58,7 @@ export default function FilterMenu({
     };
   }, [open]);
 
-  const toggle = (facet: Facet, value: string) => {
-    const current = selection[facet.key] ?? [];
-    const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
-    onChange({ ...selection, [facet.key]: next });
-  };
+  const toggle = (facet: Facet, value: string) => onChange(toggleChoice(selection, facet.key, value));
 
   return (
     <div ref={rootRef} className="static sm:relative">
@@ -100,7 +97,7 @@ export default function FilterMenu({
               <legend className="mb-2.5 text-sm font-semibold text-primary">{facet.label}</legend>
               <div className="flex flex-wrap gap-2">
                 {facet.options.map((option) => {
-                  const on = selection[facet.key]?.includes(option.value) ?? false;
+                  const on = selection.choices?.[facet.key]?.includes(option.value) ?? false;
                   const count = optionCount(items, filters, selection, facet, option);
                   const disabled = !on && count === 0;
                   return (
