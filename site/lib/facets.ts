@@ -1,4 +1,4 @@
-import { colorFor, isColorOption } from "./colors";
+import { FAMILIES, colorFamilies, familiesInText, isColorOption, type ColorFamily } from "./colors";
 import type { Product } from "./types";
 
 // Filtri della pagina di una categoria: categoria e colore (scelte da spuntare) e prezzo
@@ -46,24 +46,39 @@ const key = (s: string) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim().replace(/\s+/g, " ");
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-/** I colori arrivano dall'opzione "Colore" dei pezzi (la stessa che vede il cliente). */
+/**
+ * Colori per il filtro, raggruppati per famiglia (Verde, Rosa…).
+ * Si leggono dall'opzione "Colore" del pezzo; se il pezzo non ce l'ha, dai colori scritti
+ * nel titolo o nella descrizione ("Verde militare, Rosa"). Un nome che non è un colore
+ * conosciuto compare com'è, senza pallino.
+ */
 function colorOptions(items: Product[]): FacetOption[] {
   const byKey = new Map<string, FacetOption>();
+  const add = (k: string, label: string, swatch: string | null, id: string) => {
+    const entry = byKey.get(k) ?? { value: k, label, ids: [], swatch };
+    if (!entry.ids.includes(id)) entry.ids.push(id);
+    byKey.set(k, entry);
+  };
+  const family = (f: ColorFamily) => FAMILIES.find((x) => x.key === f)!;
+
   for (const p of items) {
-    const seen = new Set<string>();
-    for (const o of p.options ?? []) {
-      if (!isColorOption(o.name)) continue;
-      for (const v of o.values ?? []) {
-        const k = key(v);
-        if (!k || seen.has(k)) continue;
-        seen.add(k);
-        const entry = byKey.get(k) ?? { value: k, label: capitalize(v.trim()), ids: [], swatch: colorFor(v) };
-        entry.ids.push(p.id);
-        byKey.set(k, entry);
+    const values = (p.options ?? []).filter((o) => isColorOption(o.name)).flatMap((o) => o.values ?? []);
+    if (values.length) {
+      for (const v of values) {
+        const found = colorFamilies(v);
+        for (const f of found) add(f, family(f).label, family(f).swatch, p.id);
+        if (!found.length && key(v)) add(`altro:${key(v)}`, capitalize(v.trim()), null, p.id);
       }
+    } else {
+      for (const f of familiesInText(`${p.title} ${p.description ?? ""}`)) add(f, family(f).label, family(f).swatch, p.id);
     }
   }
-  return [...byKey.values()].sort((a, b) => b.ids.length - a.ids.length || a.label.localeCompare(b.label, "it"));
+  // Prima le famiglie nell'ordine dell'arcobaleno, poi i nomi non riconosciuti
+  const order = (o: FacetOption) => {
+    const i = FAMILIES.findIndex((f) => f.key === o.value);
+    return i === -1 ? FAMILIES.length : i;
+  };
+  return [...byKey.values()].sort((a, b) => order(a) - order(b) || a.label.localeCompare(b.label, "it"));
 }
 
 /** Passo del cursore: fine con prezzi bassi, più largo con prezzi alti. */
