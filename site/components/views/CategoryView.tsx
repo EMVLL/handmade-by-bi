@@ -2,7 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import BackButton from "@/components/BackButton";
 import CategoryMenu from "@/components/CategoryMenu";
-import ProductBrowser, { NO_CATEGORY, type BrowserFilter } from "@/components/ProductBrowser";
+import ProductBrowser, { type BrowserFilter } from "@/components/ProductBrowser";
 import {
   OTHER_SLUG,
   READY_SLUG,
@@ -25,15 +25,23 @@ export default async function CategoryView({ slug, site }: { slug: string; site:
   const items = productsInCategory(slug, products, collections);
   const entries = categoryEntries(settings, products, collections);
 
-  // Nei pezzi pronti si può filtrare per categoria (solo quelle che hanno pezzi pronti)
+  // Filtro per categoria: le ALTRE categorie dei pezzi di questa pagina.
+  // Serve soprattutto nei pezzi pronti (automatici o in una categoria tipo "Disponibili");
+  // compare solo se divide davvero i pezzi in almeno due gruppi.
+  const current = collections.find((c) => c.slug === slug)?.id;
+  const others = (p: (typeof items)[number]) =>
+    (p.product_collections ?? []).map((pc) => pc.collection_id).filter((id) => id !== current);
   const filters: BrowserFilter[] = [];
-  if (slug === READY_SLUG) {
+  if (slug !== OTHER_SLUG) {
     for (const c of collections) {
-      if (items.some((p) => p.product_collections?.some((pc) => pc.collection_id === c.id)))
-        filters.push({ value: c.id, label: c.name });
+      if (c.id === current) continue;
+      const ids = items.filter((p) => others(p).includes(c.id)).map((p) => p.id);
+      if (ids.length) filters.push({ value: c.id, label: c.name, ids });
     }
-    if (items.some((p) => !p.product_collections?.length))
-      filters.push({ value: NO_CATEGORY, label: settings.otherLabel });
+    // "Altro" solo nelle pagine che raccolgono pezzi di più categorie (pronti, "Disponibili"):
+    // in Borse vorrebbe dire "solo borse" e confonderebbe
+    const loose = items.filter((p) => !others(p).length).map((p) => p.id);
+    if (loose.length && filters.length >= 2) filters.push({ value: "__altro", label: settings.otherLabel, ids: loose });
   }
   // Copertina in testata solo se Benedetta l'ha scelta per questa categoria
   const chosenCover = collections.find((c) => c.slug === slug)?.cover_path

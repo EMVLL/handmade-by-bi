@@ -2,12 +2,14 @@
 
 import { useMemo, useState } from "react";
 import ProductCard from "./ProductCard";
+import SortMenu from "./SortMenu";
 import type { BadgeSettings, Product } from "@/lib/types";
 
 export interface BrowserFilter {
-  /** Valore interno: id della categoria, oppure "__altro" per i pezzi senza categoria */
   value: string;
   label: string;
+  /** Pezzi che rientrano nel filtro */
+  ids: string[];
 }
 
 type Sort = "default" | "newest" | "price_asc" | "price_desc";
@@ -18,13 +20,6 @@ const SORTS: { value: Sort; label: string }[] = [
   { value: "price_asc", label: "Prezzo: dal più basso" },
   { value: "price_desc", label: "Prezzo: dal più alto" },
 ];
-
-export const NO_CATEGORY = "__altro";
-
-function inFilter(p: Product, value: string): boolean {
-  if (value === NO_CATEGORY) return !p.product_collections?.length;
-  return p.product_collections?.some((pc) => pc.collection_id === value) ?? false;
-}
 
 /**
  * Griglia dei pezzi di una categoria, con "Ordina per" e, se servono, i filtri.
@@ -43,7 +38,8 @@ export default function ProductBrowser({
   const [sort, setSort] = useState<Sort>("default");
 
   const shown = useMemo(() => {
-    const list = filter ? items.filter((p) => inFilter(p, filter)) : [...items];
+    const ids = filter ? new Set(filters.find((f) => f.value === filter)?.ids ?? []) : null;
+    const list = ids ? items.filter((p) => ids.has(p.id)) : [...items];
     // I pezzi "prezzo su richiesta" vanno in fondo quando si ordina per prezzo
     const price = (p: Product, fallback: number) => p.price ?? fallback;
     switch (sort) {
@@ -56,7 +52,7 @@ export default function ProductBrowser({
       default:
         return list;
     }
-  }, [items, filter, sort]);
+  }, [items, filters, filter, sort]);
 
   // Filtri solo se dividono davvero i pezzi in più gruppi
   const showFilters = filters.length > 1;
@@ -94,22 +90,7 @@ export default function ProductBrowser({
           ) : (
             <div />
           )}
-          {showSort && (
-            <label className="flex shrink-0 items-center gap-2 text-sm">
-              <span className="font-semibold opacity-70">Ordina per</span>
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value as Sort)}
-                className="rounded-site border border-foreground/20 bg-background px-3 py-2 text-base"
-              >
-                {SORTS.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
+          {showSort && <SortMenu label="Ordina per" options={SORTS} value={sort} onChange={setSort} />}
         </div>
       )}
       {shown.length ? (
