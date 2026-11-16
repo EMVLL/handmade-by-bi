@@ -1,22 +1,31 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import { optionCount, selectedCount, type Facet, type Selection } from "@/lib/facets";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import {
+  activeMaxPrice,
+  optionCount,
+  priceLabel,
+  selectedCount,
+  type Facet,
+  type Filters,
+  type Selection,
+} from "@/lib/facets";
 import type { Product } from "@/lib/types";
 
 /**
- * Menu "Filtra" accanto a "Ordina per": categoria, colore e prezzo, anche insieme.
+ * Menu "Filtra" accanto a "Ordina per": categoria e colore da spuntare, prezzo con un
+ * cursore "fino a quanto spendere"; anche tutti insieme.
  * Le scelte si applicano subito; "Mostra N lavori" chiude il pannello.
  */
 export default function FilterMenu({
   items,
-  facets,
+  filters,
   selection,
   onChange,
   resultCount,
 }: {
   items: Product[];
-  facets: Facet[];
+  filters: Filters;
   selection: Selection;
   onChange: (next: Selection) => void;
   resultCount: number;
@@ -25,7 +34,9 @@ export default function FilterMenu({
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
-  const active = selectedCount(selection);
+  const active = selectedCount(filters, selection);
+  const { facets, price } = filters;
+  const maxPrice = activeMaxPrice(filters, selection);
 
   useEffect(() => {
     if (!open) return;
@@ -90,7 +101,7 @@ export default function FilterMenu({
               <div className="flex flex-wrap gap-2">
                 {facet.options.map((option) => {
                   const on = selection[facet.key]?.includes(option.value) ?? false;
-                  const count = optionCount(items, facets, selection, facet, option);
+                  const count = optionCount(items, filters, selection, facet, option);
                   const disabled = !on && count === 0;
                   return (
                     <button
@@ -123,6 +134,41 @@ export default function FilterMenu({
               </div>
             </fieldset>
           ))}
+          {price && (
+            <div>
+              <div className="mb-2 flex items-baseline justify-between gap-3">
+                <label htmlFor={`${panelId}-price`} className="text-sm font-semibold text-primary">
+                  Prezzo
+                </label>
+                <span className="text-sm font-semibold" aria-hidden>
+                  {maxPrice == null ? "Qualsiasi prezzo" : priceLabel(maxPrice)}
+                </span>
+              </div>
+              <input
+                id={`${panelId}-price`}
+                type="range"
+                min={price.min}
+                max={price.max}
+                step={price.step}
+                value={maxPrice ?? price.max}
+                tabIndex={open ? 0 : -1}
+                aria-valuetext={maxPrice == null ? "Qualsiasi prezzo" : priceLabel(maxPrice)}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  onChange({ ...selection, maxPrice: v >= price.max ? undefined : v });
+                }}
+                className="price-range h-11 w-full cursor-pointer"
+                style={{ "--fill": `${(((maxPrice ?? price.max) - price.min) / (price.max - price.min)) * 100}%` } as CSSProperties}
+              />
+              <div className="flex justify-between text-xs opacity-60" aria-hidden>
+                <span>{price.min.toLocaleString("it-IT")} €</span>
+                <span>{price.max.toLocaleString("it-IT")} €</span>
+              </div>
+              {maxPrice != null && (
+                <p className="mt-1.5 text-xs opacity-60">I pezzi con prezzo su richiesta sono nascosti.</p>
+              )}
+            </div>
+          )}
         </div>
         <div className="flex items-center justify-between gap-3 border-t border-primary/15 px-5 py-3">
           <button

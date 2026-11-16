@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import FilterMenu from "./FilterMenu";
 import ProductCard from "./ProductCard";
 import SortMenu from "./SortMenu";
-import { buildFacets, matchingIds, type FacetOption, type Selection } from "@/lib/facets";
+import { activeMaxPrice, buildFilters, matchingIds, priceLabel, type FacetOption, type Selection } from "@/lib/facets";
 import type { BadgeSettings, Product } from "@/lib/types";
 
 /** Una categoria con cui filtrare: i pezzi che ne fanno parte. */
@@ -20,8 +20,8 @@ const SORTS: { value: Sort; label: string }[] = [
 ];
 
 /**
- * Griglia dei pezzi di una categoria, con "Filtra" (categoria, colore, prezzo, anche
- * insieme) e "Ordina per". Tutto avviene nel browser: la pagina non si ricarica.
+ * Griglia dei pezzi di una categoria, con "Filtra" (categoria, colore, prezzo massimo,
+ * anche insieme) e "Ordina per". Tutto avviene nel browser: la pagina non si ricarica.
  */
 export default function ProductBrowser({
   items,
@@ -36,10 +36,12 @@ export default function ProductBrowser({
   const [selection, setSelection] = useState<Selection>({});
   const [sort, setSort] = useState<Sort>("default");
 
-  const facets = useMemo(() => buildFacets(items, filters), [items, filters]);
+  const allFilters = useMemo(() => buildFilters(items, filters), [items, filters]);
+  const { facets } = allFilters;
+  const maxPrice = activeMaxPrice(allFilters, selection);
 
   const shown = useMemo(() => {
-    const ids = matchingIds(items, facets, selection);
+    const ids = matchingIds(items, allFilters, selection);
     const list = items.filter((p) => ids.has(p.id));
     // I pezzi "prezzo su richiesta" vanno in fondo quando si ordina per prezzo
     const price = (p: Product, fallback: number) => p.price ?? fallback;
@@ -53,18 +55,25 @@ export default function ProductBrowser({
       default:
         return list;
     }
-  }, [items, facets, selection, sort]);
+  }, [items, allFilters, selection, sort]);
 
   // Le scelte attive, da togliere una per una sotto i pulsanti
-  const chips = facets.flatMap((f) =>
-    f.options
-      .filter((o) => selection[f.key]?.includes(o.value))
-      .map((o) => ({ facet: f.key, value: o.value, label: o.label })),
-  );
-  const remove = (facet: keyof Selection, value: string) =>
-    setSelection((s) => ({ ...s, [facet]: (s[facet] ?? []).filter((v) => v !== value) }));
+  const chips: { id: string; label: string; remove: () => void }[] = [
+    ...facets.flatMap((f) =>
+      f.options
+        .filter((o) => selection[f.key]?.includes(o.value))
+        .map((o) => ({
+          id: `${f.key}-${o.value}`,
+          label: o.label,
+          remove: () => setSelection((s) => ({ ...s, [f.key]: (s[f.key] ?? []).filter((v) => v !== o.value) })),
+        })),
+    ),
+    ...(maxPrice != null
+      ? [{ id: "price", label: priceLabel(maxPrice), remove: () => setSelection((s) => ({ ...s, maxPrice: undefined })) }]
+      : []),
+  ];
 
-  const showFilters = facets.length > 0;
+  const showFilters = facets.length > 0 || allFilters.price != null;
   const showSort = items.length > 1;
 
   return (
@@ -75,7 +84,7 @@ export default function ProductBrowser({
             {showFilters ? (
               <FilterMenu
                 items={items}
-                facets={facets}
+                filters={allFilters}
                 selection={selection}
                 onChange={setSelection}
                 resultCount={shown.length}
@@ -89,9 +98,9 @@ export default function ProductBrowser({
             <div className="flex flex-wrap items-center gap-2">
               {chips.map((c) => (
                 <button
-                  key={`${c.facet}-${c.value}`}
+                  key={c.id}
                   type="button"
-                  onClick={() => remove(c.facet, c.value)}
+                  onClick={c.remove}
                   aria-label={`Togli il filtro ${c.label}`}
                   className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 py-1.5 pl-3.5 pr-2.5 text-sm text-primary transition hover:bg-primary/20"
                 >

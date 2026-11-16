@@ -70,7 +70,7 @@ export default function SortMenu<T extends string>({
 
   return (
     <div ref={rootRef} className="relative flex min-w-0 items-center gap-3">
-      <span id={`${id}-label`} className="shrink-0 text-sm font-semibold opacity-70">
+      <span id={`${id}-label`} className="hidden shrink-0 text-sm font-semibold opacity-70 sm:inline">
         {label}
       </span>
       <button

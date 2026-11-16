@@ -128,3 +128,50 @@ body:has(.preview-root) .site-chrome {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
+/* ---- Cursore del prezzo nei filtri: binario chiaro, parte scelta nel colore principale ---- */
+.price-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+.price-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--c-primary) var(--fill, 100%), color-mix(in srgb, var(--c-primary) 18%, transparent) var(--fill, 100%));
+}
+.price-range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c-primary) 18%, transparent);
+}
+.price-range::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--c-primary);
+}
+.price-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  border: 3px solid var(--c-background);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
+}
+.price-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  border: 3px solid var(--c-background);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
+}
+.price-range:focus-visible {
+  outline: none;
+}
+.price-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-primary) 30%, transparent);
+}
