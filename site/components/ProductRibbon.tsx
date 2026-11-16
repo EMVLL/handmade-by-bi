@@ -23,17 +23,19 @@ export default function ProductRibbon({
   const withPhoto = products.filter((p) => p.photos?.length);
   if (!withPhoto.length) return null;
 
-  // Ripeto i lavori finché il nastro è abbastanza lungo da riempire lo schermo,
-  // poi lo raddoppio per farlo girare senza scatti.
-  const half: Product[] = [];
-  while (half.length < 8) half.push(...withPhoto);
-  const loop = [...half, ...half];
+  // Ripeto i lavori finché un giro è più lungo dello schermo, poi metto tre giri
+  // uguali in fila: si scorre sempre in quello centrale, con un giro intero di
+  // margine a destra e a sinistra, così il dito non arriva mai al bordo.
+  const round: Product[] = [];
+  while (round.length < 8) round.push(...withPhoto);
+  const loop = [...round, ...round, ...round];
 
   return (
     <RibbonScroller>
       {loop.map((p, i) => {
         const price = formatPrice(p.price);
-        const copy = i >= half.length;
+        // per i lettori di schermo conta solo il giro centrale
+        const copy = i < round.length || i >= round.length * 2;
         const content = (
           <>
             <div className="relative aspect-square overflow-hidden rounded-site bg-foreground/5">

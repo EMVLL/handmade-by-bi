@@ -4,10 +4,13 @@ import { useEffect, useRef, type ReactNode } from "react";
 
 const SPEED = 35; // pixel al secondo
 const RESUME_AFTER = 2500; // ms dopo l'ultimo tocco
+const SETTLE = 150; // ms senza movimento = lo scorrimento col dito è finito
 
 // Nastro infinito: scorre da solo, ma si può trascinare avanti e indietro
 // (dito sul telefono, mouse o rotella sul computer). Mentre lo si tocca si ferma.
-// Il contenuto deve essere ripetuto due volte (due metà uguali).
+// Il contenuto deve essere ripetuto TRE volte (tre giri uguali): si sta sempre nel
+// giro centrale e, quando ci si sposta in uno laterale, si torna in quello centrale
+// nel punto identico, senza che si veda.
 export default function RibbonScroller({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -16,20 +19,27 @@ export default function RibbonScroller({ children }: { children: ReactNode }) {
     if (!el) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    let pos = 1;
+    const round = () => el.scrollWidth / 3;
+    let pos = 0; // posizione con i decimali (scrollLeft su alcuni telefoni è intero)
     let paused = false;
-    let hovering = false;
+    let hovering = false; // solo mouse: sul telefono il "passaggio sopra" non esiste
+    let touching = false;
     let resumeTimer: ReturnType<typeof setTimeout> | undefined;
+    let settleTimer: ReturnType<typeof setTimeout> | undefined;
     let last = performance.now();
     let frame = 0;
 
-    // Arrivati a metà si torna all'inizio (e viceversa): il giro non finisce mai.
-    const wrap = () => {
-      const half = el.scrollWidth / 2;
-      if (half <= el.clientWidth) return;
-      if (el.scrollLeft >= half) el.scrollLeft -= half;
-      else if (el.scrollLeft <= 0) el.scrollLeft += half;
-      pos = el.scrollLeft;
+    // Riporta nel giro centrale. Non va fatto mentre il dito trascina o il nastro
+    // sta ancora correndo per l'inerzia: il telefono interromperebbe il gesto.
+    const recenter = () => {
+      const r = round();
+      if (r <= el.clientWidth) return;
+      let x = el.scrollLeft;
+      if (x < r) x += r;
+      else if (x >= 2 * r) x -= r;
+      else return;
+      el.scrollLeft = x;
+      pos = x;
     };
 
     const pause = () => {
@@ -39,10 +49,10 @@ export default function RibbonScroller({ children }: { children: ReactNode }) {
     const resumeLater = () => {
       if (resumeTimer) clearTimeout(resumeTimer);
       resumeTimer = setTimeout(() => {
-        if (!hovering) {
-          pos = el.scrollLeft;
-          paused = false;
-        }
+        if (hovering || touching) return;
+        recenter();
+        pos = el.scrollLeft;
+        paused = false;
       }, RESUME_AFTER);
     };
 
@@ -51,11 +61,14 @@ export default function RibbonScroller({ children }: { children: ReactNode }) {
       last = now;
       if (!paused && !reduce) {
         pos += SPEED * dt;
+        const r = round();
+        if (r > el.clientWidth && pos >= 2 * r) pos -= r;
         el.scrollLeft = pos;
-        wrap();
       }
       frame = requestAnimationFrame(tick);
     };
+    // Partenza dall'inizio del giro centrale
+    pos = round();
     el.scrollLeft = pos;
     frame = requestAnimationFrame(tick);
 
@@ -76,17 +89,15 @@ export default function RibbonScroller({ children }: { children: ReactNode }) {
       if (e.buttons === 0) return onPointerUp(); // tasto già rilasciato fuori dalla pagina
       const dx = e.clientX - startX;
       if (Math.abs(dx) > 5) el.dataset.dragMoved = "1"; // è un trascinamento, non un clic
-      // Posizione "a giro": si può trascinare all'infinito in entrambe le direzioni
-      const half = el.scrollWidth / 2;
+      // Sempre dentro il giro centrale: si trascina all'infinito in entrambe le direzioni
+      const r = round();
       let target = startScroll - dx;
-      if (half > el.clientWidth) {
-        target = ((target % half) + half) % half;
-        if (target < 1) target += half;
-      }
+      if (r > el.clientWidth) target = r + ((((target - r) % r) + r) % r);
       el.scrollLeft = target;
       pos = el.scrollLeft;
     };
     const onPointerUp = () => {
+      if (!dragging) return;
       dragging = false;
       resumeLater();
       // il clic arriva subito dopo: lo lascio bloccare, poi azzero
@@ -98,22 +109,40 @@ export default function RibbonScroller({ children }: { children: ReactNode }) {
         e.stopPropagation();
       }
     };
+    // Dopo un trascinamento col dito (o la rotella) si torna al centro solo a nastro fermo
     const onScroll = () => {
-      if (paused) wrap();
+      if (!paused || dragging) return;
+      if (settleTimer) clearTimeout(settleTimer);
+      settleTimer = setTimeout(() => {
+        if (!touching) recenter();
+      }, SETTLE);
     };
     // Il browser non deve "trascinare via" foto e link: si trascina il nastro
     const onDragStart = (e: DragEvent) => e.preventDefault();
-    const onTouchStart = () => pause();
-    const onTouchEnd = () => resumeLater();
+    const onTouchStart = () => {
+      touching = true;
+      pause();
+      // Il dito appena appoggiato ferma l'inerzia: è il momento sicuro per tornare
+      // al centro, così anche tante strisciate di fila non arrivano mai al bordo.
+      if (settleTimer) clearTimeout(settleTimer);
+      recenter();
+    };
+    const onTouchEnd = () => {
+      touching = false;
+      onScroll(); // se il nastro era già fermo, torna subito al centro
+      resumeLater();
+    };
     const onWheel = () => {
       pause();
       resumeLater();
     };
-    const onEnter = () => {
+    const onEnter = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
       hovering = true;
       pause();
     };
-    const onLeave = () => {
+    const onLeave = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
       hovering = false;
       resumeLater();
     };
@@ -122,27 +151,32 @@ export default function RibbonScroller({ children }: { children: ReactNode }) {
     el.addEventListener("dragstart", onDragStart);
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
     el.addEventListener("click", onClickCapture, true);
     el.addEventListener("scroll", onScroll, { passive: true });
     el.addEventListener("touchstart", onTouchStart, { passive: true });
     el.addEventListener("touchend", onTouchEnd, { passive: true });
+    el.addEventListener("touchcancel", onTouchEnd, { passive: true });
     el.addEventListener("wheel", onWheel, { passive: true });
-    el.addEventListener("mouseenter", onEnter);
-    el.addEventListener("mouseleave", onLeave);
+    el.addEventListener("pointerenter", onEnter);
+    el.addEventListener("pointerleave", onLeave);
     return () => {
       cancelAnimationFrame(frame);
       if (resumeTimer) clearTimeout(resumeTimer);
+      if (settleTimer) clearTimeout(settleTimer);
       el.removeEventListener("pointerdown", onPointerDown);
       el.removeEventListener("dragstart", onDragStart);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
       el.removeEventListener("click", onClickCapture, true);
       el.removeEventListener("scroll", onScroll);
       el.removeEventListener("touchstart", onTouchStart);
       el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchEnd);
       el.removeEventListener("wheel", onWheel);
-      el.removeEventListener("mouseenter", onEnter);
-      el.removeEventListener("mouseleave", onLeave);
+      el.removeEventListener("pointerenter", onEnter);
+      el.removeEventListener("pointerleave", onLeave);
     };
   }, []);
 

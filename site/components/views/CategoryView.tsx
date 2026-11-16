@@ -2,7 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import BackButton from "@/components/BackButton";
 import CategoryMenu from "@/components/CategoryMenu";
-import ProductCard from "@/components/ProductCard";
+import ProductBrowser, { NO_CATEGORY, type BrowserFilter } from "@/components/ProductBrowser";
 import {
   OTHER_SLUG,
   READY_SLUG,
@@ -24,6 +24,17 @@ export default async function CategoryView({ slug, site }: { slug: string; site:
 
   const items = productsInCategory(slug, products, collections);
   const entries = categoryEntries(settings, products, collections);
+
+  // Nei pezzi pronti si può filtrare per categoria (solo quelle che hanno pezzi pronti)
+  const filters: BrowserFilter[] = [];
+  if (slug === READY_SLUG) {
+    for (const c of collections) {
+      if (items.some((p) => p.product_collections?.some((pc) => pc.collection_id === c.id)))
+        filters.push({ value: c.id, label: c.name });
+    }
+    if (items.some((p) => !p.product_collections?.length))
+      filters.push({ value: NO_CATEGORY, label: settings.otherLabel });
+  }
   // Copertina in testata solo se Benedetta l'ha scelta per questa categoria
   const chosenCover = collections.find((c) => c.slug === slug)?.cover_path
     ? info.cover
@@ -57,11 +68,7 @@ export default async function CategoryView({ slug, site }: { slug: string; site:
       )}
       <div className="mt-8">
         {items.length ? (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3">
-            {items.map((p) => (
-              <ProductCard key={p.id} product={p} showPrice badges={site?.settings.badges} />
-            ))}
-          </div>
+          <ProductBrowser items={items} filters={filters} badges={site?.settings.badges} />
         ) : (
           <p className="opacity-70">Nessun lavoro in questa categoria, per ora.</p>
         )}
