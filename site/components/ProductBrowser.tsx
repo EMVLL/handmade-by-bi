@@ -1,16 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import FilterMenu from "./FilterMenu";
 import ProductCard from "./ProductCard";
 import SortMenu from "./SortMenu";
+import { buildFacets, matchingIds, type FacetOption, type Selection } from "@/lib/facets";
 import type { BadgeSettings, Product } from "@/lib/types";
 
-export interface BrowserFilter {
-  value: string;
-  label: string;
-  /** Pezzi che rientrano nel filtro */
-  ids: string[];
-}
+/** Una categoria con cui filtrare: i pezzi che ne fanno parte. */
+export type BrowserFilter = FacetOption;
 
 type Sort = "default" | "newest" | "price_asc" | "price_desc";
 
@@ -22,8 +20,8 @@ const SORTS: { value: Sort; label: string }[] = [
 ];
 
 /**
- * Griglia dei pezzi di una categoria, con "Ordina per" e, se servono, i filtri.
- * Tutto avviene nel browser: la pagina resta veloce e non si ricarica.
+ * Griglia dei pezzi di una categoria, con "Filtra" (categoria, colore, prezzo, anche
+ * insieme) e "Ordina per". Tutto avviene nel browser: la pagina non si ricarica.
  */
 export default function ProductBrowser({
   items,
@@ -31,15 +29,18 @@ export default function ProductBrowser({
   badges,
 }: {
   items: Product[];
+  /** Categorie con cui filtrare (le altre categorie dei pezzi di questa pagina) */
   filters?: BrowserFilter[];
   badges?: BadgeSettings;
 }) {
-  const [filter, setFilter] = useState<string | null>(null);
+  const [selection, setSelection] = useState<Selection>({});
   const [sort, setSort] = useState<Sort>("default");
 
+  const facets = useMemo(() => buildFacets(items, filters), [items, filters]);
+
   const shown = useMemo(() => {
-    const ids = filter ? new Set(filters.find((f) => f.value === filter)?.ids ?? []) : null;
-    const list = ids ? items.filter((p) => ids.has(p.id)) : [...items];
+    const ids = matchingIds(items, facets, selection);
+    const list = items.filter((p) => ids.has(p.id));
     // I pezzi "prezzo su richiesta" vanno in fondo quando si ordina per prezzo
     const price = (p: Product, fallback: number) => p.price ?? fallback;
     switch (sort) {
@@ -52,45 +53,65 @@ export default function ProductBrowser({
       default:
         return list;
     }
-  }, [items, filters, filter, sort]);
+  }, [items, facets, selection, sort]);
 
-  // Filtri solo se dividono davvero i pezzi in più gruppi
-  const showFilters = filters.length > 1;
+  // Le scelte attive, da togliere una per una sotto i pulsanti
+  const chips = facets.flatMap((f) =>
+    f.options
+      .filter((o) => selection[f.key]?.includes(o.value))
+      .map((o) => ({ facet: f.key, value: o.value, label: o.label })),
+  );
+  const remove = (facet: keyof Selection, value: string) =>
+    setSelection((s) => ({ ...s, [facet]: (s[facet] ?? []).filter((v) => v !== value) }));
+
+  const showFilters = facets.length > 0;
   const showSort = items.length > 1;
-
-  const chip = (active: boolean) =>
-    `rounded-full border px-4 py-2 text-sm transition ${
-      active ? "border-primary bg-primary text-white" : "border-foreground/20 hover:border-primary"
-    }`;
 
   return (
     <>
       {(showFilters || showSort) && (
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          {showFilters ? (
-            <div className="min-w-0">
-              <p className="mb-2 text-sm font-semibold opacity-70">Filtra</p>
-              <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
-                <button type="button" className={`shrink-0 ${chip(filter === null)}`} onClick={() => setFilter(null)}>
-                  Tutti
+        <div className="mb-6 space-y-3">
+          <div className="relative flex flex-wrap items-center justify-between gap-3">
+            {showFilters ? (
+              <FilterMenu
+                items={items}
+                facets={facets}
+                selection={selection}
+                onChange={setSelection}
+                resultCount={shown.length}
+              />
+            ) : (
+              <div />
+            )}
+            {showSort && <SortMenu label="Ordina per" options={SORTS} value={sort} onChange={setSort} />}
+          </div>
+          {chips.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              {chips.map((c) => (
+                <button
+                  key={`${c.facet}-${c.value}`}
+                  type="button"
+                  onClick={() => remove(c.facet, c.value)}
+                  aria-label={`Togli il filtro ${c.label}`}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 py-1.5 pl-3.5 pr-2.5 text-sm text-primary transition hover:bg-primary/20"
+                >
+                  {c.label}
+                  <svg aria-hidden viewBox="0 0 20 20" className="h-4 w-4">
+                    <path d="M6 6l8 8M14 6l-8 8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
                 </button>
-                {filters.map((f) => (
-                  <button
-                    key={f.value}
-                    type="button"
-                    className={`shrink-0 ${chip(filter === f.value)}`}
-                    aria-pressed={filter === f.value}
-                    onClick={() => setFilter(filter === f.value ? null : f.value)}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </div>
+              ))}
+              {chips.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setSelection({})}
+                  className="px-1 text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                >
+                  Azzera tutto
+                </button>
+              )}
             </div>
-          ) : (
-            <div />
           )}
-          {showSort && <SortMenu label="Ordina per" options={SORTS} value={sort} onChange={setSort} />}
         </div>
       )}
       {shown.length ? (
@@ -100,7 +121,16 @@ export default function ProductBrowser({
           ))}
         </div>
       ) : (
-        <p className="opacity-70">Nessun lavoro con questo filtro.</p>
+        <div className="space-y-4 py-6">
+          <p className="opacity-70">Nessun lavoro con questi filtri.</p>
+          <button
+            type="button"
+            onClick={() => setSelection({})}
+            className="rounded-site border border-primary px-5 py-2.5 text-sm font-semibold text-primary"
+          >
+            Togli i filtri
+          </button>
+        </div>
       )}
     </>
   );
