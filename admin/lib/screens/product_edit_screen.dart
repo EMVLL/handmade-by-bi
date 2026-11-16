@@ -10,13 +10,14 @@ import '../supa.dart';
 import '../utils.dart';
 import '../widgets/color_dot.dart';
 import '../widgets/section_card.dart';
+import 'photo_focus_screen.dart';
 import '../app_theme.dart';
 import '../color_names.dart';
 import '../texts/app_texts.dart';
 
 /// Una foto del pezzo: già caricata (path) oppure appena scelta (bytes).
 class _Photo {
-  _Photo.saved(String this.path)
+  _Photo.saved(String this.path, [this.focus])
       : bytes = null,
         mime = null;
   _Photo.fresh(Uint8List this.bytes, String this.mime) : path = null;
@@ -24,6 +25,11 @@ class _Photo {
   final String? path;
   final Uint8List? bytes;
   final String? mime;
+
+  /// Centro scelto per i riquadri quadrati del sito (null = centro della foto).
+  PhotoFocus? focus;
+
+  ImageProvider get image => bytes != null ? MemoryImage(bytes!) : NetworkImage(mediaUrl(path!));
 }
 
 class _OptionDraft {
@@ -98,7 +104,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     _status = p?.status ?? 'disponibile';
     _categoryIds = {...?p?.categoryIds, if (p == null) ...widget.initialCategoryIds};
     _loadCategories();
-    _photos.addAll((p?.photos ?? const <String>[]).map(_Photo.saved));
+    _photos.addAll((p?.photos ?? const <String>[]).map((path) => _Photo.saved(path, p?.photoFocus[path])));
     _options.addAll((p?.options ?? const <ProductOption>[])
         .map((o) => _OptionDraft(name: o.name, values: o.values)));
   }
@@ -233,6 +239,11 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            ListTile(
+              leading: const Icon(Icons.center_focus_strong_outlined),
+              title: Text(t.photoChooseCenter),
+              onTap: () => Navigator.pop(context, 'center'),
+            ),
             if (index > 0)
               ListTile(
                 leading: const Icon(Icons.star_outline),
@@ -261,6 +272,8 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
       ),
     );
     switch (action) {
+      case 'center':
+        await _chooseCenter(index);
       case 'cover':
         _movePhoto(index, 0);
       case 'left':
@@ -272,13 +285,24 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     }
   }
 
+  Future<void> _chooseCenter(int index) async {
+    final photo = _photos[index];
+    final focus = await Navigator.of(context).push<PhotoFocus>(
+      MaterialPageRoute(builder: (_) => PhotoFocusScreen(image: photo.image, initial: photo.focus)),
+    );
+    if (focus == null || !mounted) return;
+    setState(() => photo.focus = focus.isCenter ? null : focus);
+  }
+
   Widget _photoTile(int index) {
     final item = _photos[index];
+    final alignment = item.focus?.alignment ?? Alignment.center;
     final image = item.bytes != null
-        ? Image.memory(item.bytes!, fit: BoxFit.cover)
+        ? Image.memory(item.bytes!, fit: BoxFit.cover, alignment: alignment)
         : Image.network(
             mediaUrl(item.path!),
             fit: BoxFit.cover,
+            alignment: alignment,
             errorBuilder: (context, error, stack) =>
                 const Center(child: Icon(Icons.broken_image_outlined)),
           );
@@ -612,11 +636,13 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
     final uploaded = <String>[];
     try {
       final paths = <String>[];
+      final focus = <String, dynamic>{};
       final toUpload = _photos.where((p) => p.bytes != null).length;
       var done = 0;
       for (final photo in _photos) {
         if (photo.path != null) {
           paths.add(photo.path!);
+          if (photo.focus != null) focus[photo.path!] = photo.focus!.toMap();
           continue;
         }
         done++;
@@ -629,6 +655,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
             );
         uploaded.add(path);
         paths.add(path);
+        if (photo.focus != null) focus[path] = photo.focus!.toMap();
       }
 
       if (mounted) setState(() => _progress = t.progressSaving);
@@ -641,6 +668,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
         'compare_at_price': parsePrice(_compare.text.trim()),
         'status': _status,
         'photos': paths,
+        'photo_focus': focus,
         'options': [
           for (final o in _options)
             {'name': o.name.text.trim(), 'values': o.values},

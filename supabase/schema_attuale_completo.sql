@@ -239,6 +239,10 @@ begin
   return new;
 end $$;
 
+-- Name: validate_photo_focus(); Type: FUNCTION; Schema: private; Owner: -
+-- (testo completo in 010_centro_foto.sql: oggetto { "<foto>": { x, y } } con x e y tra 0 e 100, al massimo 24 voci)
+
+--
 -- Name: validate_product(); Type: FUNCTION; Schema: private; Owner: -
 
 CREATE FUNCTION private.validate_product() RETURNS trigger
@@ -537,6 +541,7 @@ CREATE TABLE public.products (
     deleted_at timestamp with time zone,
     lead_time text,
     show_lead_time boolean DEFAULT false NOT NULL,
+    photo_focus jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT compare_price_valid CHECK (((compare_at_price IS NULL) OR ((price IS NOT NULL) AND (compare_at_price > price)))),
     CONSTRAINT products_description_check CHECK ((char_length(description) <= 5000)),
     CONSTRAINT products_lead_time_check CHECK (((char_length(lead_time) >= 1) AND (char_length(lead_time) <= 80))),
@@ -719,6 +724,9 @@ CREATE TRIGGER product_collections_notify AFTER INSERT OR DELETE OR UPDATE ON pu
 CREATE TRIGGER products_notify AFTER INSERT OR DELETE OR UPDATE ON public.products FOR EACH STATEMENT EXECUTE FUNCTION private.notify_site();
 
 -- Name: products products_updated; Type: TRIGGER; Schema: public; Owner: -
+
+CREATE TRIGGER products_photo_focus BEFORE INSERT OR UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION private.validate_photo_focus();
+
 
 CREATE TRIGGER products_updated BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION private.set_updated_at();
 

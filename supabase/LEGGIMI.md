@@ -4,7 +4,7 @@
 
 | File | A cosa serve |
 |---|---|
-| `001_schema_iniziale.sql` … `009_tempi_nei_riquadri.sql` | Gli script numerati, nell'ordine in cui vanno eseguiti nel SQL Editor di Supabase |
+| `001_schema_iniziale.sql` … `010_centro_foto.sql` | Gli script numerati, nell'ordine in cui vanno eseguiti nel SQL Editor di Supabase |
 | `schema_attuale_completo.sql` | Fotografia dello schema DOPO tutti gli script (tabelle, vincoli, funzioni, trigger, RLS, permessi + tipi di sezione e schemi delle impostazioni). **Solo da consultare, non da eseguire** |
 | `schemi_json.json` | Gli schemi JSON attuali di ogni tipo di sezione e di ogni impostazione, leggibili |
 
@@ -21,10 +21,11 @@
 | 007_testi_etichette | Corsivo/stampatello, nomi nel nastro, etichette dei pezzi personalizzabili | Eseguito |
 | 008_tempi_realizzazione | Tempi di realizzazione per pezzo (`lead_time`) con interruttore per mostrarli (`show_lead_time`) | Eseguito |
 | 009_tempi_nei_riquadri | In "Etichette dei pezzi": interruttore `lead_time_cards` per mostrare i tempi anche nei riquadri delle griglie | Da eseguire prima di sito v2.6 |
+| 010_centro_foto | Centro di ogni foto nei riquadri quadrati (`photo_focus`, controllato da `private.validate_photo_focus`) | Da eseguire prima di sito v2.9 e app v3.1 |
 
 Dal 005 in poi gli script si possono rieseguire senza danni. Se non ci sono modifiche in sospeso ripubblicano il sito con aspetto identico, altrimenti lasciano la novità in bozza.
 
-**Progetto Supabase nuovo da zero:** prima creare gli utenti in Authentication, poi mettere le loro email nella sezione 11 dello script 001, poi eseguire 001 → 009 in ordine. Alla fine del 003 copiare il `revalidate_secret` mostrato nella variabile `REVALIDATE_SECRET` di Netlify.
+**Progetto Supabase nuovo da zero:** prima creare gli utenti in Authentication, poi mettere le loro email nella sezione 11 dello script 001, poi eseguire 001 → 010 in ordine. Alla fine del 003 copiare il `revalidate_secret` mostrato nella variabile `REVALIDATE_SECRET` di Netlify.
 
 ## Tabelle
 
@@ -32,7 +33,7 @@ Dal 005 in poi gli script si possono rieseguire senza danni. Se non ci sono modi
 
 | Tabella | Contenuto |
 |---|---|
-| `products` | Pezzi: titolo, descrizione, prezzo e prezzo barrato, stato (`disponibile`, `su_ordinazione`, `venduto`, `nascosto`), foto, opzioni, link Vinted, tempi di realizzazione (`lead_time`, `show_lead_time`), cestino (`deleted_at`) |
+| `products` | Pezzi: titolo, descrizione, prezzo e prezzo barrato, stato (`disponibile`, `su_ordinazione`, `venduto`, `nascosto`), foto, opzioni, link Vinted, tempi di realizzazione (`lead_time`, `show_lead_time`), centro delle foto (`photo_focus`), cestino (`deleted_at`) |
 | `collections` | Categorie: nome, slug, descrizione, copertina, ordine |
 | `product_collections` | Collegamento pezzo ↔ categoria |
 | `pages` | Pagine del sito (home + pagine extra), SEO |

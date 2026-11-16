@@ -147,6 +147,24 @@ class AppTextsIt implements AppTexts {
   @override
   String get photoMakeCover => 'Usa come copertina';
   @override
+  String get photoChooseCenter => 'Scegli il centro';
+  @override
+  String get focusTitle => 'Centro della foto';
+  @override
+  String get focusPickTitle => 'Tocca la foto dove sta il pezzo';
+  @override
+  String get focusPickHint => 'Il quadrato chiaro è quello che si vedrà nelle griglie e nel nastro. Puoi anche trascinarlo.';
+  @override
+  String get focusPreviewTitle => 'Anteprima';
+  @override
+  String get focusPreviewHint => 'Così appare nei riquadri del sito. Nella scheda del pezzo la foto si vede sempre intera.';
+  @override
+  String get focusReset => 'Rimetti al centro';
+  @override
+  String get focusDone => 'Fatto';
+  @override
+  String get focusLoadError => 'Non riesco ad aprire la foto. Controlla la connessione e riprova.';
+  @override
   String get photoMoveLeft => 'Sposta a sinistra';
   @override
   String get photoMoveRight => 'Sposta a destra';

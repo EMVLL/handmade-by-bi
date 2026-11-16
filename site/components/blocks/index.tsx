@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { categoryEntries, menuSettings } from "@/lib/categories";
 import type { Collection, LiveSite, Product, Props } from "@/lib/types";
-import { bool, list, mediaUrl, num, paragraphs, str } from "@/lib/format";
+import { bool, list, mediaUrl, num, paragraphs, str, photoPosition } from "@/lib/format";
 import Banner from "../Banner";
 import CategoryMenu from "../CategoryMenu";
 import ContactLinks from "../ContactLinks";
@@ -296,6 +296,7 @@ const featuredProduct: Renderer = (p, ctx) => {
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
               className="object-cover"
+              style={{ objectPosition: photoPosition(product.photo_focus, product.photos?.[0]) }}
             />
           )}
         </div>

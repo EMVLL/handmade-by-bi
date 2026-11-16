@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 const productStatuses = ['disponibile', 'su_ordinazione', 'venduto', 'nascosto'];
 
 
@@ -15,6 +17,34 @@ class ProductOption {
   Map<String, dynamic> toMap() => {'name': name, 'values': values};
 }
 
+/// Punto da tenere al centro quando una foto viene ritagliata in un quadrato
+/// (griglie, nastro, miniature): x e y in percentuale, come object-position nel sito.
+class PhotoFocus {
+  const PhotoFocus(this.x, this.y);
+
+  static const center = PhotoFocus(50, 50);
+
+  static PhotoFocus? fromMap(Object? map) {
+    if (map is! Map) return null;
+    final x = map['x'], y = map['y'];
+    if (x is! num || y is! num) return null;
+    return PhotoFocus(x.toDouble().clamp(0, 100), y.toDouble().clamp(0, 100));
+  }
+
+  final double x;
+  final double y;
+
+  bool get isCenter => (x - 50).abs() < 0.5 && (y - 50).abs() < 0.5;
+
+  /// Lo stesso punto per Flutter (BoxFit.cover + alignment equivale a object-position).
+  Alignment get alignment => Alignment(x / 50 - 1, y / 50 - 1);
+
+  Map<String, dynamic> toMap() => {
+        'x': double.parse(x.toStringAsFixed(1)),
+        'y': double.parse(y.toStringAsFixed(1)),
+      };
+}
+
 class Product {
   const Product({
     required this.id,
@@ -29,6 +59,7 @@ class Product {
     required this.vintedUrl,
     required this.leadTime,
     required this.showLeadTime,
+    required this.photoFocus,
     required this.deletedAt,
     required this.categoryIds,
   });
@@ -48,6 +79,10 @@ class Product {
         vintedUrl: map['vinted_url'] as String?,
         leadTime: map['lead_time'] as String?,
         showLeadTime: (map['show_lead_time'] as bool?) ?? false,
+        photoFocus: {
+          for (final e in ((map['photo_focus'] as Map?) ?? const {}).entries)
+            if (PhotoFocus.fromMap(e.value) case final f?) e.key.toString(): f,
+        },
         deletedAt: map['deleted_at'] == null ? null : DateTime.tryParse(map['deleted_at'] as String),
         categoryIds: ((map['product_collections'] as List?) ?? const [])
             .map((pc) => (pc as Map)['collection_id'] as String)
@@ -68,6 +103,9 @@ class Product {
   /// Tempi di realizzazione (es. "7–10 giorni") e se mostrarli sul sito.
   final String? leadTime;
   final bool showLeadTime;
+
+  /// Centro scelto per ogni foto (chiave: percorso della foto); assente = centro.
+  final Map<String, PhotoFocus> photoFocus;
   final DateTime? deletedAt;
 
   /// Categorie scelte da Benedetta (tabella product_collections).

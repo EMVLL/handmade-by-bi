@@ -168,6 +168,7 @@ class _ProductsScreenState extends State<ProductsScreen> with ShrinkingFab {
             : Image.network(
                 cover,
                 fit: BoxFit.cover,
+                alignment: p.photoFocus[p.photos.first]?.alignment ?? Alignment.center,
                 errorBuilder: (context, error, stack) => const Icon(Icons.broken_image_outlined),
               ),
       ),

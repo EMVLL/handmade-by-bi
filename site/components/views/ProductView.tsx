@@ -5,7 +5,7 @@ import { PriceLine } from "@/components/ProductCard";
 import ProductGallery from "@/components/ProductGallery";
 import { StatusPill } from "@/components/StatusBadge";
 import { getProduct } from "@/lib/data";
-import { mediaUrl, paragraphs, priceLabel } from "@/lib/format";
+import { mediaUrl, paragraphs, priceLabel, photoPosition } from "@/lib/format";
 import type { LiveSite } from "@/lib/types";
 
 // Scheda di un pezzo: usata dal sito e dall'anteprima (con il sito in bozza).
@@ -23,9 +23,10 @@ export default async function ProductView({
 
   const leadTime = product.show_lead_time ? product.lead_time?.trim() : "";
 
-  const images = product.photos
-    .map((p) => mediaUrl(p))
-    .filter((u): u is string => Boolean(u));
+  const images = product.photos.flatMap((p) => {
+    const src = mediaUrl(p);
+    return src ? [{ src, position: photoPosition(product.photo_focus, p) }] : [];
+  });
 
   return (
     <>

@@ -89,6 +89,15 @@ abstract class AppTexts {
   String get photoCover;
   String get photoAdd;
   String get photoMakeCover;
+  String get photoChooseCenter;
+  String get focusTitle;
+  String get focusPickTitle;
+  String get focusPickHint;
+  String get focusPreviewTitle;
+  String get focusPreviewHint;
+  String get focusReset;
+  String get focusDone;
+  String get focusLoadError;
   String get photoMoveLeft;
   String get photoMoveRight;
   String get photoRemove;

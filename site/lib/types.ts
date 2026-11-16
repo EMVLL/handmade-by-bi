@@ -123,6 +123,8 @@ export interface Product {
   /** Tempi di realizzazione, es. "7–10 giorni" (script 008) */
   lead_time: string | null;
   show_lead_time: boolean;
+  /** Centro scelto per ogni foto nei riquadri quadrati: { "<path>": { x, y } } in % (script 010) */
+  photo_focus?: Record<string, { x: number; y: number }> | null;
   position: number;
   created_at: string;
   product_collections: { collection_id: string; position: number }[];

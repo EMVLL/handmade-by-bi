@@ -24,6 +24,7 @@ function Tile({ e, shape, className = "" }: { e: CategoryEntry; shape: TileShape
           fill
           sizes="(min-width: 768px) 25vw, 50vw"
           className="object-cover transition duration-300 group-hover:scale-105"
+          style={{ objectPosition: e.coverPosition }}
         />
       )}
       <span className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
@@ -76,7 +77,9 @@ export default function CategoryMenu({
         {entries.map((e) => (
           <Link key={e.slug} href={e.href} className="group flex w-24 shrink-0 flex-col items-center gap-2 text-center">
             <span className="relative block h-24 w-24 overflow-hidden rounded-full bg-primary/15 ring-2 ring-primary/30 transition group-hover:ring-primary">
-              {e.cover && <Image src={e.cover} alt="" fill sizes="96px" className="object-cover" />}
+              {e.cover && (
+                <Image src={e.cover} alt="" fill sizes="96px" className="object-cover" style={{ objectPosition: e.coverPosition }} />
+              )}
             </span>
             <span className="text-sm leading-tight">{e.name}</span>
           </Link>

@@ -1,4 +1,4 @@
-import { mediaUrl } from "./format";
+import { mediaUrl, photoPosition } from "./format";
 import type { Collection, LiveSite, Product } from "./types";
 
 // Due categorie automatiche: nessuno deve tenerle aggiornate a mano.
@@ -72,13 +72,22 @@ export interface CategoryEntry {
   href: string;
   count: number;
   cover: string | null;
+  /** Centro della copertina quando è la foto di un pezzo */
+  coverPosition?: string;
 }
 
-/** Copertina: quella scelta da Benedetta, altrimenti la foto del primo pezzo. */
-function coverFor(chosen: string | null | undefined, items: Product[]): string | null {
-  if (chosen) return mediaUrl(chosen);
+/** Copertina: quella scelta da Benedetta, altrimenti la foto del primo pezzo (con il suo centro). */
+function coverFor(
+  chosen: string | null | undefined,
+  items: Product[],
+): { cover: string | null; coverPosition?: string } {
+  if (chosen) return { cover: mediaUrl(chosen) };
   const withPhoto = items.find((p) => p.photos?.length);
-  return withPhoto ? mediaUrl(withPhoto.photos[0]) : null;
+  if (!withPhoto) return { cover: null };
+  return {
+    cover: mediaUrl(withPhoto.photos[0]),
+    coverPosition: photoPosition(withPhoto.photo_focus, withPhoto.photos[0]),
+  };
 }
 
 /** Voci del menu, nell'ordine: categorie di Benedetta, poi Pronta consegna e Altro. */
@@ -95,7 +104,7 @@ export function categoryEntries(
       description,
       href: `/collezioni/${slug}`,
       count: items.length,
-      cover: coverFor(chosenCover, items),
+      ...coverFor(chosenCover, items),
     };
   };
   const entries = collections.map((c) => make(c.slug, c.name, c.description ?? "", c.cover_path));

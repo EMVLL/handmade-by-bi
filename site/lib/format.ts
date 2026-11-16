@@ -8,6 +8,20 @@ export function mediaUrl(path?: string | null): string | null {
   return `${SUPABASE_URL}/storage/v1/object/public/media/${safe}`;
 }
 
+/**
+ * Punto da tenere al centro quando una foto viene ritagliata (griglie, nastro, miniature):
+ * scelto da Benedetta nell'app, altrimenti il centro della foto. Valore CSS per object-position.
+ */
+export function photoPosition(
+  focus: Record<string, { x: number; y: number }> | null | undefined,
+  path: string | null | undefined,
+): string | undefined {
+  const f = path ? focus?.[path] : undefined;
+  if (!f) return undefined;
+  const pct = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? Math.min(100, Math.max(0, v)) : 50);
+  return `${pct(f.x)}% ${pct(f.y)}%`;
+}
+
 const eur = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" });
 
 export function formatPrice(value: number | null | undefined): string | null {

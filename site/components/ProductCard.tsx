@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { BadgeSettings, Product } from "@/lib/types";
 import StatusBadge from "./StatusBadge";
-import { formatPrice, mediaUrl } from "@/lib/format";
+import { formatPrice, mediaUrl, photoPosition } from "@/lib/format";
 
 export function PriceLine({ product, className = "" }: { product: Product; className?: string }) {
   const price = formatPrice(product.price);
@@ -43,6 +43,7 @@ export default function ProductCard({
             alt={product.title}
             fill
             sizes="(min-width: 768px) 33vw, 50vw"
+            style={{ objectPosition: photoPosition(product.photo_focus, product.photos?.[0]) }}
             className={`object-cover transition duration-300 group-hover:scale-105 ${
               product.status === "venduto" ? "opacity-70" : ""
             }`}

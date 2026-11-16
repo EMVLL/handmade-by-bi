@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { formatPrice, mediaUrl } from "@/lib/format";
+import { formatPrice, mediaUrl, photoPosition } from "@/lib/format";
 import RibbonScroller from "./RibbonScroller";
 import type { BadgeSettings, Product } from "@/lib/types";
 import StatusBadge from "./StatusBadge";
@@ -46,6 +46,7 @@ export default function ProductRibbon({
                 sizes="(min-width: 768px) 240px, 176px"
                 draggable={false}
                 className="select-none object-cover"
+                style={{ objectPosition: photoPosition(p.photo_focus, p.photos[0]) }}
               />
               <StatusBadge status={p.status} settings={badges} />
             </div>
