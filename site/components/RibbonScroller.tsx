@@ -3,7 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 
 const SPEED = 35; // pixel al secondo
-const RESUME_AFTER = 2500; // ms dopo l'ultimo tocco
+const RESUME_AFTER = 2500; // ms da quando il nastro si è fermato del tutto
 const SETTLE = 150; // ms senza movimento = lo scorrimento col dito è finito
 
 // Nastro infinito: scorre da solo, ma si può trascinare avanti e indietro
@@ -24,6 +24,7 @@ export default function RibbonScroller({ children }: { children: ReactNode }) {
     let paused = false;
     let hovering = false; // solo mouse: sul telefono il "passaggio sopra" non esiste
     let touching = false;
+    let lastUserScroll = 0; // ultimo movimento non fatto dallo scorrimento automatico
     let resumeTimer: ReturnType<typeof setTimeout> | undefined;
     let settleTimer: ReturnType<typeof setTimeout> | undefined;
     let last = performance.now();
@@ -109,23 +110,32 @@ export default function RibbonScroller({ children }: { children: ReactNode }) {
         e.stopPropagation();
       }
     };
-    // Dopo un trascinamento col dito (o la rotella) si torna al centro solo a nastro fermo
+    // Dopo un trascinamento col dito (o la rotella) si torna al centro solo a nastro fermo.
+    // Su iPhone l'inerzia continua a far scorrere il nastro per qualche secondo dopo che il
+    // dito si è alzato: finché arrivano movimenti, la ripartenza automatica viene rimandata,
+    // altrimenti la ripartenza e l'inerzia si contendono il nastro (sobbalzi e foto sovrapposte).
     const onScroll = () => {
       if (!paused || dragging) return;
+      lastUserScroll = performance.now();
       if (settleTimer) clearTimeout(settleTimer);
       settleTimer = setTimeout(() => {
         if (!touching) recenter();
       }, SETTLE);
+      if (!touching) resumeLater();
     };
     // Il browser non deve "trascinare via" foto e link: si trascina il nastro
     const onDragStart = (e: DragEvent) => e.preventDefault();
     const onTouchStart = () => {
+      const wasRunning = !paused; // scorreva da solo: nessuna inerzia in corso
       touching = true;
       pause();
-      // Il dito appena appoggiato ferma l'inerzia: è il momento sicuro per tornare
-      // al centro, così anche tante strisciate di fila non arrivano mai al bordo.
-      if (settleTimer) clearTimeout(settleTimer);
-      recenter();
+      // A nastro fermo si torna subito al centro, così anche tante strisciate di fila
+      // non arrivano mai al bordo. Se invece sta ancora scorrendo per l'inerzia non si
+      // tocca: su iPhone spostarlo in quel momento lo fa sobbalzare.
+      if (wasRunning || performance.now() - lastUserScroll > SETTLE) {
+        if (settleTimer) clearTimeout(settleTimer);
+        recenter();
+      }
     };
     const onTouchEnd = () => {
       touching = false;
