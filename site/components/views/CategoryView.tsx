@@ -13,6 +13,7 @@ import {
 } from "@/lib/categories";
 import { getCollections, getProducts } from "@/lib/data";
 import { paragraphs } from "@/lib/format";
+import { kindsFor } from "@/lib/kinds";
 import type { LiveSite } from "@/lib/types";
 
 // Pagina di una categoria: usata dal sito e dall'anteprima (con il sito in bozza).
@@ -25,22 +26,21 @@ export default async function CategoryView({ slug, site }: { slug: string; site:
   const items = productsInCategory(slug, products, collections);
   const entries = categoryEntries(settings, products, collections);
 
-  // Filtro per categoria: le ALTRE categorie dei pezzi di questa pagina.
-  // Serve soprattutto nei pezzi pronti (automatici o in una categoria tipo "Disponibili");
-  // compare solo se divide davvero i pezzi in almeno due gruppi.
+  // Filtro per categoria: per ogni pezzo le sue ALTRE categorie vere oppure, se non ne ha,
+  // il tipo ricavato dal nome ("Clutch Marrone" -> Borse). Serve soprattutto in pagine come
+  // "Disponibili" o i pezzi pronti; compare solo se divide davvero i pezzi.
   const current = collections.find((c) => c.slug === slug)?.id;
-  const others = (p: (typeof items)[number]) =>
-    (p.product_collections ?? []).map((pc) => pc.collection_id).filter((id) => id !== current);
+  const kinds = new Map(items.map((p) => [p.id, kindsFor(p, collections, current)]));
   const filters: BrowserFilter[] = [];
   if (slug !== OTHER_SLUG) {
     for (const c of collections) {
       if (c.id === current) continue;
-      const ids = items.filter((p) => others(p).includes(c.id)).map((p) => p.id);
+      const ids = items.filter((p) => kinds.get(p.id)?.includes(c.id)).map((p) => p.id);
       if (ids.length) filters.push({ value: c.id, label: c.name, ids });
     }
     // "Altro" solo nelle pagine che raccolgono pezzi di più categorie (pronti, "Disponibili"):
     // in Borse vorrebbe dire "solo borse" e confonderebbe
-    const loose = items.filter((p) => !others(p).length).map((p) => p.id);
+    const loose = items.filter((p) => !kinds.get(p.id)?.length).map((p) => p.id);
     if (loose.length && filters.length >= 2) filters.push({ value: "__altro", label: settings.otherLabel, ids: loose });
   }
   // Copertina in testata solo se Benedetta l'ha scelta per questa categoria
