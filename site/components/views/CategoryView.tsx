@@ -42,6 +42,9 @@ export default async function CategoryView({ slug, site }: { slug: string; site:
     // in Borse vorrebbe dire "solo borse" e confonderebbe
     const loose = items.filter((p) => !kinds.get(p.id)?.length).map((p) => p.id);
     if (loose.length && filters.length >= 2) filters.push({ value: "__altro", label: settings.otherLabel, ids: loose });
+    // Una sola categoria non è una scelta: in Borse una borsa spuntata anche in "Disponibili"
+    // farebbe comparire "Categoria: Disponibili", che confonde. Il gruppo serve da 2 in su.
+    if (filters.length < 2) filters.length = 0;
   }
   // Copertina in testata solo se Benedetta l'ha scelta per questa categoria
   const chosenCover = collections.find((c) => c.slug === slug)?.cover_path
